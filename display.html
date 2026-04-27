@@ -252,22 +252,22 @@
     overflow: hidden;
     padding: 0;
     margin-bottom: 0;
+    padding-top: clamp(10px,1vw,16px);
   }
 
   .pg-header {
     display: grid;
     grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    padding: 8px 24px;
+    padding: 8px 24px 10px;
     border-bottom: 1px solid var(--border2);
     background: transparent;
   }
   .pg-header span {
     font-size: 0.72rem;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text);
-    opacity: 1;
+    color: var(--text2);
   }
   .pg-header span:not(:first-child) { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
   .p-cell { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
@@ -329,7 +329,8 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .p-jamaah-wrap { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0.18em; }
+  .p-jamaah-wrap { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
+  @media (max-width: 768px) { .p-jamaah-wrap { align-items: center; } }
   .p-jamaah {
     font-size: 1.05rem;
     font-weight: 700;
@@ -521,7 +522,7 @@
     .sidebar { display: none; }
 
     #mobile-info {
-      display: flex !important;
+      display: none !important;
       align-items: center;
       gap: 12px;
       background: var(--bg);
@@ -574,11 +575,11 @@
     .main::before {
       content: 'PRAYER TIMES';
       display: block;
-      font-size: 0.5rem;
-      font-weight: 800;
-      letter-spacing: 0.18em;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
       color: var(--gold);
-      padding: 14px 16px 0;
+      padding: 10px 14px 0;
     }
 
     #mobile-banner {
@@ -594,9 +595,9 @@
     .mb-right { text-align: right; }
     #mobile-iq-bar { display: block !important; }
     .mb-label {
-      font-size: 0.45rem; font-weight: 700;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 3px;
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.13em; text-transform: uppercase;
+      color: var(--text2); margin-bottom: 3px;
     }
     .mb-prayer {
       font-size: 0.9rem; font-weight: 500;
@@ -621,14 +622,14 @@
     .pg-header {
       display: grid;
       grid-template-columns: 1.5fr 1fr 1fr 1fr;
-      padding: 10px 20px;
+      padding: 8px 14px;
       border-bottom: 1px solid var(--border);
-      margin-top: 14px;
+      margin-top: 0;
     }
     .pg-header span {
-      font-size: 0.52rem; font-weight: 600;
-      letter-spacing: 0.06em; color: var(--muted);
-      text-align: center; padding-left: 0;
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.13em; color: var(--text2);
+      text-align: center; padding: 0;
     }
     .pg-header span:first-child { text-align: left; }
     .p-name { font-size: 1rem !important; }
@@ -642,12 +643,16 @@
       border-bottom: 1px solid var(--border);
       align-items: center;
     }
-    .p-name { font-size: 1rem !important; font-weight: 700; color: var(--text); }
+    .p-name { font-size: 1rem !important; font-weight: 700; color: var(--text); text-align: left; }
     .p-name-ar { display: none; }
-    .p-begins { font-size: 0.85rem !important; font-weight: 400; color: var(--muted); text-align: center; }
-    .p-jamaah { font-size: 0.9rem !important; font-weight: 800; color: var(--text); text-align: center; }
+    .p-begins { font-size: 0.85rem !important; font-weight: 400; color: var(--muted); text-align: center; padding: 0; }
+    .p-jamaah { font-size: 0.9rem !important; font-weight: 800; color: var(--text); text-align: center; padding-left: 0; }
     .prayer-row.active .p-jamaah { color: var(--gold); }
-    .p-tomorrow { font-size: 0.8rem !important; font-weight: 400; color: var(--muted); text-align: center; }
+    .p-cell { padding: 0 !important; }
+    .p-cell.p-jamaah-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 !important; min-height: 100%; }
+    .p-cell.p-jamaah-wrap .iqamah-bar-wrap,
+    .p-cell.p-jamaah-wrap .iqamah-label { display: none !important; }
+    .p-tomorrow { font-size: 0.8rem !important; font-weight: 400; color: var(--muted); text-align: center; padding: 0; }
 
     #app { display: flex; flex-direction: column; }
     .main {
@@ -824,7 +829,8 @@
     </div>
     <div class="f-spacer"></div>
     <div class="f-cell">
-      <div class="f-value f-jummah-wrap" id="jummah-wrap">—</div>
+      <div class="f-label" id="jummah-label">Jumu'ah</div>
+      <div class="f-value" id="jummah-wrap">—</div>
     </div>
   </footer>
 
@@ -1224,14 +1230,9 @@ function initJummahAnimator(mosque) {
   let idx = 0;
   const labels = ["Jumuʼah", "2nd Jumuʼah", "3rd Jumuʼah"];
   function show() {
-    wrap.innerHTML = '';
-    const lbl = document.createElement('div');
-    lbl.style.cssText = 'font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.13em;color:var(--text2);margin-bottom:1px;';
-    lbl.textContent = labels[idx] || ("Jumuah " + (idx + 1));
-    const val = document.createElement('div');
-    val.textContent = fmt(times[idx]);
-    wrap.appendChild(lbl);
-    wrap.appendChild(val);
+    const labelEl = document.getElementById('jummah-label');
+    if (labelEl) labelEl.textContent = labels[idx] || ("Jumuah " + (idx + 1));
+    wrap.textContent = fmt(times[idx]);
   }
   show();
   setInterval(() => { idx = (idx + 1) % times.length; show(); }, 10000);
