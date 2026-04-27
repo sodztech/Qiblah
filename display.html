@@ -433,7 +433,7 @@
     font-weight: 500;
     letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
-    color: var(--gold);
+    color: rgba(238,235,229,0.45);
   }
   .brand {
     font-size: clamp(0.72rem,1.2vw,1.05rem);
@@ -783,6 +783,14 @@
   .ev-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(200,164,110,0.25); transition: background 0.3s; }
   .ev-dot.active { background: var(--gold); }
   .ev-counter { font-size: 0.58rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .mi-logo {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+    opacity: 0.9;
+  }
 </style>
 </head>
 <body>
@@ -822,8 +830,10 @@
         <div class="mosque-address" id="mosque-address"></div>
         <div class="silence-wrap" style="margin-top: clamp(8px,1vw,18px); padding-top:0;">
           <svg class="silence-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 3l18 18M10.5 4.8C10.97 4.29 11.45 4 12 4c2.21 0 4 1.79 4 4v4c0 .35-.04.69-.11 1.02M8 8v4c0 2.21 1.79 4 4 4 .76 0 1.47-.21 2.08-.58M12 20v2M8.46 16.54A5.97 5.97 0 016 12v-1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M17 12a5 5 0 01-.09 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="7" y="2" width="10" height="20" rx="2" stroke="white" stroke-width="1.5"/>
+            <path d="M10.5 5.5h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="12" cy="18" r="1" fill="white"/>
+            <path d="M3 3l18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
           <div class="silence-text">Please ensure your mobile phone is silent in the prayer hall.</div>
         </div>
@@ -834,6 +844,7 @@
   </aside>
 
   <div id="mobile-info" style="display:none">
+    <div id="mi-logo-wrap" style="display:none;align-items:center;margin-right:10px;flex-shrink:0"><img id="mi-logo" class="mi-logo" src="" alt=""></div>
     <div class="mi-mosque">
       <div class="mi-name" id="mi-name">—</div>
       <div class="mi-address" id="mi-address">—</div>
@@ -877,7 +888,7 @@
       <div class="mb-prayer" id="mb-prayer">—</div>
     </div>
     <div class="mb-right">
-      <div class="mb-label">Jam'ah Starts In</div>
+      <div class="mb-label">Iqamah</div>
       <div class="mb-countdown" id="mb-countdown">--:--:--</div>
     </div>
   </div>
@@ -893,8 +904,10 @@
   <div class="bo-prayer" id="bo-prayer"></div>
   <div class="bo-icon">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 3l18 18M10.5 4.8C10.97 4.29 11.45 4 12 4c2.21 0 4 1.79 4 4v4c0 .35-.04.69-.11 1.02M8 8v4c0 2.21 1.79 4 4 4 .76 0 1.47-.21 2.08-.58M12 20v2M8.46 16.54A5.97 5.97 0 016 12v-1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M17 12a5 5 0 01-.09 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="7" y="2" width="10" height="20" rx="2" stroke="white" stroke-width="1.5"/>
+      <path d="M10.5 5.5h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="12" cy="18" r="1" fill="white"/>
+      <path d="M3 3l18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
   </div>
   <div class="bo-text">Please ensure your mobile phone is<br>silent in the prayer hall.</div>
@@ -955,20 +968,7 @@ function toMins(s) {
   return null;
 }
 
-function calcSunrise(lat, lon, d) {
-  const rad    = Math.PI / 180;
-  const dy     = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
-  const B      = (360 / 365 * (dy - 81)) * rad;
-  const EoT    = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
-  const dec    = 23.45 * Math.sin(B) * rad;
-  const ha     = Math.acos(-Math.tan(lat * rad) * Math.tan(dec)) / rad;
-  const srUtc  = 12 - lon / 15 - EoT / 60 - ha / 15;
-  // Apply local UTC offset (handles BST/GMT automatically)
-  const offsetH = -d.getTimezoneOffset() / 60;
-  const sr     = srUtc + offsetH;
-  const h      = Math.floor(sr), m = Math.round((sr - h) * 60);
-  return `${h % 12 || 12}:${String(m).padStart(2, '0')} AM`;
-}
+
 
 function ukDate(d) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -1185,21 +1185,45 @@ async function init() {
     var miAddr = document.getElementById('mi-address');
     if (miName) miName.textContent = mosque.name || '';
     if (miAddr) miAddr.textContent = mosque.address || mosque.area || '';
+    if (mosque.logo && mosque.address) {
+      const logoWrap = document.getElementById('mi-logo-wrap');
+      const logoImg  = document.getElementById('mi-logo');
+      if (logoWrap && logoImg) {
+        logoImg.src = mosque.logo;
+        logoWrap.style.display = 'flex';
+      }
+    }
     document.title = `${mosque.name} — Prayer Times`;
 
-    async function setSunrise(lat, lon) {
-      document.getElementById('sunrise').textContent = calcSunrise(lat, lon, new Date());
-    }
-    if (mosque.lat && mosque.lon) {
-      setSunrise(mosque.lat, mosque.lon);
-    } else if (mosque.address) {
-      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(mosque.address))
-        .then(r => r.json())
-        .then(results => {
-          if (results && results[0]) setSunrise(parseFloat(results[0].lat), parseFloat(results[0].lon));
+    // Exact same fetchSunrise logic as index.html profile card
+    (function() {
+      function getSunrise(lat, lon) {
+        fetch('https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + lon + '&formatted=0')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.status !== 'OK') return;
+            var utc = new Date(data.results.sunrise);
+            var h = utc.getHours(), m = utc.getMinutes();
+            var ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            var el = document.getElementById('sunrise');
+            if (el) el.textContent = h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+          })
+          .catch(function() {});
+      }
+      if (mosque.lat && mosque.lon) {
+        getSunrise(mosque.lat, mosque.lon);
+      } else if (mosque.address) {
+        fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(mosque.address) + '&format=json&limit=1', {
+          headers: { 'Accept-Language': 'en' }
         })
-        .catch(() => {});
-    }
+          .then(function(r) { return r.json(); })
+          .then(function(results) {
+            if (results && results[0]) getSunrise(results[0].lat, results[0].lon);
+          })
+          .catch(function() {});
+      }
+    })();
 
     renderRows(tod, tom);
     initJummahAnimator(mosque);
@@ -1220,7 +1244,7 @@ async function init() {
   }
 
   try {
-    const mosques = await sbGet('mosques?select=id,name,address,area,jummah,jummah2,jummah3,lat,lon&slug=eq.' + slug + '&limit=1');
+    const mosques = await sbGet('mosques?select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,url,lat,lon,sisters,facilities,logo&slug=eq.' + slug + '&limit=1');
     const mosque  = mosques[0];
     if (!mosque) throw new Error('not found');
 
@@ -1229,7 +1253,7 @@ async function init() {
     const tmr   = tmrD.toISOString().split('T')[0];
 
     const prayers = await sbGet(
-      'prayer_timetables?select=*&mosque_id=eq.' + mosque.id +
+      'prayer_timetables?select=date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah&mosque_id=eq.' + mosque.id +
       '&date=in.(' + today + ',' + tmr + ')&order=date.asc'
     );
 
