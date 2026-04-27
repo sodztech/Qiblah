@@ -733,33 +733,19 @@
     display: none;
     width: 100%;
     max-width: 1100px;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid rgba(200,164,110,0.35);
+    border-radius: 12px;
+    overflow: hidden;
   }
-  #events-panel.active { display: flex; flex-direction: column; }
   main.main, .footer-row {
     transition: opacity 0.4s ease;
   }
   main.main.ev-hidden, .footer-row.ev-hidden { 
     opacity: 0; pointer-events: none;
   }
-  .ev-card {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid rgba(200,164,110,0.35);
-    border-radius: 12px 12px 0 0;
-    overflow: hidden;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 32px 40px;
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .ev-card.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .ev-card { display: none; }
   .ev-card-label {
     font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
     letter-spacing: 0.13em; color: var(--gold);
@@ -784,15 +770,11 @@
   .ev-footer {
     width: 100%;
     max-width: 1100px;
-    background: var(--bg);
-    border: 1px solid rgba(200,164,110,0.35);
-    border-top: 1px solid rgba(200,164,110,0.12);
-    border-radius: 0 0 12px 12px;
-    padding: 10px 24px;
+    background: transparent;
+    padding: 8px 4px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 0;
   }
   .ev-dots { display: flex; gap: 6px; align-items: center; }
   .ev-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(200,164,110,0.25); transition: background 0.3s; }
@@ -1305,110 +1287,93 @@ async function loadEvents(mosqueId) {
     );
     if (!rows || !rows.length) return;
 
-    const panel   = document.getElementById('events-panel');
-    const footer  = document.getElementById('ev-footer');
-    const dotsEl  = document.getElementById('ev-dots');
-    const counter = document.getElementById('ev-counter');
-    const main    = document.querySelector('main.main');
+    const panel     = document.getElementById('events-panel');
+    const evFooter  = document.getElementById('ev-footer');
+    const dotsEl    = document.getElementById('ev-dots');
+    const counter   = document.getElementById('ev-counter');
+    // The elements to hide when showing events
+    const main      = document.querySelector('main.main');
     const footerRow = document.querySelector('.footer-row');
 
-    // Build cards
-    rows.forEach((r, i) => {
-      const card = document.createElement('div');
-      card.className = 'ev-card';
-      card.dataset.idx = i;
+    // Build header
+    const hdr = document.createElement('div');
+    hdr.className = 'ev-card-label';
+    hdr.style.cssText = 'padding:20px 32px 12px;font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.13em;color:var(--gold);border-bottom:1px solid var(--border);';
+    hdr.textContent = 'Classes & Events';
+    panel.appendChild(hdr);
 
-      const lbl = document.createElement('div');
-      lbl.className = 'ev-card-label';
-      const badge = document.createElement('span');
+    // Build all rows together as a list
+    rows.forEach(r => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display:grid;grid-template-columns:56px 1fr;gap:0 16px;padding:16px 32px;border-bottom:1px solid var(--border);align-items:center;';
+
+      const badge = document.createElement('div');
       badge.className = 'ev-badge ' + (r.category || 'event');
+      badge.style.cssText += 'margin-top:0;';
       badge.textContent = r.category === 'class' ? 'Class' : 'Event';
-      lbl.appendChild(badge);
 
+      const info = document.createElement('div');
       const title = document.createElement('div');
       title.className = 'ev-title';
       title.textContent = r.title;
-
-      card.appendChild(lbl);
-      card.appendChild(title);
+      info.appendChild(title);
 
       if (r.description) {
         const desc = document.createElement('div');
         desc.className = 'ev-desc';
         desc.textContent = r.description;
-        card.appendChild(desc);
+        info.appendChild(desc);
       }
       if (r.date) {
         const dt = document.createElement('div');
         dt.className = 'ev-date';
-        dt.textContent = new Date(r.date).toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long'});
-        card.appendChild(dt);
+        dt.textContent = new Date(r.date).toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+        info.appendChild(dt);
       }
-      panel.appendChild(card);
-
-      // dot
-      const dot = document.createElement('div');
-      dot.className = 'ev-dot' + (i === 0 ? ' active' : '');
-      dotsEl.appendChild(dot);
+      item.appendChild(badge);
+      item.appendChild(info);
+      panel.appendChild(item);
     });
 
-    const cards = panel.querySelectorAll('.ev-card');
-    const dots  = dotsEl.querySelectorAll('.ev-dot');
-    let evIdx = 0;
-    let showingEvents = false;
-
-    function showCard(i) {
-      cards.forEach((c, j) => {
-        c.classList.toggle('visible', j === i);
-      });
-      dots.forEach((d, j) => d.classList.toggle('active', j === i));
-      counter.textContent = (i + 1) + ' of ' + rows.length;
-    }
-
     function showEvents() {
-      main.classList.add('ev-hidden');
-      footerRow.classList.add('ev-hidden');
+      main.style.transition = 'opacity 0.4s';
+      footerRow.style.transition = 'opacity 0.4s';
+      main.style.opacity = '0';
+      footerRow.style.opacity = '0';
       setTimeout(() => {
         main.style.display = 'none';
         footerRow.style.display = 'none';
-        panel.classList.add('active');
-        footer.style.display = 'flex';
-        evIdx = 0;
-        showCard(0);
+        panel.style.display = 'flex';
+        panel.style.opacity = '0';
+        evFooter.style.display = 'none';
+        requestAnimationFrame(() => {
+          panel.style.transition = 'opacity 0.4s';
+          panel.style.opacity = '1';
+        });
       }, 400);
     }
 
     function hideEvents() {
-      cards.forEach(c => c.classList.remove('visible'));
+      panel.style.opacity = '0';
       setTimeout(() => {
-        panel.classList.remove('active');
-        footer.style.display = 'none';
+        panel.style.display = 'none';
         main.style.display = '';
         footerRow.style.display = '';
-        setTimeout(() => {
-          main.classList.remove('ev-hidden');
-          footerRow.classList.remove('ev-hidden');
-        }, 50);
+        requestAnimationFrame(() => {
+          main.style.opacity = '1';
+          footerRow.style.opacity = '1';
+        });
       }, 400);
     }
 
-    // Rotate cards every 6s while showing, switch to prayer every 20s
-    let cardTimer, panelTimer;
-
     function startEventsCycle() {
       showEvents();
-      cardTimer = setInterval(() => {
-        evIdx = (evIdx + 1) % rows.length;
-        showCard(evIdx);
-      }, 6000);
-      panelTimer = setTimeout(() => {
-        clearInterval(cardTimer);
+      setTimeout(() => {
         hideEvents();
         setTimeout(startEventsCycle, 20000);
-      }, rows.length * 6000 + 1000);
+      }, 15000);
     }
 
-    // Start after 20s of prayer times
     setTimeout(startEventsCycle, 20000);
 
   } catch(e) { console.warn('Events load failed', e); }
