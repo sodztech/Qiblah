@@ -270,7 +270,7 @@
 
   .pg-header {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1.1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
     padding: 8px 24px;
     border-bottom: 1px solid var(--border2);
     background: transparent;
@@ -284,6 +284,8 @@
     opacity: 1;
   }
   .pg-header span:not(:first-child) { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
+  .p-cell { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
+  .p-jamaah-wrap { align-items: flex-start; padding-left: 0; }
 
   /* Rows */
   #rows {
@@ -293,7 +295,7 @@
 
   .prayer-row {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1.1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
     padding: 0 24px;
     border-bottom: 1px solid var(--border);
     border-left: 3px solid transparent;
@@ -345,7 +347,7 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .p-jamaah-wrap { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0.18em; min-height: 100%; padding-left: clamp(8px,1.5vw,24px); }
+  .p-jamaah-wrap { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0.18em; }
   .p-jamaah {
     font-size: 1.05rem;
     font-weight: 700;
@@ -424,7 +426,7 @@
     text-transform: uppercase;
     letter-spacing: 0.13em;
     font-weight: 700;
-    color: var(--text3);
+    color: var(--text);
   }
   .f-value {
     font-size: 1.15rem;
@@ -485,6 +487,9 @@
 
   .bg-deco { display: none; }
 
+  /* ── DESKTOP SIZE OVERRIDES (25% scale-up) ── */
+
+
   /* ── NEXT SALAH BANNER (desktop) ── */
   #mobile-banner {
     display: flex !important;
@@ -502,7 +507,7 @@
     font-size: 0.6rem;
     font-weight: 700;
     letter-spacing: 0.13em; text-transform: uppercase;
-    color: var(--text3); margin-bottom: 2px;
+    color: var(--text); margin-bottom: 2px;
   }
   .mb-prayer {
     font-size: 1.15rem; font-weight: 700;
@@ -525,20 +530,21 @@
 
   /* ── MOBILE ── */
   @media (max-width: 768px) {
+    html { height: 100%; overflow: hidden; font-size: 11px; }
     body { background: var(--bg2); overflow: hidden; height: 100%; }
-    html { height: 100%; overflow: hidden; }
 
+    body { overflow: hidden !important; }
     #app {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      padding: 10px;
-      overflow: hidden;
-      justify-content: center;
-      transform: scale(0.72);
-      transform-origin: top center;
-      width: calc(100% / 0.72);
-      margin-left: calc((100% - 100% / 0.72) / 2);
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      justify-content: flex-start !important;
+      height: auto !important;
+      min-height: 100vh !important;
+      padding: 10px !important;
+      padding-top: 8px !important;
+      overflow: visible !important;
+      gap: 0 !important;
     }
 
     .sidebar { display: none; }
@@ -908,14 +914,20 @@ function renderRows(tod, tom) {
   const cont = document.getElementById('rows');
   cont.innerHTML = '';
   PNAMES.forEach(p => {
-    const begins = tod[`${p}_begins`] || '';
-    const jamaah = tod[`${p}_jamaah`];
-    const tmr    = tom?.[`${p}_jamaah`];
+    const begins  = tod[`${p}_begins`] || '';
+    const begins2 = tod[`${p}_begins_secondary`] || null;
+    const jamaah  = tod[`${p}_jamaah`];
+    const tmr     = tom?.[`${p}_jamaah`];
 
     const parts = begins.split(/[\n/\\|]/).map(s => s.trim()).filter(Boolean);
-    const beginsHtml = parts.length > 1
-      ? parts.map(x => `<div>${fmt(x)}</div>`).join('')
-      : `<div>${fmt(begins)}</div>`;
+    let beginsHtml;
+    if (parts.length > 1) {
+      beginsHtml = parts.map(x => `<div>${fmt(x)}</div>`).join('');
+    } else if (begins2) {
+      beginsHtml = `<div>${fmt(begins)}</div><div>${fmt(begins2)}</div>`;
+    } else {
+      beginsHtml = `<div>${fmt(begins)}</div>`;
+    }
 
     const row = document.createElement('div');
     row.className = 'prayer-row';
@@ -928,12 +940,10 @@ function renderRows(tod, tom) {
         <div class="p-name-ar">${ARABIC[p]}</div>
       </div>
       <div class="p-cell p-begins">${beginsHtml}</div>
-      <div class="p-cell">
-        <div class="p-jamaah-wrap">
-          <div class="p-jamaah">${fmt(jamaah)}</div>
-          <div class="iqamah-bar-wrap" id="ib-${p}"><div class="iqamah-bar-inner" id="ibi-${p}"></div></div>
-          <div class="iqamah-label" id="il-${p}">Iqamah</div>
-        </div>
+      <div class="p-cell p-jamaah-wrap">
+        <div class="p-jamaah">${fmt(jamaah)}</div>
+        <div class="iqamah-bar-wrap" id="ib-${p}"><div class="iqamah-bar-inner" id="ibi-${p}"></div></div>
+        <div class="iqamah-label" id="il-${p}">Iqamah</div>
       </div>
       <div class="p-cell p-tomorrow">${tmr ? fmt(tmr) : '—'}</div>
     `;
