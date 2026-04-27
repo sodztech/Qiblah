@@ -1363,33 +1363,37 @@ async function loadEvents(mosqueId) {
       panel.style.height = (fRect.bottom - mRect.top) + 'px';
     }
 
-    // Set transitions once
-    main.style.transition = 'opacity 0.5s';
-    footerRow.style.transition = 'opacity 0.5s';
     panel.style.transition = 'opacity 0.5s';
 
     function showEvents() {
       positionPanel();
+      // Hide prayer first, then show events panel on top
+      main.style.transition = 'none';
+      footerRow.style.transition = 'none';
+      main.style.opacity = '0';
+      footerRow.style.opacity = '0';
+      main.style.pointerEvents = 'none';
+      footerRow.style.pointerEvents = 'none';
       panel.style.display = 'flex';
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        main.style.opacity = '0';
-        main.style.pointerEvents = 'none';
-        footerRow.style.opacity = '0';
-        footerRow.style.pointerEvents = 'none';
         panel.style.opacity = '1';
       }));
     }
 
     function hideEvents() {
+      // Fade panel out, prayer stays hidden underneath
       panel.style.opacity = '0';
       setTimeout(() => {
         panel.style.display = 'none';
-        requestAnimationFrame(() => requestAnimationFrame(() => {
+        // Now fade prayer back in cleanly
+        main.style.transition = 'opacity 0.5s';
+        footerRow.style.transition = 'opacity 0.5s';
+        main.style.pointerEvents = '';
+        footerRow.style.pointerEvents = '';
+        requestAnimationFrame(() => {
           main.style.opacity = '1';
-          main.style.pointerEvents = '';
           footerRow.style.opacity = '1';
-          footerRow.style.pointerEvents = '';
-        }));
+        });
       }, 500);
     }
 
