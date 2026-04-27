@@ -1380,25 +1380,17 @@ async function loadEvents(mosqueId) {
     }
 
     function hideEvents() {
-      // Fade panel out
+      // Fade panel out AND simultaneously fade prayer in
+      // But prayer starts at 0 so there's no flash
       panel.style.transition = 'opacity 0.5s';
       panel.style.opacity = '0';
-      // After panel fully gone, fade prayer back in
-      setTimeout(() => {
-        panel.style.display = 'none';
-        main.style.transition = 'none';
-        footerRow.style.transition = 'none';
-        main.style.opacity = '0';
-        footerRow.style.opacity = '0';
-        main.style.pointerEvents = '';
-        footerRow.style.pointerEvents = '';
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          main.style.transition = 'opacity 0.5s';
-          footerRow.style.transition = 'opacity 0.5s';
-          main.style.opacity = '1';
-          footerRow.style.opacity = '1';
-        }));
-      }, 500);
+      main.style.pointerEvents = '';
+      footerRow.style.pointerEvents = '';
+      main.style.transition = 'opacity 0.5s';
+      footerRow.style.transition = 'opacity 0.5s';
+      main.style.opacity = '1';
+      footerRow.style.opacity = '1';
+      setTimeout(() => { panel.style.display = 'none'; }, 500);
     }
 
     function startEventsCycle() {
