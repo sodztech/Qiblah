@@ -277,7 +277,7 @@
   }
   .pg-header span {
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text);
@@ -717,41 +717,7 @@
     }
   }
 
-  #ticker-wrap {
-    background: rgba(200,164,110,0.1);
-    border: 1px solid rgba(200,164,110,0.3);
-    border-radius: 8px;
-    padding: 7px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  #ticker-label {
-    color: var(--gold);
-    font-size: 0.6rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    white-space: nowrap;
-    flex-shrink: 0;
-    border-right: 1px solid rgba(200,164,110,0.3);
-    padding-right: 10px;
-  }
-  #ticker-track { overflow: hidden; flex: 1; }
-  #ticker-text {
-    display: inline-block;
-    white-space: nowrap;
-    color: var(--text);
-    font-size: 0.72rem;
-    font-weight: 500;
-    animation: ticker-scroll 25s linear infinite;
-  }
-  @keyframes ticker-scroll {
-    0%   { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-  }
+
 
   .f-jummah-item {
     display: block;
@@ -761,50 +727,77 @@
     display: none;
   }
 
-  #slide-wrap { position: relative; overflow: hidden; display: contents; }
+  #slide-wrap { display: contents; }
   #prayer-panel { display: contents; }
-  #prayer-panel.slide-out main.main,
-  #prayer-panel.slide-out .footer-row {
-    transform: translateX(-110%);
-    opacity: 0;
-  }
-  main.main, .footer-row {
-    transition: transform 0.6s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;
-  }
   #events-panel {
     display: none;
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: var(--bg);
-    flex-direction: column;
+    width: 100%;
+    max-width: 1100px;
   }
-  #events-panel.slide-in { display: flex; }
-  .ev-header {
+  #events-panel.active { display: flex; flex-direction: column; }
+  main.main, .footer-row {
+    transition: opacity 0.4s ease;
+  }
+  main.main.ev-hidden, .footer-row.ev-hidden { 
+    opacity: 0; pointer-events: none;
+  }
+  .ev-card {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid rgba(200,164,110,0.35);
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 40px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .ev-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .ev-card-label {
     font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
     letter-spacing: 0.13em; color: var(--gold);
-    padding: 14px 24px 10px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
   }
-  .ev-item {
-    padding: 14px 24px;
-    border-bottom: 1px solid var(--border2);
-    display: grid;
-    grid-template-columns: 48px 1fr;
-    gap: 0 14px;
-    align-items: start;
+  .ev-card-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: rgba(200,164,110,0.2);
   }
-  .ev-item:last-child { border-bottom: none; }
   .ev-badge {
     font-size: 0.5rem; font-weight: 800; text-transform: uppercase;
-    letter-spacing: 0.08em; padding: 3px 6px; border-radius: 4px;
-    margin-top: 3px; white-space: nowrap; text-align: center;
+    letter-spacing: 0.08em; padding: 3px 8px; border-radius: 4px;
+    white-space: nowrap;
   }
   .ev-badge.class { background: rgba(100,160,255,0.15); color: #7ab4ff; }
   .ev-badge.event { background: rgba(200,164,110,0.2); color: var(--gold); }
-  .ev-title { color: var(--text); font-size: 0.9rem; font-weight: 700; line-height: 1.3; }
-  .ev-desc { color: var(--muted); font-size: 0.72rem; margin-top: 4px; line-height: 1.4; }
-  .ev-date { color: var(--gold); font-size: 0.65rem; margin-top: 4px; font-weight: 600; }
+  .ev-title { color: var(--text); font-size: 1.4rem; font-weight: 700; line-height: 1.3; margin: 10px 0 8px; }
+  .ev-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+  .ev-date { color: var(--gold); font-size: 0.8rem; margin-top: 12px; font-weight: 600; }
+  .ev-footer {
+    width: 100%;
+    max-width: 1100px;
+    background: var(--bg);
+    border: 1px solid rgba(200,164,110,0.35);
+    border-top: 1px solid rgba(200,164,110,0.12);
+    border-radius: 0 0 12px 12px;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0;
+  }
+  .ev-dots { display: flex; gap: 6px; align-items: center; }
+  .ev-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(200,164,110,0.25); transition: background 0.3s; }
+  .ev-dot.active { background: var(--gold); }
+  .ev-counter { font-size: 0.58rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; }
 </style>
 </head>
 <body>
@@ -892,6 +885,7 @@
 
   </div><!-- /prayer-panel -->
   <div id="events-panel"></div>
+  <div id="ev-footer" class="ev-footer" style="display:none"><div class="ev-dots" id="ev-dots"></div><div class="ev-counter" id="ev-counter"></div></div>
   </div><!-- /slide-wrap -->
   <!-- Next salah banner -->
   <div id="mobile-banner" style="display:none">
@@ -904,12 +898,7 @@
       <div class="mb-countdown" id="mb-countdown">--:--:--</div>
     </div>
   </div>
-  <div id="ticker-wrap">
-    <div id="ticker-label">Notice</div>
-    <div id="ticker-track">
-      <span id="ticker-text">Loading…</span>
-    </div>
-  </div>
+
   <div id="mobile-iq-bar" style="display:none;width:0%"></div>
 
   </div>
@@ -1231,7 +1220,6 @@ async function init() {
     }
 
     renderRows(tod, tom);
-    loadTicker(mosque.id);
     loadEvents(mosque.id);
     initJummahAnimator(mosque);
     startClock();
@@ -1284,21 +1272,6 @@ async function init() {
 
 init();
 
-async function loadTicker(mosqueId) {
-  try {
-    const rows = await sbGet('announcements?select=title&mosque_id=eq.' + mosqueId + '&active=eq.true&category=eq.General&order=sort_order.asc');
-    const el = document.getElementById('ticker-text');
-    const wrap = document.getElementById('ticker-wrap');
-    if (rows && rows.length) {
-      el.textContent = rows.map(r => r.title).join('   •   ');
-    } else {
-      if (wrap) wrap.style.display = 'none';
-    }
-  } catch(e) {
-    const wrap = document.getElementById('ticker-wrap');
-    if (wrap) wrap.style.display = 'none';
-  }
-}
 
 // ── JUMMAH ANIMATOR ────────────────────────────────────────────────────────────
 function initJummahAnimator(mosque) {
@@ -1323,7 +1296,7 @@ function initJummahAnimator(mosque) {
   setInterval(() => { idx = (idx + 1) % times.length; show(); }, 10000);
 }
 
-// ── EVENTS SLIDE ──────────────────────────────────────────────────────────────
+// ── EVENTS CARDS ──────────────────────────────────────────────────────────────
 async function loadEvents(mosqueId) {
   try {
     const rows = await sbGet(
@@ -1332,42 +1305,112 @@ async function loadEvents(mosqueId) {
     );
     if (!rows || !rows.length) return;
 
-    const panel = document.getElementById('events-panel');
-    const hdr = document.createElement('div');
-    hdr.className = 'ev-header';
-    hdr.textContent = 'Classes & Events';
-    panel.appendChild(hdr);
+    const panel   = document.getElementById('events-panel');
+    const footer  = document.getElementById('ev-footer');
+    const dotsEl  = document.getElementById('ev-dots');
+    const counter = document.getElementById('ev-counter');
+    const main    = document.querySelector('main.main');
+    const footerRow = document.querySelector('.footer-row');
 
-    rows.forEach(r => {
-      const item = document.createElement('div');
-      item.className = 'ev-item';
-      const badge = document.createElement('div');
+    // Build cards
+    rows.forEach((r, i) => {
+      const card = document.createElement('div');
+      card.className = 'ev-card';
+      card.dataset.idx = i;
+
+      const lbl = document.createElement('div');
+      lbl.className = 'ev-card-label';
+      const badge = document.createElement('span');
       badge.className = 'ev-badge ' + (r.category || 'event');
       badge.textContent = r.category === 'class' ? 'Class' : 'Event';
-      const info = document.createElement('div');
-      info.innerHTML =
-        '<div class="ev-title">' + r.title + '</div>' +
-        (r.description ? '<div class="ev-desc">' + r.description + '</div>' : '') +
-        (r.date ? '<div class="ev-date">' + new Date(r.date).toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'}) + '</div>' : '');
-      item.appendChild(badge);
-      item.appendChild(info);
-      panel.appendChild(item);
+      lbl.appendChild(badge);
+
+      const title = document.createElement('div');
+      title.className = 'ev-title';
+      title.textContent = r.title;
+
+      card.appendChild(lbl);
+      card.appendChild(title);
+
+      if (r.description) {
+        const desc = document.createElement('div');
+        desc.className = 'ev-desc';
+        desc.textContent = r.description;
+        card.appendChild(desc);
+      }
+      if (r.date) {
+        const dt = document.createElement('div');
+        dt.className = 'ev-date';
+        dt.textContent = new Date(r.date).toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long'});
+        card.appendChild(dt);
+      }
+      panel.appendChild(card);
+
+      // dot
+      const dot = document.createElement('div');
+      dot.className = 'ev-dot' + (i === 0 ? ' active' : '');
+      dotsEl.appendChild(dot);
     });
 
-    // Start rotation
-    const prayer = document.getElementById('prayer-panel');
-    const events = document.getElementById('events-panel');
+    const cards = panel.querySelectorAll('.ev-card');
+    const dots  = dotsEl.querySelectorAll('.ev-dot');
+    let evIdx = 0;
     let showingEvents = false;
-    setInterval(() => {
-      showingEvents = !showingEvents;
-      if (showingEvents) {
-        prayer.classList.add('slide-out');
-        setTimeout(() => { events.classList.add('slide-in'); }, 300);
-      } else {
-        events.classList.remove('slide-in');
-        setTimeout(() => { prayer.classList.remove('slide-out'); }, 300);
-      }
-    }, 20000);
+
+    function showCard(i) {
+      cards.forEach((c, j) => {
+        c.classList.toggle('visible', j === i);
+      });
+      dots.forEach((d, j) => d.classList.toggle('active', j === i));
+      counter.textContent = (i + 1) + ' of ' + rows.length;
+    }
+
+    function showEvents() {
+      main.classList.add('ev-hidden');
+      footerRow.classList.add('ev-hidden');
+      setTimeout(() => {
+        main.style.display = 'none';
+        footerRow.style.display = 'none';
+        panel.classList.add('active');
+        footer.style.display = 'flex';
+        evIdx = 0;
+        showCard(0);
+      }, 400);
+    }
+
+    function hideEvents() {
+      cards.forEach(c => c.classList.remove('visible'));
+      setTimeout(() => {
+        panel.classList.remove('active');
+        footer.style.display = 'none';
+        main.style.display = '';
+        footerRow.style.display = '';
+        setTimeout(() => {
+          main.classList.remove('ev-hidden');
+          footerRow.classList.remove('ev-hidden');
+        }, 50);
+      }, 400);
+    }
+
+    // Rotate cards every 6s while showing, switch to prayer every 20s
+    let cardTimer, panelTimer;
+
+    function startEventsCycle() {
+      showEvents();
+      cardTimer = setInterval(() => {
+        evIdx = (evIdx + 1) % rows.length;
+        showCard(evIdx);
+      }, 6000);
+      panelTimer = setTimeout(() => {
+        clearInterval(cardTimer);
+        hideEvents();
+        setTimeout(startEventsCycle, 20000);
+      }, rows.length * 6000 + 1000);
+    }
+
+    // Start after 20s of prayer times
+    setTimeout(startEventsCycle, 20000);
+
   } catch(e) { console.warn('Events load failed', e); }
 }
 </script>
