@@ -1363,29 +1363,30 @@ async function loadEvents(mosqueId) {
       panel.style.height = (fRect.bottom - mRect.top) + 'px';
     }
 
+    // Set transitions once
+    main.style.transition = 'opacity 0.5s';
+    footerRow.style.transition = 'opacity 0.5s';
+    panel.style.transition = 'opacity 0.5s';
+
     function showEvents() {
       positionPanel();
       panel.style.display = 'flex';
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        main.style.transition = 'opacity 0.5s';
-        footerRow.style.transition = 'opacity 0.5s';
         main.style.opacity = '0';
+        main.style.pointerEvents = 'none';
         footerRow.style.opacity = '0';
+        footerRow.style.pointerEvents = 'none';
         panel.style.opacity = '1';
       }));
     }
 
     function hideEvents() {
       panel.style.opacity = '0';
-      setTimeout(() => {
-        panel.style.display = 'none';
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          main.style.transition = 'opacity 0.5s';
-          footerRow.style.transition = 'opacity 0.5s';
-          main.style.opacity = '1';
-          footerRow.style.opacity = '1';
-        }));
-      }, 500);
+      main.style.opacity = '1';
+      main.style.pointerEvents = '';
+      footerRow.style.opacity = '1';
+      footerRow.style.pointerEvents = '';
+      setTimeout(() => { panel.style.display = 'none'; }, 500);
     }
 
     function startEventsCycle() {
