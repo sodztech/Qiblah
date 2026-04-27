@@ -716,6 +716,42 @@
       color: var(--gold);
     }
   }
+
+  #ticker-wrap {
+    background: rgba(200,164,110,0.1);
+    border: 1px solid rgba(200,164,110,0.3);
+    border-radius: 8px;
+    padding: 7px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  #ticker-label {
+    color: var(--gold);
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(200,164,110,0.3);
+    padding-right: 10px;
+  }
+  #ticker-track { overflow: hidden; flex: 1; }
+  #ticker-text {
+    display: inline-block;
+    white-space: nowrap;
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 500;
+    animation: ticker-scroll 25s linear infinite;
+  }
+  @keyframes ticker-scroll {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
 </style>
 </head>
 <body>
@@ -809,6 +845,12 @@
     <div class="mb-right">
       <div class="mb-label">Jam'ah Starts In</div>
       <div class="mb-countdown" id="mb-countdown">--:--:--</div>
+    </div>
+  </div>
+  <div id="ticker-wrap">
+    <div id="ticker-label">Notice</div>
+    <div id="ticker-track">
+      <span id="ticker-text">Loading…</span>
     </div>
   </div>
   <div id="mobile-iq-bar" style="display:none;width:0%"></div>
@@ -1135,6 +1177,7 @@ async function init() {
     }
 
     renderRows(tod, tom);
+    loadTicker(mosque.id);
     startClock();
     startActiveTracking(tod, tom);
 
@@ -1184,6 +1227,22 @@ async function init() {
 }
 
 init();
+
+async function loadTicker(mosqueId) {
+  try {
+    const rows = await sbGet('announcements?select=title&mosque_id=eq.' + mosqueId + '&active=eq.true&order=sort_order.asc');
+    const el = document.getElementById('ticker-text');
+    const wrap = document.getElementById('ticker-wrap');
+    if (rows && rows.length) {
+      el.textContent = rows.map(r => r.title).join('   •   ');
+    } else {
+      if (wrap) wrap.style.display = 'none';
+    }
+  } catch(e) {
+    const wrap = document.getElementById('ticker-wrap');
+    if (wrap) wrap.style.display = 'none';
+  }
+}
 </script>
 </body>
 </html>
