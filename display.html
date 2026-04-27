@@ -426,14 +426,14 @@
     text-transform: uppercase;
     letter-spacing: 0.13em;
     font-weight: 700;
-    color: var(--text);
+    color: var(--text2);
   }
   .f-value {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--gold);
+    font-size: 1rem;
+    font-weight: 500;
     letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
+    color: var(--gold);
   }
   .brand {
     font-size: clamp(0.72rem,1.2vw,1.05rem);
@@ -507,20 +507,21 @@
     font-size: 0.6rem;
     font-weight: 700;
     letter-spacing: 0.13em; text-transform: uppercase;
-    color: var(--text); margin-bottom: 2px;
+    color: var(--text);
+    opacity: 0.6; margin-bottom: 2px;
   }
   .mb-prayer {
-    font-size: 1.15rem; font-weight: 700;
-    color: var(--gold); line-height: 1;
-    letter-spacing: -0.025em;
+    font-size: 1.15rem; font-weight: 500;
+    line-height: 1; letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
+    color: var(--gold);
   }
   .mb-right { text-align: right; }
   .mb-countdown {
-    font-size: 1.15rem; font-weight: 700;
-    color: var(--gold); line-height: 1;
-    letter-spacing: -0.025em;
+    font-size: 1.15rem; font-weight: 500;
+    line-height: 1; letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
+    color: var(--gold);
   }
   #mobile-iq-bar {
     display: none !important;
@@ -634,7 +635,7 @@
     }
     .mb-right .mb-label { text-align: right; }
     .mb-countdown {
-      font-size: 0.9rem; font-weight: 700;
+      font-size: 0.9rem; font-weight: 500;
       color: var(--gold); line-height: 1;
       font-variant-numeric: tabular-nums;
     }
@@ -712,7 +713,7 @@
       color: var(--muted);
     }
     .footer-row .f-value {
-      font-size: 0.85rem !important; font-weight: 700;
+      font-size: 0.85rem !important; font-weight: 500;
       color: var(--gold);
     }
   }
@@ -1268,7 +1269,7 @@ function initJummahAnimator(mosque) {
   function show() {
     wrap.innerHTML = '';
     const lbl = document.createElement('div');
-    lbl.style.cssText = 'font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text);margin-bottom:1px;';
+    lbl.style.cssText = 'font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text2);margin-bottom:1px;';
     lbl.textContent = labels[idx] || ("Jumuah " + (idx + 1));
     const val = document.createElement('div');
     val.textContent = fmt(times[idx]);
@@ -1296,45 +1297,62 @@ async function loadEvents(mosqueId) {
     const main      = document.querySelector('main.main');
     const footerRow = document.querySelector('.footer-row');
 
-    // Build header
-    const hdr = document.createElement('div');
-    hdr.className = 'ev-card-label';
-    hdr.style.cssText = 'padding:12px 24px 10px;font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.13em;color:var(--gold);border-bottom:1px solid rgba(200,164,110,0.2);flex-shrink:0;';
-    hdr.textContent = 'Classes & Events';
-    panel.appendChild(hdr);
+    const PAGE_SIZE = 10;
+    const pages = [];
+    for (let i = 0; i < rows.length; i += PAGE_SIZE) {
+      pages.push(rows.slice(i, i + PAGE_SIZE));
+    }
+    let pageIdx = 0;
 
-    // Build all rows together as a list
-    rows.forEach(r => {
-      const item = document.createElement('div');
-      item.style.cssText = 'display:flex;flex-direction:row;align-items:flex-start;gap:12px;padding:10px 24px;border-bottom:1px solid rgba(255,255,255,0.06);';
-
-      const badge = document.createElement('div');
-      badge.className = 'ev-badge ' + (r.category || 'event');
-      badge.style.cssText += 'margin-top:0;';
-      badge.textContent = r.category === 'class' ? 'Class' : 'Event';
-
-      const info = document.createElement('div');
-      const title = document.createElement('div');
-      title.style.cssText = 'font-size:0.82rem;font-weight:700;line-height:1.2;color:var(--text);';
-      title.textContent = r.title;
-      info.appendChild(title);
-
-      if (r.description) {
-        const desc = document.createElement('div');
-        desc.style.cssText = 'font-size:0.65rem;color:var(--muted);margin-top:2px;line-height:1.3;';
-        desc.textContent = r.description;
-        info.appendChild(desc);
+    function buildPage(pageRows) {
+      panel.innerHTML = '';
+      // Header
+      const hdr = document.createElement('div');
+      hdr.style.cssText = 'padding:12px 24px 10px;font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.13em;color:var(--gold);border-bottom:1px solid rgba(200,164,110,0.2);flex-shrink:0;display:flex;justify-content:space-between;align-items:center;';
+      const hdrTitle = document.createElement('span');
+      hdrTitle.textContent = 'Classes & Events';
+      hdr.appendChild(hdrTitle);
+      if (pages.length > 1) {
+        const pg = document.createElement('span');
+        pg.style.cssText = 'font-size:0.5rem;opacity:0.5;font-weight:400;text-transform:none;letter-spacing:0;';
+        pg.textContent = (pageIdx + 1) + ' / ' + pages.length;
+        hdr.appendChild(pg);
       }
-      if (r.date) {
-        const dt = document.createElement('div');
-        dt.style.cssText = 'font-size:0.6rem;color:var(--gold);margin-top:2px;font-weight:600;';
-        dt.textContent = new Date(r.date).toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
-        info.appendChild(dt);
-      }
-      item.appendChild(badge);
-      item.appendChild(info);
-      panel.appendChild(item);
-    });
+      panel.appendChild(hdr);
+
+      const grid = document.createElement('div');
+      grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;flex:1;';
+      panel.appendChild(grid);
+
+      pageRows.forEach((r, ri) => {
+        const item = document.createElement('div');
+        const isLeft = ri % 2 === 0;
+        item.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06);min-width:0;' + (isLeft ? 'border-right:1px solid rgba(255,255,255,0.06);' : '');
+        const badge = document.createElement('div');
+        badge.className = 'ev-badge ' + (r.category || 'event');
+        badge.textContent = r.category === 'class' ? 'Class' : 'Event';
+        const info = document.createElement('div');
+        const title = document.createElement('div');
+        title.style.cssText = 'font-size:0.82rem;font-weight:700;line-height:1.2;color:var(--text);';
+        title.textContent = r.title;
+        info.appendChild(title);
+        if (r.description) {
+          const desc = document.createElement('div');
+          desc.style.cssText = 'font-size:0.65rem;color:var(--muted);margin-top:2px;line-height:1.3;';
+          desc.textContent = r.description;
+          info.appendChild(desc);
+        }
+        if (r.date) {
+          const dt = document.createElement('div');
+          dt.style.cssText = 'font-size:0.6rem;color:var(--gold);margin-top:2px;font-weight:600;';
+          dt.textContent = new Date(r.date).toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+          info.appendChild(dt);
+        }
+        item.appendChild(badge);
+        item.appendChild(info);
+        grid.appendChild(item);
+      });
+    }
 
     function positionPanel() {
       const mRect = main.getBoundingClientRect();
@@ -1371,11 +1389,24 @@ async function loadEvents(mosqueId) {
     }
 
     function startEventsCycle() {
+      pageIdx = 0;
+      buildPage(pages[0]);
       showEvents();
+      // Advance page every 6s
+      let pageTimer = setInterval(() => {
+        pageIdx = (pageIdx + 1) % pages.length;
+        panel.style.opacity = '0';
+        setTimeout(() => {
+          buildPage(pages[pageIdx]);
+          panel.style.opacity = '1';
+        }, 300);
+      }, 6000);
+      // After all pages shown, go back to prayer
       setTimeout(() => {
+        clearInterval(pageTimer);
         hideEvents();
         setTimeout(startEventsCycle, 20000);
-      }, 15000);
+      }, pages.length * 6000 + 500);
     }
 
     setTimeout(startEventsCycle, 20000);
