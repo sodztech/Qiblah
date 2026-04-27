@@ -731,15 +731,14 @@
   #prayer-panel { display: contents; }
   #events-panel {
     display: none;
-    width: 100%;
-    max-width: 1100px;
-    flex-direction: column;
+    position: fixed;
     background: var(--bg);
     border: 1px solid rgba(200,164,110,0.35);
     border-radius: 12px;
     overflow: hidden;
     opacity: 0;
     transition: opacity 0.5s ease;
+    z-index: 10;
   }
   main.main, .footer-row {
     transition: opacity 0.4s ease;
@@ -1284,7 +1283,7 @@ async function loadEvents(mosqueId) {
   try {
     const rows = await sbGet(
       'announcements?select=title,description,category,date&mosque_id=eq.' + mosqueId +
-      '&active=eq.true&category=neq.General&order=sort_order.asc&limit=6'
+      '&active=eq.true&category=in.' + encodeURIComponent('(class,event)') + '&order=sort_order.asc&limit=6'
     );
     if (!rows || !rows.length) return;
 
@@ -1336,29 +1335,34 @@ async function loadEvents(mosqueId) {
       panel.appendChild(item);
     });
 
+    function positionPanel() {
+      const mRect = main.getBoundingClientRect();
+      const fRect = footerRow.getBoundingClientRect();
+      panel.style.top    = (mRect.top + window.scrollY) + 'px';
+      panel.style.left   = (mRect.left + window.scrollX) + 'px';
+      panel.style.width  = mRect.width + 'px';
+      panel.style.height = (fRect.bottom - mRect.top) + 'px';
+    }
+
     function showEvents() {
-      // Fade out prayer
-      main.style.transition = 'opacity 0.5s';
-      footerRow.style.transition = 'opacity 0.5s';
-      main.style.opacity = '0';
-      footerRow.style.opacity = '0';
-      setTimeout(() => {
-        main.style.display = 'none';
-        footerRow.style.display = 'none';
-        panel.style.display = 'flex';
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          panel.style.opacity = '1';
-        }));
-      }, 500);
+      positionPanel();
+      panel.style.display = 'flex';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        main.style.transition = 'opacity 0.5s';
+        footerRow.style.transition = 'opacity 0.5s';
+        main.style.opacity = '0';
+        footerRow.style.opacity = '0';
+        panel.style.opacity = '1';
+      }));
     }
 
     function hideEvents() {
       panel.style.opacity = '0';
       setTimeout(() => {
         panel.style.display = 'none';
-        main.style.display = '';
-        footerRow.style.display = '';
         requestAnimationFrame(() => requestAnimationFrame(() => {
+          main.style.transition = 'opacity 0.5s';
+          footerRow.style.transition = 'opacity 0.5s';
           main.style.opacity = '1';
           footerRow.style.opacity = '1';
         }));
