@@ -1009,7 +1009,6 @@ function renderRows(tod, tom) {
     row.innerHTML = `
       <div class="p-name-wrap">
         <div class="p-name">${PLABELS[p]}</div>
-        <div class="p-name-ar">${ARABIC[p]}</div>
       </div>
       <div class="p-cell p-begins">${beginsHtml}</div>
       <div class="p-cell p-jamaah-wrap">
@@ -1381,21 +1380,25 @@ async function loadEvents(mosqueId) {
     }
 
     function hideEvents() {
-      // Step 1: instantly hide panel (no transition)
-      panel.style.transition = 'none';
+      // Fade panel out
+      panel.style.transition = 'opacity 0.5s';
       panel.style.opacity = '0';
-      panel.style.display = 'none';
-      // Step 2: prayer is already faded out underneath — now fade it back in
-      main.style.pointerEvents = '';
-      footerRow.style.pointerEvents = '';
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        main.style.transition = 'opacity 0.5s';
-        footerRow.style.transition = 'opacity 0.5s';
-        main.style.opacity = '1';
-        footerRow.style.opacity = '1';
-        // Restore panel transition for next time
-        setTimeout(() => { panel.style.transition = 'opacity 0.5s'; }, 600);
-      }));
+      // After panel fully gone, fade prayer back in
+      setTimeout(() => {
+        panel.style.display = 'none';
+        main.style.transition = 'none';
+        footerRow.style.transition = 'none';
+        main.style.opacity = '0';
+        footerRow.style.opacity = '0';
+        main.style.pointerEvents = '';
+        footerRow.style.pointerEvents = '';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          main.style.transition = 'opacity 0.5s';
+          footerRow.style.transition = 'opacity 0.5s';
+          main.style.opacity = '1';
+          footerRow.style.opacity = '1';
+        }));
+      }, 500);
     }
 
     function startEventsCycle() {
