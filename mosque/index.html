@@ -311,31 +311,67 @@ body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--t
         <span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:4px">shown on display screen</span>
         <button onclick="showAddAnnouncement()" style="margin-left:auto;background:rgba(240,165,0,0.12);border:1px solid rgba(240,165,0,0.25);color:var(--gold);font-size:12px;padding:4px 12px;border-radius:8px;cursor:pointer;font-family:inherit">+ Add</button>
       </h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Items marked <strong style="color:#047857">Active</strong> appear on the display screen. Use the ● button to toggle visibility. <strong>Class</strong> and <strong>Event</strong> categories show in the events panel.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+        <strong>Weekly class:</strong> fill Day only — shows every week.<br>
+        <strong>Course:</strong> fill Day + Start Date + Weeks — auto-hides after course ends.<br>
+        <strong>Event:</strong> fill Start Date only — shows until the date passes.<br>
+        Tag must be exactly <strong>Class</strong>, <strong>Event</strong>, or <strong>Online</strong>.
+      </p>
       <div id="announcements-list"></div>
       <div id="add-ann-form" style="display:none;background:var(--card2);border-radius:10px;padding:16px;margin-top:12px">
-        <div class="field" style="margin-bottom:10px"><label>Title</label><input type="text" id="new-ann-title" placeholder="e.g. Islamic Studies for Children"></div>
-        <div class="field" style="margin-bottom:10px"><label>Description</label><textarea id="new-ann-desc" placeholder="Details..." style="min-height:60px"></textarea></div>
         <div class="row-2">
-          <div class="field" style="margin-bottom:10px"><label>Date (optional)</label><input type="date" id="new-ann-date"></div>
           <div class="field" style="margin-bottom:10px">
-            <label>Category</label>
-            <select id="new-ann-cat">
-              <option value="class">Class — shows on display</option>
-              <option value="event">Event — shows on display</option>
-              <option value="General">General</option>
-              <option value="Reminder">Reminder</option>
-              <option value="Urgent">Urgent</option>
+            <label>Title *</label>
+            <input type="text" id="new-ann-title" placeholder="e.g. Youth Club">
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label>Tag *</label>
+            <select id="new-ann-tag">
+              <option value="Class">Class</option>
+              <option value="Event">Event</option>
+              <option value="Online">Online</option>
             </select>
           </div>
         </div>
-        <div class="row-2">
+        <div class="field" style="margin-bottom:10px">
+          <label>Description *</label>
+          <textarea id="new-ann-desc" placeholder="Short description..." style="min-height:60px"></textarea>
+        </div>
+        <div class="row-3">
+          <div class="field" style="margin-bottom:10px">
+            <label>Day (weekly)</label>
+            <select id="new-ann-day">
+              <option value="">— none —</option>
+              <option>Daily</option>
+              <option>Monday</option>
+              <option>Tuesday</option>
+              <option>Wednesday</option>
+              <option>Thursday</option>
+              <option>Friday</option>
+              <option>Saturday</option>
+              <option>Sunday</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label>Time * (24h)</label>
+            <input type="time" id="new-ann-time" placeholder="20:00">
+          </div>
           <div class="field" style="margin-bottom:10px">
             <label>Sort Order</label>
             <input type="number" id="new-ann-order" placeholder="1, 2, 3..." min="1">
           </div>
+        </div>
+        <div class="row-3">
           <div class="field" style="margin-bottom:10px">
-            <label>Show on Display Screen</label>
+            <label>Start Date (course/event)</label>
+            <input type="date" id="new-ann-date">
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label>Weeks (course only)</label>
+            <input type="number" id="new-ann-weeks" placeholder="e.g. 6" min="1">
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label>Show on Display</label>
             <select id="new-ann-active">
               <option value="true">Yes — active</option>
               <option value="false">No — hidden</option>
@@ -503,9 +539,7 @@ function loadFromSupabase() {
   var p4 = sbFetch('announcements?mosque_id=eq.' + mid + '&select=*&order=sort_order.asc,created_at.desc')
     .then(function(r){ return r.json(); })
     .then(function(rows) {
-      if (rows) currentData.announcements = rows.map(function(a){
-        return { title:a.title, desc:a.description||'', date:a.date||'', category:a.category||'General', active:a.active!==false, sort_order:a.sort_order||0, _id:a.id };
-      });
+      if (rows) currentData.announcements = rows.map(mapAnn);
     });
 
   Promise.all([p1, p2, p3, p4]).then(function() {
@@ -811,23 +845,30 @@ function renderAnnouncements() {
   var anns = currentData.announcements || [];
   var el = document.getElementById('announcements-list');
   if (!el) return;
-  if (!anns.length) { el.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:8px 0">No announcements yet.</p>'; return; }
+  if (!anns.length) { el.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:8px 0">No classes or events yet.</p>'; return; }
   el.innerHTML = anns.map(function(a, i) {
-    var catCls = a.category === 'class' ? 'ann-badge-class' : a.category === 'event' ? 'ann-badge-event' : 'ann-badge-general';
+    var tagCls = a.tag === 'Class' ? 'ann-badge-class' : a.tag === 'Event' ? 'ann-badge-event' : 'ann-badge-general';
     var activeCls = a.active ? 'ann-badge-active' : 'ann-badge-hidden';
     var toggleStyle = 'background:' + (a.active ? 'rgba(4,120,87,0.1)' : 'rgba(190,18,60,0.08)') + ';color:' + (a.active ? '#047857' : '#be123c') + ';';
+    // Build meta line
+    var meta = [];
+    if (a.day) meta.push(a.day);
+    if (a.time) meta.push(a.time);
+    if (a.start_date) meta.push('Starts ' + a.start_date);
+    if (a.weeks) meta.push(a.weeks + ' weeks');
+    if (a.sort_order) meta.push('#' + a.sort_order);
     return '<div class="announcement-item">' +
       '<div class="ann-body">' +
         '<div class="atitle">' +
           a.title +
-          ' <span class="ann-badge ' + catCls + '">' + a.category + '</span>' +
+          ' <span class="ann-badge ' + tagCls + '">' + (a.tag||'Class') + '</span>' +
           ' <span class="ann-badge ' + activeCls + '">' + (a.active ? '● Active' : '○ Hidden') + '</span>' +
-          (a.sort_order ? ' <span style="font-size:10px;color:var(--muted)">#' + a.sort_order + '</span>' : '') +
         '</div>' +
-        '<div class="adesc">' + (a.date ? a.date + ' · ' : '') + (a.desc || '') + '</div>' +
+        (meta.length ? '<div class="adesc" style="margin-bottom:1px">' + meta.join(' · ') + '</div>' : '') +
+        '<div class="adesc">' + (a.desc || '') + '</div>' +
       '</div>' +
       '<div style="display:flex;gap:6px;flex-shrink:0;align-items:center">' +
-        '<button class="ann-toggle-btn" onclick="toggleAnnActive(' + i + ')" style="' + toggleStyle + '" title="' + (a.active ? 'Hide from display' : 'Show on display') + '">' + (a.active ? '●' : '○') + '</button>' +
+        '<button class="ann-toggle-btn" onclick="toggleAnnActive(' + i + ')" style="' + toggleStyle + '" title="' + (a.active ? 'Hide' : 'Show') + '">' + (a.active ? '●' : '○') + '</button>' +
         '<button class="del-btn" onclick="deleteAnnouncement(' + i + ')">&#x2715;</button>' +
       '</div>' +
     '</div>';
@@ -840,12 +881,20 @@ function addAnnouncement() {
   var title = document.getElementById('new-ann-title').value.trim();
   if (!title) return;
   var orderVal = document.getElementById('new-ann-order').value.trim();
+  var weeksVal = document.getElementById('new-ann-weeks').value.trim();
+  var timeVal = document.getElementById('new-ann-time').value.trim();
+  var dayVal = document.getElementById('new-ann-day').value;
+  var tag = document.getElementById('new-ann-tag').value;
   var ann = {
     mosque_id: currentMosque.id,
     title: title,
     description: document.getElementById('new-ann-desc').value.trim(),
-    date: document.getElementById('new-ann-date').value || null,
-    category: document.getElementById('new-ann-cat').value,
+    tag: tag,
+    category: tag.toLowerCase(), // 'class', 'event', or 'online' — matches display filter
+    day: dayVal || null,
+    time: timeVal || null,
+    start_date: document.getElementById('new-ann-date').value || null,
+    weeks: weeksVal ? parseInt(weeksVal) : null,
     active: document.getElementById('new-ann-active').value === 'true',
     sort_order: orderVal ? parseInt(orderVal) : null
   };
@@ -854,15 +903,25 @@ function addAnnouncement() {
     .then(function(rows) {
       if (rows && rows[0]) {
         currentData.announcements = currentData.announcements || [];
-        currentData.announcements.unshift({ title:rows[0].title, desc:rows[0].description||'', date:rows[0].date||'', category:rows[0].category||'General', active:rows[0].active!==false, sort_order:rows[0].sort_order||0, _id:rows[0].id });
+        currentData.announcements.push(mapAnn(rows[0]));
+        currentData.announcements.sort(function(a,b){ return (a.sort_order||99)-(b.sort_order||99); });
       }
-      renderAnnouncements(); showSaveStatus('Announcement posted', true);
+      renderAnnouncements(); showSaveStatus('Posted', true);
     }).catch(function(){ showSaveStatus('Error posting', false); });
   document.getElementById('add-ann-form').style.display='none';
-  document.getElementById('new-ann-title').value='';
-  document.getElementById('new-ann-desc').value='';
+  ['new-ann-title','new-ann-desc','new-ann-order','new-ann-weeks'].forEach(function(id){ document.getElementById(id).value=''; });
   document.getElementById('new-ann-date').value='';
-  document.getElementById('new-ann-order').value='';
+  document.getElementById('new-ann-time').value='';
+  document.getElementById('new-ann-day').value='';
+}
+
+function mapAnn(a) {
+  return {
+    title: a.title, desc: a.description||'', tag: a.tag||'Class',
+    category: a.category||'class', day: a.day||'', time: a.time||'',
+    start_date: a.start_date||'', weeks: a.weeks||null,
+    active: a.active!==false, sort_order: a.sort_order||0, _id: a.id
+  };
 }
 
 function toggleAnnActive(i) {
