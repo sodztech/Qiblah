@@ -536,7 +536,7 @@ function loadFromSupabase() {
     });
 
   // ── ANNOUNCEMENTS — includes active and sort_order ──
-  var p4 = sbFetch('announcements?mosque_id=eq.' + mid + '&select=*&order=sort_order.asc,created_at.desc')
+  var p4 = sbFetch('announcements?mosque_id=eq.' + mid + '&select=id,title,description,tag,category,day,time,start_date,date,weeks,active,sort_order&order=sort_order.asc,created_at.desc')
     .then(function(r){ return r.json(); })
     .then(function(rows) {
       if (rows) currentData.announcements = rows.map(mapAnn);
@@ -915,11 +915,28 @@ function addAnnouncement() {
   document.getElementById('new-ann-day').value='';
 }
 
+function toDisplayDate(s) {
+  // Convert YYYY-MM-DD to DD/MM/YYYY
+  if (!s) return '';
+  if (s.includes('/')) return s; // already DD/MM/YYYY
+  var p = s.split('-');
+  if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
+  return s;
+}
+function toInputDate(s) {
+  // Convert DD/MM/YYYY to YYYY-MM-DD for <input type="date">
+  if (!s) return '';
+  if (s.includes('-')) return s; // already YYYY-MM-DD
+  var p = s.split('/');
+  if (p.length === 3) return p[2] + '-' + p[1] + '-' + p[0];
+  return s;
+}
 function mapAnn(a) {
+  var raw = a.start_date || a.date || '';
   return {
     title: a.title, desc: a.description||'', tag: a.tag||'Class',
     category: a.category||'class', day: a.day||'', time: a.time||'',
-    start_date: a.start_date||'', weeks: a.weeks||null,
+    start_date: toDisplayDate(raw), weeks: a.weeks||null,
     active: a.active!==false, sort_order: a.sort_order||0, _id: a.id
   };
 }
