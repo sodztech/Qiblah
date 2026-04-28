@@ -627,7 +627,7 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   <div id="save-status" style="display:none"></div>
 </div>
 
-<script>
+<script type="text/plain" data-disabled="display-screen-script">
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 const SHEET_ID = '1ShUEYYtEFOEnqWf8Go9mK8aSJsTp4G8aQ0oAZTAl8uc';
 
@@ -1241,10 +1241,11 @@ async function initEvents() {
 
 
 </script>
+<script src="admin.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
+        navigator.serviceWorker.register('../sw.js');
       });
     }
   </script>
