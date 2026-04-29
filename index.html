@@ -556,8 +556,10 @@ nav::after {
 .svc-icon-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .svc-icon-sm svg { width: 18px; height: 18px; }
 .profile-detail-list { display: flex; flex-direction: column; }
+.profile-detail-list-spaced { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.profile-detail-subtitle { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
 .profile-detail-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
-.profile-detail-item:first-child { border-top: none; }
+.profile-detail-item:first-child, .profile-detail-subtitle + .profile-detail-item { border-top: none; }
 .profile-detail-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(155,127,78,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .profile-detail-icon svg { width: 17px; height: 17px; }
 .profile-detail-title { font-size: 14px; font-weight: 600; color: var(--text); }
@@ -2324,53 +2326,49 @@ function profileTagClass(tag) {
 function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   cdPrayers = cdPrayers || prayers;
   var services = m.services || [];
-  var announcements = (m.announcements && m.announcements.length ? m.announcements.filter(function(a) { return !isAnnouncementExpired(a); }) : [
-    { title: 'Qur\'an Class', tag: 'Class', day: 'Monday', time: 'After Maghrib', description: 'Open study circle for recitation and reflection.' },
-    { title: 'Youth Circle', tag: 'Class', day: 'Friday', time: '18:00', description: 'Weekly reminder and activities for young people.' },
-    { title: 'Sisters Study Circle', tag: 'Class', day: 'Saturday', time: '11:00', description: 'A regular space for learning and community.' },
-    { title: 'New Muslim Support', tag: 'Service', day: 'Sunday', time: 'By appointment', description: 'Guidance and support for new Muslims.' },
-    { title: 'Community Talk', tag: 'Event', day: 'Monthly', time: 'After Isha', description: 'Talks and reminders for the wider community.' }
-  ]).slice(0, 5);
-  var svcSection = services.length ? (
-    '<div class="detail-card">' +
-      '<h3>Services</h3>' +
-      '<div class="svc-detail-list">' +
-        services.map(function(s) {
-          var c = svcColor(s.type);
-          return '<div class="svc-item">' +
-            '<div class="svc-icon-sm" style="background:' + c.bg + '">' +
-              '<svg viewBox="0 0 24 24" fill="' + c.color + '">' + svcIcon(s.type) + '</svg>' +
-            '</div>' +
-            '<div style="flex:1">' +
-              '<div style="font-size:14px;font-weight:600">' + s.name + '</div>' +
-              (s.days ? '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + s.days + (s.time ? ' &bull; ' + fmtServiceTime(s.time) : '') + '</div>' : '') +
-            '</div>' +
-            '<span class="service-type-badge" style="background:' + c.bg + ';color:' + c.color + '">' + s.type + '</span>' +
-          '</div>';
-        }).join('') +
-      '</div>' +
+  var announcements = (m.announcements || []).filter(function(a) { return !isAnnouncementExpired(a); }).slice(0, 5);
+  var serviceRows = services.length ? (
+    '<div class="svc-detail-list">' +
+      services.map(function(s) {
+        var c = svcColor(s.type);
+        return '<div class="svc-item">' +
+          '<div class="svc-icon-sm" style="background:' + c.bg + '">' +
+            '<svg viewBox="0 0 24 24" fill="' + c.color + '">' + svcIcon(s.type) + '</svg>' +
+          '</div>' +
+          '<div style="flex:1">' +
+            '<div style="font-size:14px;font-weight:600">' + qText(s.name) + '</div>' +
+            (s.days ? '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + qText(s.days) + (s.time ? ' &bull; ' + qText(fmtServiceTime(s.time)) : '') + '</div>' : '') +
+          '</div>' +
+          '<span class="service-type-badge" style="background:' + c.bg + ';color:' + c.color + '">' + qText(s.type) + '</span>' +
+        '</div>';
+      }).join('') +
     '</div>'
   ) : '';
-  var annSection = announcements.length ? (
+  var eventRows = announcements.length ? (
+    '<div class="profile-detail-list' + (services.length ? ' profile-detail-list-spaced' : '') + '">' +
+      '<div class="profile-detail-subtitle">Classes &amp; Events</div>' +
+      announcements.map(function(a) {
+        var tag = a.tag || a.category || 'Event';
+        var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
+        var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date), duration].filter(Boolean).join(' · ');
+        return '<div class="profile-detail-item">' +
+          '<div class="profile-detail-icon">' +
+            '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg>' +
+          '</div>' +
+          '<div style="flex:1;min-width:0">' +
+            '<div class="profile-detail-title">' + qText(a.title) + '</div>' +
+            '<div class="profile-detail-meta"><span class="profile-event-tag ' + profileTagClass(tag) + '">' + qText(tag) + '</span>' + qText(meta) + '</div>' +
+            (a.description ? '<div class="profile-detail-desc">' + qText(a.description) + '</div>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>'
+  ) : '';
+  var svcSection = (services.length || announcements.length) ? (
     '<div class="detail-card">' +
-      '<h3>Classes &amp; Events</h3>' +
-      '<div class="profile-detail-list">' +
-        announcements.map(function(a) {
-          var tag = a.tag || a.category || 'Event';
-          var duration = a.weeks ? (a.weeks + ' week' + (Number(a.weeks) === 1 ? '' : 's')) : '';
-          var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date), duration].filter(Boolean).join(' · ');
-          return '<div class="profile-detail-item">' +
-            '<div class="profile-detail-icon">' +
-              '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg>' +
-            '</div>' +
-            '<div style="flex:1;min-width:0">' +
-              '<div class="profile-detail-title">' + qText(a.title) + '</div>' +
-              '<div class="profile-detail-meta"><span class="profile-event-tag ' + profileTagClass(tag) + '">' + qText(tag) + '</span>' + qText(meta) + '</div>' +
-              (a.description ? '<div class="profile-detail-desc">' + qText(a.description) + '</div>' : '') +
-            '</div>' +
-          '</div>';
-        }).join('') +
-      '</div>' +
+      '<h3>Services</h3>' +
+      serviceRows +
+      eventRows +
     '</div>'
   ) : '';
 
@@ -2458,7 +2456,6 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         facItems +
       '</div>' +
       svcSection +
-      annSection +
       '<div class="detail-card">' +
         '<h3>Contact</h3>' +
         (m.phone ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div><a href="tel:' + m.phone + '" style="color:var(--muted);font-size:14px">' + m.phone + '</a></div>' : '') +
