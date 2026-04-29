@@ -173,6 +173,32 @@ body {
 }
 .divider { height: 1px; background: var(--border); margin: 12px 0; }
 
+/* ── PROFILE LOGO ── */
+.profile-logo-box {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px; margin-bottom: 16px;
+}
+.profile-logo-preview {
+  width: 72px; height: 72px; border-radius: 12px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0;
+}
+.profile-logo-preview img {
+  max-width: 100%; max-height: 100%; object-fit: contain; display: none;
+}
+.profile-logo-placeholder {
+  color: var(--text3); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.profile-logo-actions {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.profile-logo-note {
+  width: 100%; font-size: 12px; color: var(--text2); line-height: 1.45;
+}
+
 /* ── GRID ── */
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
@@ -500,6 +526,7 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   }
   .card-title { line-height: 1.35; }
   .row-2, .row-3 { grid-template-columns: 1fr; gap: 0; }
+  .profile-logo-box { align-items: flex-start; }
   .asr-opinion-grid {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -632,6 +659,18 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   .display-preview-frame {
     width: 960px;
     height: 540px;
+  }
+  .profile-logo-box {
+    flex-direction: column;
+  }
+  .profile-logo-preview {
+    width: 84px;
+    height: 84px;
+  }
+  .profile-logo-actions .act-btn,
+  .profile-logo-actions .btn {
+    width: 100% !important;
+    text-align: center;
   }
   .card-head {
     flex-direction: column;
@@ -855,6 +894,25 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   <div id="tab-profile" style="display:none">
     <div class="card">
       <div class="card-head"><span class="card-title">Mosque Information</span></div>
+      <div class="field">
+        <label>Mosque Logo</label>
+        <div class="profile-logo-box">
+          <div class="profile-logo-preview">
+            <img id="profile-logo-preview" src="" alt="">
+            <span class="profile-logo-placeholder" id="profile-logo-placeholder">No logo</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="profile-logo-actions">
+              <label class="act-btn" style="cursor:pointer">
+                Upload Logo
+                <input type="file" id="profile-logo-file" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleProfileLogoUpload(event)">
+              </label>
+              <button type="button" class="btn btn-sec" style="width:auto;padding:9px 14px;font-size:13px" onclick="removeProfileLogo()">Remove</button>
+            </div>
+            <div class="profile-logo-note">PNG, JPG or WebP. Transparent square logos work best for the TV display.</div>
+          </div>
+        </div>
+      </div>
       <div class="field"><label>Mosque Name</label><input type="text" id="profile-name"></div>
       <div class="field"><label>Address</label><input type="text" id="profile-address"></div>
       <div class="row-2">

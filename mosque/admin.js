@@ -13,6 +13,7 @@ var editingServiceId = null;
 var editingServiceIndex = -1;
 var embedType = 'small';
 var ADMIN_SESSION_KEY = 'qiblah_mosque_admin_session_v1';
+var pendingProfileLogo = undefined;
 
 function sbFetch(path, opts) {
   opts = opts || {};
@@ -112,7 +113,7 @@ function restoreAdminSession() {
   var session = readAdminSession();
   if (!session || !session.slug) return;
   showLoginError('Restoring session...');
-  sbFetch('mosques?slug=eq.' + encodeURIComponent(session.slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities')
+  sbFetch('mosques?slug=eq.' + encodeURIComponent(session.slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo')
     .then(function(rows) {
       if (!rows || !rows.length) throw new Error('Saved mosque not found.');
       currentAdminId = session.adminId || null;
@@ -133,7 +134,7 @@ function doLogin() {
   if (!slug || !pin) { showLoginError('Please enter your Mosque ID and PIN.'); return; }
   showLoginError('Checking...');
 
-  sbFetch('mosques?slug=eq.' + encodeURIComponent(slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,mosque_admins(id,pin_hash)')
+  sbFetch('mosques?slug=eq.' + encodeURIComponent(slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,logo,mosque_admins(id,pin_hash)')
     .then(function(rows) {
       if (!rows || !rows.length) throw new Error('Mosque ID not found.');
       var mosque = rows[0];
@@ -415,13 +416,85 @@ function clearAllPrayerTimes() {
 }
 
 function renderProfile() {
+  pendingProfileLogo = undefined;
   byId('profile-name').value = currentMosque.name || '';
   byId('profile-address').value = currentMosque.address || '';
   byId('profile-phone').value = currentMosque.phone || '';
   byId('profile-website').value = currentMosque.website || '';
   byId('profile-email').value = currentMosque.email || '';
   byId('profile-facilities').value = Array.isArray(currentMosque.facilities) ? currentMosque.facilities.join(', ') : (currentMosque.facilities || '');
+  renderProfileLogo(currentMosque.logo || '');
   renderJummahFields();
+}
+function renderProfileLogo(src) {
+  var img = byId('profile-logo-preview');
+  var placeholder = byId('profile-logo-placeholder');
+  if (!img || !placeholder) return;
+  if (src) {
+    img.src = src;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    img.removeAttribute('src');
+    img.style.display = 'none';
+    placeholder.style.display = 'block';
+  }
+}
+function resizeLogoFile(file) {
+  return new Promise(function(resolve, reject) {
+    if (!file || !/^image\/(png|jpeg|webp)$/.test(file.type)) {
+      reject(new Error('Please choose a PNG, JPG or WebP logo.'));
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      reject(new Error('Logo is too large. Please choose an image under 2MB.'));
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function() {
+      var originalDataUrl = reader.result;
+      var img = new Image();
+      img.onload = function() {
+        var max = 512;
+        var scale = Math.min(1, max / Math.max(img.width, img.height));
+        var w = Math.max(1, Math.round(img.width * scale));
+        var h = Math.max(1, Math.round(img.height * scale));
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL(file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png', 0.88));
+      };
+      img.onerror = function() { reject(new Error('Could not read that image.')); };
+      img.src = originalDataUrl;
+    };
+    reader.onerror = function() { reject(new Error('Could not read that image.')); };
+    reader.readAsDataURL(file);
+  });
+}
+function handleProfileLogoUpload(event) {
+  var file = event && event.target && event.target.files ? event.target.files[0] : null;
+  if (!file) return;
+  showSaveStatus('Preparing logo...', false);
+  resizeLogoFile(file)
+    .then(function(dataUrl) {
+      pendingProfileLogo = dataUrl;
+      renderProfileLogo(dataUrl);
+      showSaveStatus('Logo ready. Save profile to publish.', true);
+    })
+    .catch(function(err) {
+      showSaveStatus(err.message || 'Logo upload failed', false);
+    })
+    .finally(function() {
+      if (event && event.target) event.target.value = '';
+    });
+}
+function removeProfileLogo() {
+  pendingProfileLogo = '';
+  renderProfileLogo('');
+  showSaveStatus('Logo removed. Save profile to publish.', true);
 }
 function saveProfile() {
   var payload = {
@@ -432,13 +505,16 @@ function saveProfile() {
     email: byId('profile-email').value.trim(),
     facilities: byId('profile-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean)
   };
+  if (pendingProfileLogo !== undefined) payload.logo = pendingProfileLogo;
   showSaveStatus('Saving profile...', false);
   sbFetch('mosques?id=eq.' + currentMosque.id, { method: 'PATCH', body: JSON.stringify(payload) })
     .then(function(rows) {
       Object.assign(currentMosque, rows && rows[0] ? rows[0] : payload);
+      pendingProfileLogo = undefined;
       byId('header-mosque-name').textContent = currentMosque.name || '';
       byId('dash-mosque-title').textContent = currentMosque.name || '';
       byId('dash-mosque-address').textContent = currentMosque.address || '';
+      renderProfileLogo(currentMosque.logo || '');
       renderEmbed();
       clearPublicAppCache();
       showSaveStatus('Profile saved', true);

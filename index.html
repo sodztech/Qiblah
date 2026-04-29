@@ -2237,6 +2237,7 @@ function openDetail(idx) {
           website:  dbM.website  || m.website  || '',
           email:    dbM.email    || m.email    || '',
           about:    dbM.about    || m.about    || '',
+          logo:     dbM.logo     || m.logo     || '',
           jummah:   dbM.jummah   || m.jummah   || '',
           services: m.services   || [],  // already populated from loadMosquesFromSupabase
           announcements: m.announcements || [],
@@ -2418,8 +2419,13 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       '</div>' +
       '<div style="background:var(--card);border:1.5px solid rgba(155,127,78,0.4);border-radius:var(--radius);padding:10px 14px;margin-bottom:0;position:relative">' +
         '<span class="area-badge" style="position:absolute;top:10px;right:12px">' + (m.area || '') + '</span>' +
-        '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px;padding-right:80px">' + m.name + '</h2>' +
-        '<p style="font-size:12px;color:var(--muted)">' + m.address + '</p>' +
+        '<div style="display:flex;align-items:center;gap:10px;padding-right:80px">' +
+          (m.logo ? '<img src="' + qText(m.logo) + '" alt="" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;border-radius:8px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:4px">' : '') +
+          '<div style="min-width:0">' +
+            '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px">' + qText(m.name) + '</h2>' +
+            '<p style="font-size:12px;color:var(--muted)">' + qText(m.address) + '</p>' +
+          '</div>' +
+        '</div>' +
       '</div>' +
     '</div>' +
     '<div class="detail-body">' +
