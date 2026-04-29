@@ -81,6 +81,7 @@ Mosque admins log in with their mosque ID/slug and PIN. After login, refresh kee
 Admin sections include:
 
 - Prayer timetable
+- CSV timetable upload with optional second Asr beginning time
 - Jummah times
 - Mosque profile and facilities
 - Services
