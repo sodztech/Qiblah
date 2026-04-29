@@ -181,24 +181,6 @@
     background: rgba(255,255,255,0.08) !important;
     color: rgba(255,255,255,0.75) !important;
   }
-  .service-card > div[style*="absolute"] span:first-child,
-  #online-list .service-card > div[style*="absolute"] span:first-child,
-  #service-results .service-card > div[style*="absolute"] span:first-child {
-    color: rgba(255,255,255,0.75) !important;
-    background: rgba(255,255,255,0.08) !important;
-  }
-  .service-icon {
-    background: rgba(139,112,78,0.15) !important;
-  }
-  .service-icon svg {
-    fill: #c9a87a !important;
-  }
-  .svc-icon-sm {
-    background: rgba(139,112,78,0.15) !important;
-  }
-  .svc-icon-sm svg {
-    fill: #c9a87a !important;
-  }
   .fac-icon {
     border-color: rgba(139,112,78,0.4) !important;
   }
@@ -561,6 +543,8 @@ nav::after {
 .service-card:hover { border-color: rgba(155,127,78,0.3); }
 .service-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .service-icon svg { width: 18px; height: 18px; }
+.institute-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.institute-icon svg { width: 18px; height: 18px; }
 .service-body { flex: 1; min-width: 0; }
 .service-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .service-mosque { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1110,12 +1094,12 @@ var IMGS = [];
 var MOSQUES = [];
 
 var SVC_COLORS = {
-  'Education': {bg:'rgba(13,148,136,0.14)',  color:'#0f766e'},
-  'Youth':     {bg:'rgba(194,65,12,0.12)',   color:'#c2410c'},
-  'Community': {bg:'rgba(4,120,87,0.14)',    color:'#065f46'},
-  'Welfare':   {bg:'rgba(190,18,60,0.12)',   color:'#9f1239'},
-  'Health':    {bg:'rgba(3,105,161,0.14)',   color:'#075985'},
-  'Sports':    {bg:'rgba(109,40,217,0.14)',  color:'#5b21b6'}
+  'Education': {bg:'rgba(20,184,166,0.16)',  color:'#2dd4bf'},
+  'Youth':     {bg:'rgba(249,115,22,0.15)',   color:'#fb923c'},
+  'Community': {bg:'rgba(34,197,94,0.15)',    color:'#4ade80'},
+  'Welfare':   {bg:'rgba(244,63,94,0.15)',    color:'#fb7185'},
+  'Health':    {bg:'rgba(56,189,248,0.16)',   color:'#38bdf8'},
+  'Sports':    {bg:'rgba(167,139,250,0.16)',  color:'#a78bfa'}
 };
 
 function svcColor(type) {
@@ -2561,14 +2545,14 @@ var activeCourseType = 'All';
 
 function courseTypeColor(type) {
   var map = {
-    'Quran':       { bg:'rgba(67,56,202,0.12)',  color:'#3730a3' },
-    'Arabic':      { bg:'rgba(4,120,87,0.12)',   color:'#065f46' },
-    'Fiqh':        { bg:'rgba(194,65,12,0.12)',  color:'#9a3412' },
-    'Aqeedah':     { bg:'rgba(159,18,57,0.12)',  color:'#881337' },
-    'Hadith':      { bg:'rgba(7,89,133,0.12)',   color:'#0c4a6e' },
-    'Seerah':      { bg:'rgba(131,24,67,0.12)',  color:'#831843' },
-    'History':     { bg:'rgba(120,53,15,0.12)',  color:'#78350f' },
-    'Spirituality':{ bg:'rgba(91,33,182,0.12)',  color:'#4c1d95' }
+    'Quran':       { bg:'rgba(99,102,241,0.16)',  color:'#818cf8' },
+    'Arabic':      { bg:'rgba(34,197,94,0.15)',   color:'#4ade80' },
+    'Fiqh':        { bg:'rgba(249,115,22,0.15)',  color:'#fb923c' },
+    'Aqeedah':     { bg:'rgba(244,63,94,0.15)',   color:'#fb7185' },
+    'Hadith':      { bg:'rgba(14,165,233,0.16)',  color:'#38bdf8' },
+    'Seerah':      { bg:'rgba(236,72,153,0.15)',  color:'#f472b6' },
+    'History':     { bg:'rgba(245,158,11,0.15)',  color:'#fbbf24' },
+    'Spirituality':{ bg:'rgba(168,85,247,0.16)',  color:'#c084fc' }
   };
   return map[type] || { bg:'rgba(155,127,78,0.15)', color:'var(--gold)' };
 }
@@ -2680,13 +2664,20 @@ var activeInstType = 'All';
 
 function instTypeColor(type) {
   var map = {
-    'School':          { bg:'rgba(67,56,202,0.12)',  color:'#3730a3' },
-    'Madrasa':         { bg:'rgba(120,53,15,0.12)',  color:'#78350f' },
-    'Islamic Centre':  { bg:'rgba(4,120,87,0.12)',   color:'#065f46' },
-    'Community Centre':{ bg:'rgba(131,24,67,0.12)',  color:'#831843' },
-    'Academy':         { bg:'rgba(159,18,57,0.12)',  color:'#881337' }
+    'School':          { bg:'rgba(99,102,241,0.16)', color:'#818cf8' },
+    'Madrasa':         { bg:'rgba(245,158,11,0.15)', color:'#fbbf24' },
+    'Islamic Centre':  { bg:'rgba(20,184,166,0.16)', color:'#2dd4bf' },
+    'Community Centre':{ bg:'rgba(236,72,153,0.15)', color:'#f472b6' },
+    'Academy':         { bg:'rgba(244,63,94,0.15)',  color:'#fb7185' }
   };
   return map[type] || { bg:'rgba(155,127,78,0.15)', color:'var(--gold)' };
+}
+
+function instTypeIcon(type) {
+  if (type === 'School') return '<path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm-5 9.18v4L12 19l5-2.82v-4L12 15l-5-2.82z"/>';
+  if (type === 'Madrasa') return '<path d="M12 3l7 5v12h-5v-5h-4v5H5V8l7-5zm0 3.1L7 9.68V18h1v-5h8v5h1V9.68L12 6.1z"/>';
+  if (type === 'Academy') return '<path d="M4 4h13a3 3 0 013 3v13H7a3 3 0 01-3-3V4zm3 3v10h10V7H7zm2 2h6v2H9V9zm0 3h5v2H9v-2z"/>';
+  return '<path d="M12 2l9 5v2h-2v10h2v2H3v-2h2V9H3V7l9-5zm-4 7v10h3V9H8zm5 0v10h3V9h-3z"/>';
 }
 
 function initInstFilters() {
@@ -2768,6 +2759,9 @@ function openInstitute(idx) {
 function instCardHTML(inst, idx) {
   var c = instTypeColor(inst.type);
   return '<div class="mosque-card" onclick="openInstitute(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px 16px;position:relative">' +
+    '<div class="institute-icon" style="background:' + c.bg + '">' +
+      '<svg viewBox="0 0 24 24" fill="' + c.color + '">' + instTypeIcon(inst.type) + '</svg>' +
+    '</div>' +
     '<div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:7px">' +
       '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 7px;border-radius:5px">' + inst.type + '</span>' +
     '</div>' +
