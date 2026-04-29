@@ -12,6 +12,7 @@ var editingAnnouncementIndex = -1;
 var editingServiceId = null;
 var editingServiceIndex = -1;
 var embedType = 'small';
+var ADMIN_SESSION_KEY = 'qiblah_mosque_admin_session_v1';
 
 function sbFetch(path, opts) {
   opts = opts || {};
@@ -86,6 +87,44 @@ function normaliseSlugInput(s) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+function saveAdminSession(mosque, adminId) {
+  try {
+    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({
+      slug: mosque && mosque.slug ? mosque.slug : '',
+      adminId: adminId || null,
+      savedAt: Date.now()
+    }));
+  } catch (e) {}
+}
+function clearAdminSession() {
+  try {
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+  } catch (e) {}
+}
+function readAdminSession() {
+  try {
+    return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || 'null');
+  } catch (e) {
+    return null;
+  }
+}
+function restoreAdminSession() {
+  var session = readAdminSession();
+  if (!session || !session.slug) return;
+  showLoginError('Restoring session...');
+  sbFetch('mosques?slug=eq.' + encodeURIComponent(session.slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities')
+    .then(function(rows) {
+      if (!rows || !rows.length) throw new Error('Saved mosque not found.');
+      currentAdminId = session.adminId || null;
+      currentMosque = rows[0];
+      byId('login-error').style.display = 'none';
+      loadDashboard();
+    })
+    .catch(function() {
+      clearAdminSession();
+      byId('login-error').style.display = 'none';
+    });
+}
 
 function doLogin() {
   var slug = normaliseSlugInput(byId('mosque-id-input').value);
@@ -104,6 +143,7 @@ function doLogin() {
       currentAdminId = admin.id;
       currentMosque = mosque;
       delete currentMosque.mosque_admins;
+      saveAdminSession(currentMosque, currentAdminId);
       loadDashboard();
     })
     .catch(function(err) {
@@ -879,6 +919,7 @@ window.openDisplayPreview = openDisplayPreview;
 window.copyDisplayPreviewLink = copyDisplayPreviewLink;
 
 function doLogout() {
+  clearAdminSession();
   currentMosque = null;
   currentAdminId = null;
   byId('login-screen').style.display = 'flex';
@@ -898,4 +939,5 @@ document.addEventListener('DOMContentLoaded', function() {
     navigator.clipboard.writeText(byId('embed-code-block').textContent);
     showSaveStatus('Embed code copied', true);
   });
+  restoreAdminSession();
 });
