@@ -211,9 +211,12 @@
     font-size: clamp(0.75rem, 1.6vh, 1.2rem); font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2);
   }
-  .pg-header span:not(:first-child) { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
-  .p-cell { text-align: left; padding-left: clamp(8px,1.5vw,24px); }
-  .p-jamaah-wrap { align-items: flex-start; padding-left: 0; }
+  .pg-header span:first-child { text-align: left; }
+  .pg-header span:not(:first-child) { text-align: center; padding-left: 0; }
+  .p-cell {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 0; text-align: center; padding-left: 0;
+  }
 
   #rows { display: flex; flex-direction: column; flex: 1; }
 
@@ -238,7 +241,7 @@
   }
   @keyframes rowglow { 0%,100%{opacity:0} 50%{opacity:1} }
 
-  .p-name-wrap { display: flex; flex-direction: column; gap: 0.08em; }
+  .p-name-wrap { display: flex; flex-direction: column; gap: 0.08em; min-width: 0; }
   .p-name {
     font-size: clamp(1.1rem, 2.8vh, 2.4rem); font-weight: 700;
     letter-spacing: -0.01em; color: var(--text); transition: color 0.4s;
@@ -250,7 +253,7 @@
     color: var(--text2); line-height: 1.45; font-variant-numeric: tabular-nums;
   }
 
-  .p-jamaah-wrap { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
+  .p-jamaah-wrap { gap: 0; }
   .p-jamaah {
     font-size: clamp(1.1rem, 2.8vh, 2.4rem); font-weight: 700;
     letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
