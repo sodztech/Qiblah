@@ -81,7 +81,7 @@ function doLogin() {
   if (!slug || !pin) { showLoginError('Please enter your Mosque ID and PIN.'); return; }
   showLoginError('Checking...');
 
-  sbFetch('mosques?slug=eq.' + encodeURIComponent(slug) + '&select=id,slug,name,address,area,borough,jummah,phone,website,email,about,facilities,mosque_admins(id,pin_hash)')
+  sbFetch('mosques?slug=eq.' + encodeURIComponent(slug) + '&select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,facilities,mosque_admins(id,pin_hash)')
     .then(function(rows) {
       if (!rows || !rows.length) throw new Error('Mosque ID not found.');
       var mosque = rows[0];
@@ -159,7 +159,13 @@ function renderPrayerRows() {
       '<input class="pt-cell" id="today-' + p + '-jamaah" value="' + esc(row[p + '_jamaah'] || '') + '" placeholder="HH:MM">' +
     '</div>';
   }).join('');
-  byId('jummah-times-input').value = currentMosque.jummah || '';
+  renderJummahFields();
+}
+
+function renderJummahFields() {
+  byId('jummah-time-1').value = currentMosque.jummah || '';
+  byId('jummah-time-2').value = currentMosque.jummah2 || '';
+  byId('jummah-time-3').value = currentMosque.jummah3 || '';
 }
 
 function buildTimePayload(date) {
@@ -337,7 +343,7 @@ function renderProfile() {
   byId('profile-email').value = currentMosque.email || '';
   byId('profile-about').value = currentMosque.about || '';
   byId('profile-facilities').value = Array.isArray(currentMosque.facilities) ? currentMosque.facilities.join(', ') : (currentMosque.facilities || '');
-  byId('jummah-times-input').value = currentMosque.jummah || '';
+  renderJummahFields();
 }
 function saveProfile() {
   var payload = {
@@ -362,10 +368,18 @@ function saveProfile() {
     }).catch(function(err) { showSaveStatus('Profile save failed: ' + err.message.slice(0, 80), false); });
 }
 function saveJummah() {
-  var payload = { jummah: byId('jummah-times-input').value.trim() };
+  var payload = {
+    jummah: byId('jummah-time-1').value.trim(),
+    jummah2: byId('jummah-time-2').value.trim(),
+    jummah3: byId('jummah-time-3').value.trim()
+  };
   showSaveStatus('Saving Jummah...', false);
   sbFetch('mosques?id=eq.' + currentMosque.id, { method: 'PATCH', body: JSON.stringify(payload) })
-    .then(function(rows) { currentMosque.jummah = rows && rows[0] ? rows[0].jummah : payload.jummah; showSaveStatus('Jummah saved', true); })
+    .then(function(rows) {
+      Object.assign(currentMosque, rows && rows[0] ? rows[0] : payload);
+      renderJummahFields();
+      showSaveStatus('Jummah saved', true);
+    })
     .catch(function(err) { showSaveStatus('Jummah save failed: ' + err.message.slice(0, 80), false); });
 }
 
