@@ -174,6 +174,13 @@ nav {
 .display-time { text-align: center; color: rgba(238,235,229,0.72); font-variant-numeric: tabular-nums; }
 .display-time.strong { color: var(--text); font-weight: 900; }
 .display-row.active .display-prayer, .display-row.active .display-time.strong { color: var(--gold); }
+.tv-video-preview {
+  display: block;
+  width: 100%;
+  border: 1px solid rgba(200,164,110,0.34);
+  border-radius: 15px;
+  background: #102033;
+}
 .preview-footer {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px;
 }
@@ -520,13 +527,7 @@ footer {
         <div class="preview-brand"><span class="preview-dot"></span> Qiblah Display</div>
         <div class="preview-tabs"><span class="preview-tab">Public app</span><span class="preview-tab">Admin</span><span class="preview-tab active">TV</span></div>
       </div>
-      <div class="display-preview">
-        <div class="display-head"><span></span><span>Begins</span><span>Jamaah</span><span>Tomorrow</span></div>
-        <div class="display-row active"><div class="display-prayer">Fajr</div><div class="display-time">3:58</div><div class="display-time strong">4:28</div><div class="display-time">4:25</div></div>
-        <div class="display-row"><div class="display-prayer">Zuhr</div><div class="display-time">1:03</div><div class="display-time strong">1:30</div><div class="display-time">1:30</div></div>
-        <div class="display-row"><div class="display-prayer">Asr</div><div class="display-time">5:00</div><div class="display-time strong">6:30</div><div class="display-time">6:30</div></div>
-        <div class="display-row"><div class="display-prayer">Isha</div><div class="display-time">9:35</div><div class="display-time strong">10:00</div><div class="display-time">10:00</div></div>
-      </div>
+      <img class="tv-video-preview" src="assets/tv-display-preview.svg" alt="Looping preview of the Qiblah mosque TV display screen">
       <div class="preview-footer">
         <div class="preview-stat"><strong>365</strong><span>Timetable days</span></div>
         <div class="preview-stat"><strong>TV</strong><span>Display link</span></div>
