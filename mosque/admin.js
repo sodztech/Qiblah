@@ -459,8 +459,44 @@ function resizeLogoFile(file) {
         var h = Math.max(1, Math.round(img.height * scale));
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext('2d');
-        var mime = file.type === 'image/jpeg' ? 'image/jpeg' : (file.type === 'image/webp' ? 'image/webp' : 'image/png');
+        var mime = 'image/png';
         var dataUrl = '';
+        function removePlainBackground() {
+          var imageData = ctx.getImageData(0, 0, w, h);
+          var data = imageData.data;
+          var samples = [
+            [0, 0], [w - 1, 0], [0, h - 1], [w - 1, h - 1],
+            [Math.floor(w / 2), 0], [Math.floor(w / 2), h - 1],
+            [0, Math.floor(h / 2)], [w - 1, Math.floor(h / 2)]
+          ];
+          var total = [0, 0, 0], count = 0;
+          samples.forEach(function(p) {
+            var idx = (p[1] * w + p[0]) * 4;
+            if (data[idx + 3] < 245) return;
+            total[0] += data[idx];
+            total[1] += data[idx + 1];
+            total[2] += data[idx + 2];
+            count++;
+          });
+          if (!count) return;
+          var bg = [total[0] / count, total[1] / count, total[2] / count];
+          var cornerSpread = 0;
+          samples.forEach(function(p) {
+            var idx = (p[1] * w + p[0]) * 4;
+            var d = Math.abs(data[idx] - bg[0]) + Math.abs(data[idx + 1] - bg[1]) + Math.abs(data[idx + 2] - bg[2]);
+            cornerSpread = Math.max(cornerSpread, d);
+          });
+          if (cornerSpread > 85) return;
+          for (var i = 0; i < data.length; i += 4) {
+            var dist = Math.abs(data[i] - bg[0]) + Math.abs(data[i + 1] - bg[1]) + Math.abs(data[i + 2] - bg[2]);
+            if (dist < 48) {
+              data[i + 3] = 0;
+            } else if (dist < 92) {
+              data[i + 3] = Math.min(data[i + 3], Math.round((dist - 48) / 44 * 255));
+            }
+          }
+          ctx.putImageData(imageData, 0, 0);
+        }
         function draw() {
           canvas.width = w;
           canvas.height = h;
@@ -471,6 +507,7 @@ function resizeLogoFile(file) {
             ctx.fillRect(0, 0, w, h);
           }
           ctx.drawImage(img, 0, 0, w, h);
+          removePlainBackground();
         }
         function dataUrlBytes(value) {
           var base64 = String(value || '').split(',')[1] || '';
