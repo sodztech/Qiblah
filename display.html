@@ -932,8 +932,7 @@ async function initEvents(mosqueId) {
     function dateLabel(d) {
       const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
       const diffDays = Math.round((dateOnly - todayStart) / 86400000);
-      if (diffDays === 0) return 'Today';
-      if (diffDays === 1) return 'Tomorrow';
+      if (diffDays >= 0 && diffDays < 7) return DAYS[d.getDay()];
       return DAYS[d.getDay()] + ' ' + ordinal(d.getDate()) + ' ' + d.toLocaleDateString('en-GB', { month:'long' });
     }
 
@@ -993,10 +992,7 @@ async function initEvents(mosqueId) {
       } else if (ev.occurrenceDate) {
         dayLabel = dateLabel(ev.occurrenceDate);
       } else if (ev.day) {
-        const score = dayScore(ev.day);
-        if (score === 0) dayLabel = 'Today';
-        else if (score === 1) dayLabel = 'Tomorrow';
-        else dayLabel = ev.day;
+        dayLabel = ev.day;
       }
       return [dayLabel, fmtTime(ev.time)].filter(Boolean).join(' · ');
     }
