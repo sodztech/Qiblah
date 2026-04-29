@@ -176,6 +176,18 @@ body {
 /* ── GRID ── */
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.asr-opinion-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 220px;
+  gap: 16px;
+  align-items: end;
+  max-width: 720px;
+}
+.asr-opinion-grid .field { margin-bottom: 0; }
+.asr-opinion-action .btn {
+  width: 100%;
+  min-height: 43px;
+}
 .save-row { display: flex; gap: 10px; margin-top: 16px; }
 .save-row .btn { width: auto; flex: 1; }
 
@@ -488,6 +500,12 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   }
   .card-title { line-height: 1.35; }
   .row-2, .row-3 { grid-template-columns: 1fr; gap: 0; }
+  .asr-opinion-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    max-width: none;
+  }
+  .asr-opinion-action .btn { width: 100%; }
   .save-row { flex-direction: column; gap: 8px; }
   .save-row .btn { width: 100% !important; }
   .field { margin-bottom: 13px; }
@@ -720,7 +738,7 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     <div class="card">
       <div class="card-head"><span class="card-title">Asr Opinion</span></div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Choose which Asr beginning time appears on Qiblah. If the selected column is blank, Qiblah will use the other Asr begins time.</p>
-      <div class="row-2">
+      <div class="asr-opinion-grid">
         <div class="field">
           <label>Display Asr Begins</label>
           <select id="asr-opinion-select">
@@ -728,8 +746,8 @@ select.inline-sel:focus { border-color: var(--gold-border); }
             <option value="second">Second Asr begins / Hanafi</option>
           </select>
         </div>
-        <div class="field" style="justify-content:flex-end">
-          <button class="btn btn-ghost" style="width:100%" onclick="saveAsrOpinion()">Save Asr Setting</button>
+        <div class="asr-opinion-action">
+          <button class="btn btn-ghost" onclick="saveAsrOpinion()">Save Setting</button>
         </div>
       </div>
     </div>
