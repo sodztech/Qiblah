@@ -145,18 +145,35 @@
   .ev-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(200,164,110,0.25); transition: background 0.3s; }
   .ev-dot.active { background: var(--gold); }
   .ev-footer {
-    flex-shrink: 0; border-top: 1px solid var(--border);
-    height: var(--footer-h, 56px); overflow: hidden;
-    display: flex; align-items: center; padding: 0 16px;
+    flex-shrink: 0;
+    border-top: 1px solid rgba(200,164,110,0.35);
+    min-height: 86px;
+    height: max(var(--footer-h, 56px), 86px);
+    overflow: hidden;
+    display: flex; align-items: center;
+    padding: 0 22px;
+    background: linear-gradient(180deg, rgba(200,164,110,0.08), rgba(200,164,110,0.02));
   }
   .ev-ticker-wrap { width: 100%; overflow: hidden; }
   .ev-ticker {
-    display: flex; white-space: nowrap;
-    animation: ticker 50s linear infinite;
-    font-size: clamp(0.75rem, 1.3vh, 1rem); color: var(--text2);
+    display: flex; white-space: nowrap; align-items: center;
+    animation: ticker 42s linear infinite;
+    font-size: clamp(1.25rem, 2.55vh, 2rem);
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1;
     will-change: transform; transform: translateZ(0); backface-visibility: hidden;
   }
-  .ev-ticker span { display: inline-block; padding-right: 60px; flex-shrink: 0; }
+  .ev-ticker > span { display: inline-flex; align-items: center; padding-right: 80px; flex-shrink: 0; }
+  .ticker-entry {
+    color: var(--text);
+    text-shadow: 0 0 22px rgba(200,164,110,0.12);
+  }
+  .ticker-sep {
+    color: var(--gold);
+    padding: 0 18px;
+    opacity: 0.9;
+  }
   @keyframes ticker {
     0%   { transform: translateX(0); }
     100% { transform: translateX(calc(-1 * var(--ticker-w, 50%))); }
@@ -575,8 +592,12 @@ function setTicker(entries) {
   const ticker = document.getElementById('ev-ticker');
   if (!ticker) return;
   const values = (entries && entries.length ? entries : DEFAULT_TICKERS).map(v => String(v || '').trim()).filter(Boolean).slice(0, 5);
-  const text = values.join('   \u00b7   ') + '   \u00b7   ';
-  ticker.querySelectorAll('span').forEach(span => { span.textContent = text; });
+  const html = values.map(v => '<span class="ticker-entry">' + escTicker(v) + '</span>').join('<span class="ticker-sep">\u2022</span>') + '<span class="ticker-sep">\u2022</span>';
+  ticker.querySelectorAll(':scope > span').forEach(span => { span.innerHTML = html; });
+}
+
+function escTicker(value) {
+  return String(value || '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch]);
 }
 
 function fmt(s) {
