@@ -14,6 +14,7 @@ var editingServiceIndex = -1;
 var embedType = 'small';
 var ADMIN_SESSION_KEY = 'qiblah_mosque_admin_session_v1';
 var pendingProfileLogo = undefined;
+var ANNOUNCEMENT_FILTERS = ['General', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality'];
 
 function sbFetch(path, opts) {
   opts = opts || {};
@@ -630,7 +631,7 @@ function resetAnnForm() {
   ['new-ann-title', 'new-ann-desc', 'new-ann-link', 'new-ann-time', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
   byId('new-ann-day').value = '';
   byId('new-ann-tag').value = 'Class';
-  setAnnouncementFilterOptions('Education');
+  setAnnouncementFilterOptions('General');
   byId('new-ann-active').value = 'true';
   byId('ann-submit-btn').textContent = 'Post';
   toggleAnnouncementLinkField();
@@ -661,15 +662,12 @@ function announcementFilter(row) {
   if (contentFilter) return contentFilter;
   var tag = String(row && (row.tag || row.category) || '').toLowerCase();
   if (tag === 'online') return 'General';
-  return tag === 'class' ? 'Education' : 'Event';
+  return 'General';
 }
 function setAnnouncementFilterOptions(selected) {
   var select = byId('new-ann-filter');
   if (!select) return;
-  var tag = byId('new-ann-tag').value;
-  var options = tag === 'Online'
-    ? ['General', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality']
-    : ['Education', 'Youth', 'Welfare', 'Community', 'Class', 'Event'];
+  var options = ANNOUNCEMENT_FILTERS;
   select.innerHTML = options.map(function(opt) {
     return '<option value="' + esc(opt) + '">' + esc(opt) + '</option>';
   }).join('');
