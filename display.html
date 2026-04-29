@@ -937,6 +937,20 @@ async function initEvents(mosqueId) {
       return DAYS[d.getDay()] + ' ' + ordinal(d.getDate()) + ' ' + d.toLocaleDateString('en-GB', { month:'long' });
     }
 
+    function dateFromDay(day) {
+      const score = dayScore(day);
+      if (score === 999) return null;
+      const d = new Date(todayStart);
+      d.setDate(d.getDate() + Math.max(0, score));
+      return d;
+    }
+
+    function nextCourseDate(startDate, day) {
+      if (!startDate) return null;
+      if (startDate >= todayStart) return startDate;
+      return dateFromDay(day) || todayStart;
+    }
+
     function normaliseEvent(ev, index) {
       const tag = ev.tag || ev.category || 'Class';
       const startDate = parseDate(ev.start_date);
@@ -960,13 +974,15 @@ async function initEvents(mosqueId) {
         isCourse: isCourse,
         endDate: endDate,
         isDaily: ev.day === 'Daily',
-        isFutureCourse: isCourse && startDate > todayStart
+        isFutureCourse: isCourse && startDate > todayStart,
+        occurrenceDate: isCourse ? nextCourseDate(startDate, ev.day) : (startDate || dateFromDay(ev.day) || todayStart)
       };
     }
 
     function isVisible(ev) {
       if (!ev.title || ev.title.toLowerCase() === 'title') return false;
       if (ev.endDate && todayStart > ev.endDate) return false;
+      if (ev.startDate && !ev.isCourse && ev.startDate < todayStart) return false;
       return true;
     }
 
@@ -974,8 +990,8 @@ async function initEvents(mosqueId) {
       let dayLabel = 'Daily';
       if (ev.isDaily) {
         return 'Daily';
-      } else if (ev.startDate) {
-        dayLabel = dateLabel(ev.startDate);
+      } else if (ev.occurrenceDate) {
+        dayLabel = dateLabel(ev.occurrenceDate);
       } else if (ev.day) {
         const score = dayScore(ev.day);
         if (score === 0) dayLabel = 'Today';
@@ -989,9 +1005,9 @@ async function initEvents(mosqueId) {
     visible.sort(function(a, b) {
       if (a.isDaily && !b.isDaily) return -1;
       if (b.isDaily && !a.isDaily) return 1;
-      if (a.isFutureCourse !== b.isFutureCourse) return a.isFutureCourse ? 1 : -1;
-      const sa = dayScore(a.day), sb = dayScore(b.day);
-      if (sa !== sb) return sa - sb;
+      const da = a.occurrenceDate ? a.occurrenceDate.getTime() : Number.MAX_SAFE_INTEGER;
+      const db = b.occurrenceDate ? b.occurrenceDate.getTime() : Number.MAX_SAFE_INTEGER;
+      if (da !== db) return da - db;
       const ta = timeMins(a.time), tb = timeMins(b.time);
       if (ta !== tb) return ta - tb;
       return a.sortOrder - b.sortOrder;
@@ -1000,6 +1016,7 @@ async function initEvents(mosqueId) {
     const nextSignature = JSON.stringify(visible.map(ev => ({
       day: ev.day,
       startDate: ev.startDate ? ev.startDate.toISOString().slice(0, 10) : '',
+      occurrenceDate: ev.occurrenceDate ? ev.occurrenceDate.toISOString().slice(0, 10) : '',
       weeks: ev.weeks || '',
       time: ev.time,
       title: ev.title,
