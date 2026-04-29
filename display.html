@@ -579,6 +579,7 @@ let liveTom = null;
 let liveBlackout = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
 let liveAsrOpinion = 'first';
 let eventRotateTimer = null;
+let eventsSignature = '';
 let jummahRotateTimer = null;
 
 function getSlug() {
@@ -859,9 +860,6 @@ async function initEvents(mosqueId) {
   const list   = document.getElementById('ev-list');
   const dotsEl = document.getElementById('ev-dots');
   if (!list) return;
-  if (eventRotateTimer) clearInterval(eventRotateTimer);
-  list.innerHTML = '';
-  if (dotsEl) dotsEl.innerHTML = '';
 
   try {
     try {
@@ -892,23 +890,29 @@ async function initEvents(mosqueId) {
       '&active=eq.true&category=in.' + encodeURIComponent('(class,event,online)') +
       '&order=sort_order.asc&limit=50'
     );
-    if (!rows || !rows.length) return;
-
     const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayIdx = now.getDay(); // 0=Sun
     const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const nowMins = now.getHours() * 60 + now.getMinutes();
 
     function dayScore(day) {
-      if (!day || day === 'Daily') return -1;
+      if (!day || day === 'Daily') return day === 'Daily' ? -1 : 999;
       const idx = DAYS.indexOf(day);
       if (idx === -1) return 999;
       return (idx - todayIdx + 7) % 7;
     }
 
+    function timeMins(t) {
+      const mins = toMins(t);
+      return mins === null ? 9999 : mins;
+    }
+
     function fmtTime(t) {
       if (!t) return '';
-      const [h, m] = t.split(':').map(Number);
+      const mins = toMins(t);
+      if (mins === null) return '';
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
       const ampm = h >= 12 ? 'PM' : 'AM';
       return (h % 12 || 12) + ':' + String(m).padStart(2,'0') + ' ' + ampm;
     }
@@ -920,55 +924,95 @@ async function initEvents(mosqueId) {
       return new Date(s);
     }
 
-    function isVisible(ev) {
-      const sd = parseDate(ev.start_date);
-      const weeks = ev.weeks ? parseInt(ev.weeks) : null;
-      if (sd && weeks) {
-        // Course: hide after start_date + weeks*7 days
-        const end = new Date(sd); end.setDate(end.getDate() + weeks * 7);
-        return now <= end;
+    function ordinal(n) {
+      if (n > 3 && n < 21) return n + 'th';
+      return n + ({ 1:'st', 2:'nd', 3:'rd' }[n % 10] || 'th');
+    }
+
+    function dateLabel(d) {
+      const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const diffDays = Math.round((dateOnly - todayStart) / 86400000);
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Tomorrow';
+      return DAYS[d.getDay()] + ' ' + ordinal(d.getDate()) + ' ' + d.toLocaleDateString('en-GB', { month:'long' });
+    }
+
+    function normaliseEvent(ev, index) {
+      const tag = ev.tag || ev.category || 'Class';
+      const startDate = parseDate(ev.start_date);
+      const weeks = ev.weeks ? parseInt(ev.weeks, 10) : null;
+      const isCourse = !!(startDate && weeks);
+      let endDate = null;
+      if (isCourse) {
+        endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + weeks * 7);
       }
+      return {
+        day: (ev.day || '').trim(),
+        startDate: startDate,
+        weeks: weeks,
+        time: (ev.time || '').trim(),
+        title: (ev.title || '').trim(),
+        description: (ev.description || ev.desc || '').trim(),
+        tag: tag,
+        tagLower: String(tag).toLowerCase(),
+        sortOrder: ev.sort_order || index + 1,
+        isCourse: isCourse,
+        endDate: endDate,
+        isDaily: ev.day === 'Daily',
+        isFutureCourse: isCourse && startDate > todayStart
+      };
+    }
+
+    function isVisible(ev) {
+      if (!ev.title || ev.title.toLowerCase() === 'title') return false;
+      if (ev.endDate && todayStart > ev.endDate) return false;
       return true;
     }
 
     function getTimeLabel(ev) {
-      const sd = parseDate(ev.start_date);
-      const score = dayScore(ev.day);
-      let dayLabel = '';
-      if (ev.day === 'Daily') {
-        dayLabel = 'Daily';
-      } else if (ev.day && sd) {
-        // Course: show STARTS D MMM
-        const d = sd.getDate();
-        const mon = sd.toLocaleDateString('en-GB', { month:'short' }).toUpperCase();
-        dayLabel = 'STARTS ' + d + ' ' + mon;
+      let dayLabel = 'Daily';
+      if (ev.isDaily) {
+        return 'Daily';
+      } else if (ev.startDate) {
+        dayLabel = dateLabel(ev.startDate);
       } else if (ev.day) {
-        // Weekly recurring
+        const score = dayScore(ev.day);
         if (score === 0) dayLabel = 'Today';
         else if (score === 1) dayLabel = 'Tomorrow';
-        else dayLabel = ev.day.toUpperCase();
-      } else if (sd) {
-        // Event with date only — no recurring day
-        const d = sd.getDate();
-        const mon = sd.toLocaleDateString('en-GB', { month:'short' }).toUpperCase();
-        dayLabel = d + ' ' + mon;
+        else dayLabel = ev.day;
       }
       return [dayLabel, fmtTime(ev.time)].filter(Boolean).join(' · ');
     }
 
-    // Filter visible and sort
-    const visible = rows.filter(isVisible);
+    const visible = (rows || []).map(normaliseEvent).filter(isVisible);
     visible.sort(function(a, b) {
+      if (a.isDaily && !b.isDaily) return -1;
+      if (b.isDaily && !a.isDaily) return 1;
+      if (a.isFutureCourse !== b.isFutureCourse) return a.isFutureCourse ? 1 : -1;
       const sa = dayScore(a.day), sb = dayScore(b.day);
-      // Daily first
-      if (sa === -1 && sb !== -1) return -1;
-      if (sb === -1 && sa !== -1) return 1;
-      // Then by day score
       if (sa !== sb) return sa - sb;
-      // Then by sort_order
-      return (a.sort_order || 99) - (b.sort_order || 99);
+      const ta = timeMins(a.time), tb = timeMins(b.time);
+      if (ta !== tb) return ta - tb;
+      return a.sortOrder - b.sortOrder;
     });
 
+    const nextSignature = JSON.stringify(visible.map(ev => ({
+      day: ev.day,
+      startDate: ev.startDate ? ev.startDate.toISOString().slice(0, 10) : '',
+      weeks: ev.weeks || '',
+      time: ev.time,
+      title: ev.title,
+      description: ev.description,
+      tag: ev.tag,
+      sortOrder: ev.sortOrder
+    })));
+    if (nextSignature === eventsSignature) return;
+    eventsSignature = nextSignature;
+
+    if (eventRotateTimer) clearInterval(eventRotateTimer);
+    list.innerHTML = '';
+    if (dotsEl) dotsEl.innerHTML = '';
     if (!visible.length) return;
 
     const ITEMS_PER_PAGE = 5;
@@ -981,15 +1025,14 @@ async function initEvents(mosqueId) {
       const full = page.length === ITEMS_PER_PAGE;
       page.forEach(ev => {
         const timeLabel = getTimeLabel(ev);
-        const tagLower = (ev.tag || ev.category || 'class').toLowerCase();
         div.innerHTML += `
           <div class="ev-item${full ? ' ev-item-stretch' : ''}">
             <div class="ev-item-top">
               <div class="ev-time">${timeLabel}</div>
-              <div class="ev-tag ev-tag-${tagLower}">${ev.tag || 'Class'}</div>
+              <div class="ev-tag ev-tag-${ev.tagLower}">${escTicker(ev.tag || 'Class')}</div>
             </div>
-            <div class="ev-title">${ev.title}</div>
-            ${ev.description ? `<div class="ev-desc">${ev.description}</div>` : ''}
+            <div class="ev-title">${escTicker(ev.title)}</div>
+            ${ev.description ? `<div class="ev-desc">${escTicker(ev.description)}</div>` : ''}
           </div>`;
       });
       list.appendChild(div);
