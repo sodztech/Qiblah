@@ -1163,7 +1163,7 @@ function filterServices() {
       if (tagKey === 'online' || isAnnouncementExpired(a)) return;
       var type = tagKey === 'class' ? 'Class' : 'Event';
       var title = a.title || '';
-      var desc = a.description || '';
+      var desc = announcementText(a);
       if ((activeServiceType === 'All' || activeServiceType === type) &&
           (title.toLowerCase().indexOf(q) > -1 || desc.toLowerCase().indexOf(q) > -1 || m.name.toLowerCase().indexOf(q) > -1)) {
         results.push({
@@ -2328,6 +2328,25 @@ function qText(value) {
     return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
   });
 }
+function parseAnnouncementContent(description) {
+  var raw = String(description || '').trim();
+  if (!raw || raw.charAt(0) !== '{') return { text: raw, link: '' };
+  try {
+    var parsed = JSON.parse(raw);
+    return {
+      text: parsed.text || parsed.description || '',
+      link: parsed.link || parsed.url || parsed.online_link || ''
+    };
+  } catch (e) {
+    return { text: raw, link: '' };
+  }
+}
+function announcementText(a) {
+  return parseAnnouncementContent(a && a.description).text;
+}
+function announcementOnlineLink(a) {
+  return parseAnnouncementContent(a && a.description).link;
+}
 
 function formatProfileDate(value) {
   var s = String(value || '').trim();
@@ -2392,7 +2411,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
           '<div style="flex:1;min-width:0">' +
             '<div class="profile-detail-title">' + qText(a.title) + '</div>' +
             '<div class="profile-detail-meta"><span class="profile-event-tag ' + profileTagClass(tag) + '">' + qText(tag) + '</span>' + qText(meta) + '</div>' +
-            (a.description ? '<div class="profile-detail-desc">' + qText(a.description) + '</div>' : '') +
+            (announcementText(a) ? '<div class="profile-detail-desc">' + qText(announcementText(a)) + '</div>' : '') +
           '</div>' +
         '</div>';
       }).join('') +
@@ -2771,7 +2790,7 @@ function getMosqueOnlineCourses() {
   MOSQUES.forEach(function(m, mi) {
     (m.announcements || []).forEach(function(a) {
       var tag = String(a.tag || a.category || '').toLowerCase();
-      if (tag !== 'online' || isAnnouncementExpired(a)) return;
+      if (tag !== 'online' || isAnnouncementExpired(a) || !announcementOnlineLink(a)) return;
       var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date)].filter(Boolean).join(' · ');
       items.push({
         name: a.title || 'Online class',
@@ -2779,9 +2798,8 @@ function getMosqueOnlineCourses() {
         type: 'Online',
         level: meta,
         price: '',
-        url: '',
-        desc: a.description || '',
-        mosqueIdx: mi
+        url: announcementOnlineLink(a),
+        desc: announcementText(a)
       });
     });
   });
@@ -2903,7 +2921,7 @@ function instCardHTML(inst, idx) {
 }
 
 // ── localStorage cache helpers ────────────────────────────────────────────────
-var CACHE_KEY_STATIC  = 'qiblah_static_v3';   // mosques, services, announcements, courses, institutes
+var CACHE_KEY_STATIC  = 'qiblah_static_v4';   // mosques, services, announcements, courses, institutes
 var CACHE_KEY_PRAYERS = 'qiblah_prayers_v1';   // prayer times (date-keyed, expires daily)
 var CACHE_TTL_STATIC  = 30 * 60 * 1000;       // 30 minutes
 var CACHE_TTL_PRAYERS = 60 * 60 * 1000;        // 1 hour

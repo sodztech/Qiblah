@@ -61,6 +61,9 @@ function showSaveStatus(msg, ok) {
 }
 function clearPublicAppCache() {
   try {
+    localStorage.removeItem('qiblah_static_v4');
+    localStorage.removeItem('qiblah_static_v3');
+    localStorage.removeItem('qiblah_static_v2');
     localStorage.removeItem('qiblah_static_v1');
     localStorage.removeItem('qiblah_prayers_v1');
   } catch (e) {}
@@ -687,17 +690,43 @@ function showAddAnnouncement() {
   editingAnnouncementIndex = -1;
   byId('ann-submit-btn').textContent = 'Post';
   byId('add-ann-form').style.display = 'block';
+  toggleAnnouncementLinkField();
   byId('add-ann-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function resetAnnForm() {
   editingAnnouncementId = null;
   editingAnnouncementIndex = -1;
-  ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
+  ['new-ann-title', 'new-ann-desc', 'new-ann-link', 'new-ann-time', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
   byId('new-ann-day').value = '';
   byId('new-ann-tag').value = 'Class';
   byId('new-ann-active').value = 'true';
   byId('ann-submit-btn').textContent = 'Post';
+  toggleAnnouncementLinkField();
   byId('add-ann-form').style.display = 'none';
+}
+function parseAnnouncementContent(description) {
+  var raw = String(description || '').trim();
+  if (!raw || raw.charAt(0) !== '{') return { text: raw, link: '' };
+  try {
+    var parsed = JSON.parse(raw);
+    return {
+      text: parsed.text || parsed.description || '',
+      link: parsed.link || parsed.url || parsed.online_link || ''
+    };
+  } catch (e) {
+    return { text: raw, link: '' };
+  }
+}
+function announcementDescription(row) {
+  return parseAnnouncementContent(row && row.description).text;
+}
+function announcementLink(row) {
+  return parseAnnouncementContent(row && row.description).link;
+}
+function toggleAnnouncementLinkField() {
+  var field = byId('new-ann-link-field');
+  if (!field) return;
+  field.style.display = byId('new-ann-tag').value === 'Online' ? 'block' : 'none';
 }
 function announcementTimeMins(value) {
   var time = normaliseTime(value);
@@ -748,7 +777,8 @@ function renderAnnouncements() {
       '<span class="badge badge-' + String(a.tag || a.category || 'event').toLowerCase() + '">' + esc(a.tag || a.category || 'Event') + '</span>' +
       '<span class="badge ' + (isAnnouncementActive(a) ? 'badge-active' : 'badge-hidden') + '">' + (isAnnouncementActive(a) ? 'Active' : 'Hidden') + '</span></div>' +
       '<div class="ann-meta">' + esc([a.day, a.time, a.start_date || a.date, duration].filter(Boolean).join(' · ')) + '</div>' +
-      '<div class="ann-desc">' + esc(a.description || '') + '</div></div>' +
+      (announcementLink(a) ? '<div class="ann-meta">Link: ' + esc(announcementLink(a)) + '</div>' : '') +
+      '<div class="ann-desc">' + esc(announcementDescription(a)) + '</div></div>' +
       '<button class="icon-btn text-btn" onclick="editAnnouncement(' + i + ')">Edit</button><button class="del-btn" onclick="deleteAnnouncement(' + i + ')">x</button></div>';
   }).join('');
 }
@@ -770,11 +800,15 @@ function readAnnouncementPayload() {
   var title = byId('new-ann-title').value.trim();
   if (!title) { alert('Title required'); return null; }
   var tag = byId('new-ann-tag').value;
+  var desc = byId('new-ann-desc').value.trim();
+  var link = byId('new-ann-link').value.trim();
+  if (tag === 'Online' && !link) { alert('Online link required'); return null; }
+  if (link && !/^https?:\/\//i.test(link)) link = 'https://' + link;
   return {
     title: title,
     tag: tag,
     category: tag.toLowerCase(),
-    description: byId('new-ann-desc').value.trim(),
+    description: tag === 'Online' ? JSON.stringify({ text: desc, link: link }) : desc,
     day: byId('new-ann-day').value || null,
     time: byId('new-ann-time').value || null,
     start_date: parseAdminDate(byId('new-ann-date').value),
@@ -809,12 +843,14 @@ function editAnnouncement(idx) {
   editingAnnouncementIndex = idx;
   byId('new-ann-title').value = a.title || '';
   byId('new-ann-tag').value = a.tag || a.category || 'Event';
-  byId('new-ann-desc').value = a.description || '';
+  byId('new-ann-desc').value = announcementDescription(a);
+  byId('new-ann-link').value = announcementLink(a);
   byId('new-ann-day').value = a.day || '';
   byId('new-ann-time').value = a.time || '';
   byId('new-ann-date').value = formatAdminDate(a.start_date || a.date || '');
   byId('new-ann-weeks').value = a.weeks || '';
   byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
+  toggleAnnouncementLinkField();
   byId('ann-submit-btn').textContent = 'Save';
   byId('add-ann-form').style.display = 'block';
   byId('add-ann-form').scrollIntoView({ behavior: 'smooth', block: 'start' });

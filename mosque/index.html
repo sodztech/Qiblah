@@ -964,10 +964,11 @@ select.inline-sel:focus { border-color: var(--gold-border); }
         <div class="row-2">
           <div class="field" style="margin-bottom:10px"><label>Title *</label><input type="text" id="new-ann-title" placeholder="e.g. Youth Club"></div>
           <div class="field" style="margin-bottom:10px"><label>Tag *</label>
-            <select id="new-ann-tag"><option value="Class">Class</option><option value="Event">Event</option><option value="Online">Online</option></select>
+            <select id="new-ann-tag" onchange="toggleAnnouncementLinkField()"><option value="Class">Class</option><option value="Event">Event</option><option value="Online">Online</option></select>
           </div>
         </div>
         <div class="field" style="margin-bottom:10px"><label>Description</label><textarea id="new-ann-desc" placeholder="Short description..." style="min-height:56px"></textarea></div>
+        <div class="field" id="new-ann-link-field" style="display:none;margin-bottom:10px"><label>Online Link *</label><input type="url" id="new-ann-link" placeholder="https://..."></div>
         <div class="row-2">
           <div class="field" style="margin-bottom:10px"><label>Day (weekly)</label>
             <select id="new-ann-day">
