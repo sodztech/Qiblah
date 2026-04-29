@@ -204,6 +204,33 @@
     line-height: 1.45;
   }
   .tablet-hijri { color: var(--gold); }
+  .tablet-selector {
+    margin-top: 14px;
+  }
+  .tablet-selector label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 7px;
+  }
+  .tablet-selector select {
+    width: 100%;
+    min-height: 42px;
+    border-radius: 10px;
+    border: 1px solid rgba(var(--gold-rgb),0.26);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.95rem;
+    padding: 8px 12px;
+    outline: none;
+  }
+  .tablet-selector select:focus {
+    border-color: rgba(var(--gold-rgb),0.6);
+    box-shadow: 0 0 0 3px rgba(var(--gold-rgb),0.1);
+  }
   .tablet-reminder {
     border-top: 1px solid var(--border2);
     padding-top: 14px;
@@ -602,6 +629,12 @@
         <div class="tablet-clock"><span id="tablet-time">12:00</span><span class="tablet-ampm" id="tablet-ampm">AM</span></div>
         <div class="tablet-date" id="tablet-date">—</div>
         <div class="tablet-hijri" id="tablet-hijri">—</div>
+        <div class="tablet-selector">
+          <label for="tablet-mosque-select">Mosque</label>
+          <select id="tablet-mosque-select">
+            <option value="">Loading mosques...</option>
+          </select>
+        </div>
       </div>
       <div class="tablet-reminder">
         <div class="tablet-reminder-title">Daily Reminder</div>
@@ -1308,6 +1341,43 @@ async function fetchDisplayBundle(slug) {
   return { mosque, tod, tom };
 }
 
+async function populateMosqueSelector(selectedSlug) {
+  const select = document.getElementById('tablet-mosque-select');
+  if (!select) return;
+  try {
+    const rows = await sbGet('mosques?select=slug,name,area&is_hidden=eq.false&order=name');
+    select.innerHTML = '';
+    if (!rows.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'No mosques available';
+      select.appendChild(opt);
+      return;
+    }
+    rows.forEach(function(m) {
+      if (!m.slug) return;
+      const opt = document.createElement('option');
+      opt.value = m.slug;
+      opt.textContent = m.name + (m.area ? ' - ' + m.area : '');
+      select.appendChild(opt);
+    });
+    if (selectedSlug) select.value = selectedSlug;
+    select.onchange = function() {
+      const slug = select.value;
+      if (!slug) return;
+      if (location.protocol === 'file:') {
+        const url = new URL(location.href);
+        url.searchParams.set('mosque', slug);
+        location.href = url.toString();
+        return;
+      }
+      location.href = '/prayer-tablet/' + encodeURIComponent(slug);
+    };
+  } catch (err) {
+    select.innerHTML = '<option value="">Mosques unavailable</option>';
+  }
+}
+
 function applyMosqueInfo(mosque) {
   const miName = document.getElementById('mi-name');
   const miInfo = document.getElementById('mobile-info');
@@ -1350,6 +1420,7 @@ async function init() {
 
   async function launch(mosque, tod, tom) {
     applyMosqueInfo(mosque);
+    populateMosqueSelector(slug || mosque.slug || '');
 
     // Ticker init
     requestAnimationFrame(() => {
