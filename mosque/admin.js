@@ -540,15 +540,55 @@ function showAddAnnouncement() {
 function resetAnnForm() {
   editingAnnouncementId = null;
   editingAnnouncementIndex = -1;
-  ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-order', 'new-ann-date'].forEach(function(id) { byId(id).value = ''; });
+  ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-date'].forEach(function(id) { byId(id).value = ''; });
   byId('new-ann-day').value = '';
   byId('new-ann-tag').value = 'Class';
   byId('new-ann-active').value = 'true';
   byId('ann-submit-btn').textContent = 'Post';
   byId('add-ann-form').style.display = 'none';
 }
+function announcementTimeMins(value) {
+  var time = normaliseTime(value);
+  var m = String(time || '').match(/^(\d{1,2}):(\d{2})$/);
+  return m ? Number(m[1]) * 60 + Number(m[2]) : 9999;
+}
+function announcementDate(value) {
+  var parsed = parseAdminDate(value);
+  if (!parsed || !/^\d{4}-\d{2}-\d{2}$/.test(parsed)) return null;
+  var parts = parsed.split('-').map(Number);
+  return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+function announcementDayDate(day) {
+  var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var idx = days.indexOf(day);
+  if (idx === -1) return null;
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var diff = (idx - today.getDay() + 7) % 7;
+  var date = new Date(today);
+  date.setDate(date.getDate() + diff);
+  return date;
+}
+function announcementSortDate(row) {
+  if (row.day === 'Daily') return new Date(0);
+  return announcementDate(row.start_date || row.date) || announcementDayDate(row.day) || new Date(8640000000000000);
+}
+function sortAnnouncements() {
+  currentData.announcements.sort(function(a, b) {
+    var activeDiff = (isAnnouncementActive(b) ? 1 : 0) - (isAnnouncementActive(a) ? 1 : 0);
+    if (activeDiff) return activeDiff;
+    var dailyDiff = (a.day === 'Daily' ? 0 : 1) - (b.day === 'Daily' ? 0 : 1);
+    if (dailyDiff) return dailyDiff;
+    var dateDiff = announcementSortDate(a) - announcementSortDate(b);
+    if (dateDiff) return dateDiff;
+    var timeDiff = announcementTimeMins(a.time) - announcementTimeMins(b.time);
+    if (timeDiff) return timeDiff;
+    return String(a.title || '').localeCompare(String(b.title || ''));
+  });
+}
 function renderAnnouncements() {
   var el = byId('announcements-list');
+  sortAnnouncements();
   if (!currentData.announcements.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px">No classes or events yet.</p>'; return; }
   el.innerHTML = currentData.announcements.map(function(a, i) {
     return '<div class="ann-item"><div class="ann-body"><div class="ann-title">' + esc(a.title) +
@@ -584,7 +624,6 @@ function readAnnouncementPayload() {
     description: byId('new-ann-desc').value.trim(),
     day: byId('new-ann-day').value || null,
     time: byId('new-ann-time').value || null,
-    sort_order: byId('new-ann-order').value ? Number(byId('new-ann-order').value) : null,
     start_date: parseAdminDate(byId('new-ann-date').value),
     active: byId('new-ann-active').value === 'true'
   };
@@ -644,7 +683,6 @@ function parseBulkAnnouncementRows(text) {
       start_date: parseAdminDate(value(cols.startDate)),
       weeks: value(cols.weeks) || null,
       time: normaliseTime(value(cols.time)) || null,
-      sort_order: currentData.announcements.length + i + 1,
       active: true
     };
     return payload.title ? payload : null;
@@ -681,7 +719,6 @@ function editAnnouncement(idx) {
   byId('new-ann-desc').value = a.description || '';
   byId('new-ann-day').value = a.day || '';
   byId('new-ann-time').value = a.time || '';
-  byId('new-ann-order').value = a.sort_order || '';
   byId('new-ann-date').value = formatAdminDate(a.start_date || a.date || '');
   byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
   byId('ann-submit-btn').textContent = 'Save';
