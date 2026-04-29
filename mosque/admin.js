@@ -576,10 +576,11 @@ function formatAdminDate(value) {
 function readAnnouncementPayload() {
   var title = byId('new-ann-title').value.trim();
   if (!title) { alert('Title required'); return null; }
+  var tag = byId('new-ann-tag').value;
   return {
     title: title,
-    tag: byId('new-ann-tag').value,
-    category: byId('new-ann-tag').value,
+    tag: tag,
+    category: tag.toLowerCase(),
     description: byId('new-ann-desc').value.trim(),
     day: byId('new-ann-day').value || null,
     time: byId('new-ann-time').value || null,
@@ -637,7 +638,7 @@ function parseBulkAnnouncementRows(text) {
       mosque_id: currentMosque.id,
       title: value(cols.title),
       tag: value(cols.tag) || 'Event',
-      category: value(cols.tag) || 'Event',
+      category: (value(cols.tag) || 'Event').toLowerCase(),
       description: value(cols.desc),
       day: value(cols.day) || null,
       start_date: parseAdminDate(value(cols.startDate)),
