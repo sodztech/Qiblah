@@ -30,6 +30,8 @@
   --cream3:   #1a2d45;
   --dark:     #101e2f;
   --white:    #eeebe5;
+  --card:     #101a28;
+  --card2:    #142030;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -138,19 +140,58 @@ nav {
   text-decoration: none; transition: all 0.2s;
 }
 .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-.hero-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
-  padding: 22px; box-shadow: 0 18px 50px rgba(0,0,0,0.20);
+.hero-card { position: relative; }
+.product-preview {
+  background: linear-gradient(180deg, rgba(26,45,69,0.96), rgba(16,30,47,0.96));
+  border: 1px solid var(--border); border-radius: 20px; padding: 16px;
+  box-shadow: 0 26px 70px rgba(0,0,0,0.30); overflow: hidden;
 }
-.feature-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+.preview-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.preview-brand { display: flex; align-items: center; gap: 9px; font-weight: 800; color: var(--text); }
+.preview-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 5px rgba(200,164,110,0.10); }
+.preview-tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.preview-tab {
+  font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px solid var(--border2); border-radius: 999px; padding: 5px 9px; background: rgba(255,255,255,0.03);
+}
+.preview-tab.active { color: #141007; background: var(--gold); border-color: var(--gold); }
+.display-preview {
+  border: 1px solid rgba(200,164,110,0.34); border-radius: 15px; overflow: hidden; background: #102033;
+}
+.display-head {
+  display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 10px;
+  padding: 11px 14px; border-bottom: 1px solid var(--border2);
+  color: rgba(238,235,229,0.70); font-size: 10px; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.display-head span:not(:first-child) { text-align: center; }
+.display-row {
+  display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 10px; align-items: center;
+  padding: 15px 14px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.display-row:last-child { border-bottom: 0; }
+.display-row.active { background: rgba(200,164,110,0.06); border-left: 3px solid var(--gold); }
+.display-prayer { font-weight: 800; color: var(--text); }
+.display-time { text-align: center; color: rgba(238,235,229,0.72); font-variant-numeric: tabular-nums; }
+.display-time.strong { color: var(--text); font-weight: 900; }
+.display-row.active .display-prayer, .display-row.active .display-time.strong { color: var(--gold); }
+.preview-footer {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px;
+}
+.preview-stat {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border2); border-radius: 12px; padding: 12px;
+}
+.preview-stat strong { display: block; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.preview-stat span { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+.feature-strip {
+  max-width: 1120px; margin: -28px auto 0; padding: 0 24px 48px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
 }
 .feature-card {
-  background: var(--surface2); border: 1px solid var(--border2); border-radius: 12px;
-  padding: 14px; min-height: 124px;
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 14px;
+  padding: 16px; min-height: 136px;
 }
 .feature-icon {
-  width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
   background: rgba(200,164,110,0.12); color: var(--gold); margin-bottom: 10px;
 }
 .feature-icon svg { width: 17px; height: 17px; }
@@ -401,7 +442,9 @@ footer {
   .signup-form { padding: 28px 22px; }
   .hero { grid-template-columns: 1fr; padding: 92px 16px 44px; }
   .hero-copy, .hero-card { padding: 20px; }
-  .feature-grid { grid-template-columns: 1fr; }
+  .feature-strip { grid-template-columns: 1fr; margin-top: 0; padding: 0 16px 36px; }
+  .preview-footer { grid-template-columns: 1fr; }
+  .display-head, .display-row { grid-template-columns: 1.1fr 1fr 1fr 1fr; padding-left: 10px; padding-right: 10px; }
 }
 
 
@@ -440,7 +483,10 @@ footer {
     Qiblah
   </a>
   <div class="nav-links">
+    <a class="nav-link" href="#features">Features</a>
+    <a class="nav-link" href="#how">How it works</a>
     <a class="nav-link" href="#signup">Register</a>
+    <a class="nav-cta" href="#signup">Get listed</a>
   </div>
 </nav>
 
@@ -469,32 +515,51 @@ footer {
   </div>
 
   <div class="hero-card">
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 20h16v-9l-2-1.5V6h-3v1.25L12 5 4 11v9zm3-2v-5.5l5-3.75 5 3.75V18h-3v-4h-4v4H7z"/></svg></div>
-        <strong>Mosque profile</strong><span>Address, contact details, facilities, sisters area, Jummah and public listing.</span>
+    <div class="product-preview">
+      <div class="preview-top">
+        <div class="preview-brand"><span class="preview-dot"></span> Qiblah Display</div>
+        <div class="preview-tabs"><span class="preview-tab">Public app</span><span class="preview-tab">Admin</span><span class="preview-tab active">TV</span></div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm13 8H4v10h16V10z"/></svg></div>
-        <strong>Prayer times</strong><span>Daily jamaah times, yearly CSV uploads and tomorrow's Fajr.</span>
+      <div class="display-preview">
+        <div class="display-head"><span></span><span>Begins</span><span>Jamaah</span><span>Tomorrow</span></div>
+        <div class="display-row active"><div class="display-prayer">Fajr</div><div class="display-time">3:58</div><div class="display-time strong">4:28</div><div class="display-time">4:25</div></div>
+        <div class="display-row"><div class="display-prayer">Zuhr</div><div class="display-time">1:03</div><div class="display-time strong">1:30</div><div class="display-time">1:30</div></div>
+        <div class="display-row"><div class="display-prayer">Asr</div><div class="display-time">5:00</div><div class="display-time strong">6:30</div><div class="display-time">6:30</div></div>
+        <div class="display-row"><div class="display-prayer">Isha</div><div class="display-time">9:35</div><div class="display-time strong">10:00</div><div class="display-time">10:00</div></div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v12H3V5zm2 2v8h14V7H5zm4 12h6v2H9v-2z"/></svg></div>
-        <strong>TV display screen</strong><span>Full-screen display for prayer rows, events, ticker and Iqamah countdown.</span>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg></div>
-        <strong>Announcements</strong><span>Publish classes, events, notices and community services from Mosque Admin.</span>
+      <div class="preview-footer">
+        <div class="preview-stat"><strong>365</strong><span>Timetable days</span></div>
+        <div class="preview-stat"><strong>TV</strong><span>Display link</span></div>
+        <div class="preview-stat"><strong>Live</strong><span>Announcements</span></div>
       </div>
     </div>
   </div>
 </section>
 
+<div class="feature-strip" id="features">
+  <div class="feature-card">
+    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 20h16v-9l-2-1.5V6h-3v1.25L12 5 4 11v9zm3-2v-5.5l5-3.75 5 3.75V18h-3v-4h-4v4H7z"/></svg></div>
+    <strong>Mosque profile</strong><span>Address, contact details, facilities, sisters area, Jummah and public listing.</span>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm13 8H4v10h16V10z"/></svg></div>
+    <strong>Prayer times</strong><span>Daily jamaah times, yearly CSV uploads and tomorrow's Fajr.</span>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v12H3V5zm2 2v8h14V7H5zm4 12h6v2H9v-2z"/></svg></div>
+    <strong>TV display screen</strong><span>Full-screen display for prayer rows, events, ticker and Iqamah countdown.</span>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4zm3 4v2h10V8H7zm0 4v2h7v-2H7z"/></svg></div>
+    <strong>Announcements</strong><span>Publish classes, events, notices and community services from Mosque Admin.</span>
+  </div>
+</div>
+
 
 
 <!-- HOW IT WORKS -->
 <div style="height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
-<section class="how">
+<section class="how" id="how">
   <div class="section-inner">
     <span class="section-tag reveal">Simple & Free</span>
     <h2 class="section-title reveal">Everything your<br>mosque needs</h2>
