@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qiblah Prayer Times Embed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#101e2f;
+  --surface:#142030;
+  --surface2:#1a2d45;
+  --gold:#c8a46e;
+  --gold2:#e0be78;
+  --text:#eeebe5;
+  --muted:rgba(238,235,229,.62);
+  --border:rgba(255,255,255,.08);
+  --gold-border:rgba(200,164,110,.35);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { min-height:100%; background:transparent; font-family:Outfit, sans-serif; color:var(--text); }
+body { padding:0; }
+.embed { background:var(--surface); border:1px solid var(--gold-border); border-radius:14px; overflow:hidden; width:100%; color:var(--text); }
+.head { background:rgba(200,164,110,.06); border-bottom:1px solid var(--border); padding:13px 16px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.name { font-size:14px; font-weight:700; line-height:1.2; }
+.area { font-size:11px; color:var(--muted); margin-top:2px; }
+.next { text-align:right; flex-shrink:0; }
+.next-label { font-size:9px; color:var(--muted); font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+.next-time { font-size:16px; color:var(--gold); font-weight:800; font-variant-numeric:tabular-nums; margin-top:2px; }
+.bar { height:2px; background:rgba(255,255,255,.06); }
+.bar span { display:block; height:2px; width:35%; background:linear-gradient(90deg,var(--gold),var(--gold2)); }
+.small-grid { display:grid; grid-template-columns:repeat(5,1fr); }
+.small-cell { padding:11px 4px; text-align:center; border-right:1px solid var(--border); }
+.small-cell:last-child { border-right:none; }
+.small-name { font-size:9px; font-weight:800; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
+.small-time { font-size:12px; font-weight:600; }
+.large .head { padding:16px 18px; }
+.large .name { font-size:18px; }
+.large-table { display:grid; grid-template-columns:1.05fr 1fr 1fr 1fr; }
+.th { padding:10px 12px; font-size:10px; font-weight:800; color:var(--muted); letter-spacing:.11em; text-transform:uppercase; text-align:center; background:rgba(255,255,255,.02); }
+.th:first-child { text-align:left; }
+.td { padding:12px; border-top:1px solid var(--border); text-align:center; color:rgba(238,235,229,.74); font-size:14px; }
+.prayer { text-align:left; color:var(--text); font-weight:800; }
+.jamaah { color:var(--gold); font-weight:800; }
+.jummah { display:flex; justify-content:space-between; gap:16px; border-top:1px solid var(--border); padding:12px 16px; color:var(--gold); font-size:13px; font-weight:800; }
+.error { padding:18px; color:var(--muted); background:var(--surface); border:1px solid var(--gold-border); border-radius:14px; font-size:14px; }
+@media (max-width:520px) {
+  .large-table { grid-template-columns:1fr; }
+  .th { display:none; }
+  .td { display:grid; grid-template-columns:90px 1fr; gap:10px; text-align:left; padding:9px 12px; }
+  .prayer { background:rgba(200,164,110,.05); color:var(--gold); }
+  .prayer::before { content:'Prayer'; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+  .td.begins::before { content:'Begins'; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+  .td.jamaah::before { content:"Jama'ah"; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+  .td.tomorrow::before { content:'Tomorrow'; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+  .small-grid { grid-template-columns:repeat(5,64px); overflow-x:auto; }
+}
+</style>
+</head>
+<body>
+<div id="root" class="error">Loading prayer times...</div>
+<script>
+var SB_URL = 'https://bfevwoykvnogmgxdkxdj.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZXZ3b3lrdm5vZ21neGRreGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDgwNjEsImV4cCI6MjA5MTcyNDA2MX0.8I--P9h_jYsSlvkthF76O1m0mcFkgI8mcRmKVgXOHAk';
+var PRAYERS = [
+  ['fajr', 'Fajr'],
+  ['zuhr', 'Zuhr'],
+  ['asr', 'Asr'],
+  ['maghrib', 'Maghrib'],
+  ['isha', 'Isha']
+];
+function esc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, function(c) {
+    return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c];
+  });
+}
+function iso(offset) {
+  var d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function get(path) {
+  return fetch(SB_URL + '/rest/v1/' + path, {
+    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }
+  }).then(function(r) { return r.ok ? r.json() : []; }).catch(function() { return []; });
+}
+function mins(t) {
+  if (!t) return 99999;
+  var s = String(t).trim();
+  var ap = s.match(/^(\d{1,2}):(\d{2})\s*([AP]M)$/i);
+  if (ap) {
+    var h = Number(ap[1]);
+    if (ap[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+    if (ap[3].toUpperCase() === 'AM' && h === 12) h = 0;
+    return h * 60 + Number(ap[2]);
+  }
+  var m = s.match(/^(\d{1,2}):(\d{2})/);
+  return m ? Number(m[1]) * 60 + Number(m[2]) : 99999;
+}
+function nextPrayer(row) {
+  if (!row) return { label:'Next Jamaah', time:'--:--' };
+  var now = new Date();
+  var nowM = now.getHours() * 60 + now.getMinutes();
+  for (var i = 0; i < PRAYERS.length; i++) {
+    var key = PRAYERS[i][0];
+    var t = row[key + '_jamaah'];
+    if (t && nowM < mins(t)) return { label:PRAYERS[i][1], time:t };
+  }
+  return { label:'Fajr', time:row.fajr_jamaah || '--:--' };
+}
+function small(mosque, today) {
+  var next = nextPrayer(today);
+  return '<div class="embed small">' +
+    '<div class="head"><div><div class="name">' + esc(mosque.name || 'Mosque') + '</div><div class="area">' + esc(mosque.area || '') + '</div></div>' +
+    '<div class="next"><div class="next-label">' + esc(next.label) + '</div><div class="next-time">' + esc(next.time) + '</div></div></div>' +
+    '<div class="bar"><span></span></div>' +
+    '<div class="small-grid">' + PRAYERS.map(function(p) {
+      return '<div class="small-cell"><div class="small-name">' + p[1] + '</div><div class="small-time">' + esc(today[p[0] + '_jamaah'] || '--') + '</div></div>';
+    }).join('') + '</div></div>';
+}
+function large(mosque, today, tomorrow) {
+  var rows = PRAYERS.map(function(p) {
+    return '<div class="td prayer">' + p[1] + '</div>' +
+      '<div class="td begins">' + esc(today[p[0] + '_begins'] || '--') + '</div>' +
+      '<div class="td jamaah">' + esc(today[p[0] + '_jamaah'] || '--') + '</div>' +
+      '<div class="td tomorrow">' + esc((tomorrow && tomorrow[p[0] + '_jamaah']) || '--') + '</div>';
+  }).join('');
+  var jummah = [mosque.jummah, mosque.jummah2, mosque.jummah3].filter(Boolean).join(' · ') || '--';
+  return '<div class="embed large">' +
+    '<div class="head"><div><div class="name">' + esc(mosque.name || 'Mosque') + '</div><div class="area">' + esc(mosque.address || mosque.area || '') + '</div></div></div>' +
+    '<div class="large-table"><div class="th">Prayer</div><div class="th">Begins</div><div class="th">Jamaah</div><div class="th">Tomorrow</div>' + rows + '</div>' +
+    '<div class="jummah"><span>Jummah</span><span>' + esc(jummah) + '</span></div>' +
+  '</div>';
+}
+async function init() {
+  var params = new URLSearchParams(location.search);
+  var slug = params.get('mosque') || params.get('slug') || '';
+  var type = params.get('type') === 'large' ? 'large' : 'small';
+  var root = document.getElementById('root');
+  if (!slug) { root.textContent = 'Missing mosque.'; return; }
+  var mosques = await get('mosques?slug=eq.' + encodeURIComponent(slug) + '&select=id,name,address,area,jummah,jummah2,jummah3&limit=1');
+  var mosque = mosques && mosques[0];
+  if (!mosque) { root.textContent = 'Mosque not found.'; return; }
+  var rows = await get('prayer_timetables?mosque_id=eq.' + mosque.id + '&date=in.(' + iso(0) + ',' + iso(1) + ')&select=*&order=date');
+  var today = rows.find(function(r) { return r.date === iso(0); }) || {};
+  var tomorrow = rows.find(function(r) { return r.date === iso(1); }) || {};
+  root.className = '';
+  root.innerHTML = type === 'large' ? large(mosque, today, tomorrow) : small(mosque, today);
+}
+init();
+</script>
+</body>
+</html>

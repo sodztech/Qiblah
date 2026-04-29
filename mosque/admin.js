@@ -9,6 +9,7 @@ var currentData = { services: [], announcements: [], times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
+var embedType = 'small';
 
 function sbFetch(path, opts) {
   opts = opts || {};
@@ -532,17 +533,65 @@ function deleteAnnouncement(idx) {
 
 function renderEmbed() {
   var slug = currentMosque && currentMosque.slug ? currentMosque.slug : '';
-  var displayUrl = new URL('../display.html', location.href);
-  displayUrl.searchParams.set('mosque', slug);
-  var url = displayUrl.href;
-  byId('ep-name').textContent = currentMosque.name || 'Mosque';
-  byId('ep-area').textContent = currentMosque.area || '';
+  var embedUrl = new URL('../embed.html', location.href);
+  embedUrl.searchParams.set('mosque', slug);
+  embedUrl.searchParams.set('type', embedType);
+  var url = embedUrl.href;
   var today = currentData.times[todayISO()] || {};
-  byId('ep-grid').innerHTML = PNAMES.map(function(p, i) {
-    return '<div style="padding:11px 4px;text-align:center' + (i < PNAMES.length - 1 ? ';border-right:1px solid rgba(255,255,255,0.06)' : '') + '"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">' + PLABELS[p] + '</div><div style="font-size:12px;font-weight:500;color:#eeebe5">' + esc(today[p + '_jamaah'] || '--') + '</div></div>';
-  }).join('');
-  byId('embed-code-block').textContent = '<iframe src="' + url + '" style="width:100%;min-height:620px;border:0" loading="lazy"></iframe>';
+  var tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  var tomorrow = currentData.times[dateISO(tomorrowDate)] || {};
+  var preview = byId('embed-preview');
+  if (byId('embed-small-btn')) byId('embed-small-btn').classList.toggle('active', embedType === 'small');
+  if (byId('embed-large-btn')) byId('embed-large-btn').classList.toggle('active', embedType === 'large');
+
+  if (embedType === 'large') {
+    preview.style.maxWidth = '620px';
+    preview.innerHTML =
+      '<div style="padding:16px;border-bottom:1px solid rgba(255,255,255,0.08)">' +
+        '<div style="font-size:18px;font-weight:700;color:#eeebe5">' + esc(currentMosque.name || 'Mosque') + '</div>' +
+        '<div style="font-size:12px;color:rgba(238,235,229,0.55);margin-top:3px">' + esc(currentMosque.area || currentMosque.address || '') + '</div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;gap:0">' +
+        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase">Prayer</div>' +
+        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase;text-align:center">Begins</div>' +
+        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase;text-align:center">Jama\'ah</div>' +
+        '<div style="padding:10px 12px;font-size:10px;font-weight:800;color:rgba(238,235,229,0.55);letter-spacing:.12em;text-transform:uppercase;text-align:center">Tomorrow</div>' +
+        PNAMES.map(function(p) {
+          return '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);font-weight:700;color:#eeebe5">' + PLABELS[p] + '</div>' +
+            '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;color:rgba(238,235,229,0.72)">' + esc(today[p + '_begins'] || '--') + '</div>' +
+            '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;font-weight:700;color:#c8a46e">' + esc(today[p + '_jamaah'] || '--') + '</div>' +
+            '<div style="padding:12px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;color:rgba(238,235,229,0.72)">' + esc(tomorrow[p + '_jamaah'] || '--') + '</div>';
+        }).join('') +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.08);padding:12px 16px;color:#c8a46e;font-weight:700;font-size:13px">' +
+        '<span>Jummah</span><span>' + esc([currentMosque.jummah, currentMosque.jummah2, currentMosque.jummah3].filter(Boolean).join(' · ') || '--') + '</span>' +
+      '</div>';
+  } else {
+    preview.style.maxWidth = '440px';
+    preview.innerHTML =
+      '<div style="background:rgba(200,164,110,0.06);padding:13px 16px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.07)">' +
+        '<div><div style="font-size:14px;font-weight:700;color:#eeebe5">' + esc(currentMosque.name || 'Mosque') + '</div>' +
+        '<div style="font-size:11px;color:rgba(238,235,229,0.5);margin-top:1px">' + esc(currentMosque.area || '') + '</div></div>' +
+        '<div style="text-align:right"><div style="font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(238,235,229,0.5);text-transform:uppercase;margin-bottom:1px">Next Jama\'ah</div>' +
+        '<div style="font-size:16px;font-weight:700;color:#c8a46e;font-variant-numeric:tabular-nums">--:--</div></div>' +
+      '</div>' +
+      '<div style="height:2px;background:rgba(255,255,255,0.06)"><div style="height:2px;background:linear-gradient(90deg,#c8a46e,#e0be78);width:35%"></div></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(5,1fr)">' +
+        PNAMES.map(function(p, i) {
+          return '<div style="padding:11px 4px;text-align:center' + (i < PNAMES.length - 1 ? ';border-right:1px solid rgba(255,255,255,0.06)' : '') + '"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(238,235,229,0.5);margin-bottom:4px">' + PLABELS[p] + '</div><div style="font-size:12px;font-weight:500;color:#eeebe5">' + esc(today[p + '_jamaah'] || '--') + '</div></div>';
+        }).join('') +
+      '</div>';
+  }
+  var minHeight = embedType === 'large' ? '540px' : '190px';
+  byId('embed-code-block').textContent = '<iframe src="' + url + '" style="width:100%;min-height:' + minHeight + ';border:0" loading="lazy"></iframe>';
 }
+
+function setEmbedType(type) {
+  embedType = type === 'large' ? 'large' : 'small';
+  renderEmbed();
+}
+window.setEmbedType = setEmbedType;
 function doLogout() {
   currentMosque = null;
   currentAdminId = null;

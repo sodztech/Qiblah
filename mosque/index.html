@@ -340,6 +340,19 @@ select.inline-sel:focus { border-color: var(--gold-border); }
 }
 .icon-btn.text-btn { width: auto; padding: 0 10px; font-size: 12px; font-weight: 700; }
 .icon-btn:hover { background: rgba(200,164,110,0.18); }
+.embed-options {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 5px; margin-bottom: 16px;
+}
+.embed-option {
+  background: transparent; border: 1px solid transparent; color: var(--text2);
+  border-radius: 8px; padding: 9px 10px; cursor: pointer;
+  font-family: inherit; font-size: 12px; font-weight: 700;
+}
+.embed-option.active {
+  background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold);
+}
 
 @media (max-width: 900px) {
   body { overflow-x: hidden; }
@@ -480,6 +493,7 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     padding: 10px 12px;
   }
   #embed-preview { max-width: 100% !important; }
+  .embed-options { grid-template-columns: 1fr; }
   #ep-grid { grid-template-columns: repeat(5,minmax(48px,1fr)) !important; overflow-x: auto; }
   #embed-code-block {
     font-size: 10px !important;
@@ -806,6 +820,10 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     <div class="card">
       <div class="card-head"><span class="card-title">Prayer Times Widget</span></div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">Embed a live prayer times widget on your mosque website.</p>
+      <div class="embed-options">
+        <button class="embed-option active" id="embed-small-btn" onclick="setEmbedType('small')">Small widget</button>
+        <button class="embed-option" id="embed-large-btn" onclick="setEmbedType('large')">Large prayer card</button>
+      </div>
       <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:20px;display:flex;justify-content:center">
         <div id="embed-preview" style="font-family:'Outfit',sans-serif;background:#142030;border:1px solid rgba(200,164,110,0.35);border-radius:14px;overflow:hidden;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(0,0,0,0.4)">
           <div style="background:rgba(200,164,110,0.06);padding:13px 16px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.07)">
