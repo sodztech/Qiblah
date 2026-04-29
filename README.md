@@ -1,42 +1,129 @@
 # Qiblah
 
-A mosque finder and community app for Tower Hamlets, Newham and Redbridge.
+Qiblah is a local mosque and community platform for finding prayer times, Jummah times, services, classes and events. The public site is backed by Supabase and includes admin tools for mosque teams, a super admin area, embeddable widgets, and a TV display screen for digital signage.
 
-## Files
+Live site: https://qiblah.co.uk
+
+## Main Areas
+
+| Path | Purpose |
+|------|---------|
+| `/` | Public Qiblah app with mosque profiles, prayer times, services, classes and events |
+| `/register/` | Landing page for mosques to register interest |
+| `/mosque/` | Mosque admin dashboard |
+| `/admin/` | Super admin dashboard |
+| `/display/{mosque-slug}` | Live TV display for a mosque |
+| `/embed.html` | Embeddable mosque prayer card/widget |
+| `/institute/` | Institute profile page |
+| `/jumuah/` | Jummah finder page |
+| `/morning-adhkar/` | Morning adhkar page |
+| `/evening-adhkar/` | Evening adhkar page |
+| `/surah-kahf/` | Surah Kahf page |
+
+## Current Features
+
+- Public mosque profiles with prayer times, Jummah times, facilities, services, classes and events.
+- Mosque cards use clean mosque icon branding and do not show AM/PM on prayer times.
+- Service times display in 12-hour AM/PM format.
+- Prayer countdown logic follows the same flow as the local mosque countdown: begins first, then Jamaah.
+- Super admin dashboard for managing mosques and core site data.
+- Mosque admin dashboard for mosque teams to manage their own profile, prayer timetable, Jummah times, services, announcements, classes/events, embed widgets, TV ticker and display colours.
+- Mosque admin stays logged in after refresh unless the user signs out.
+- TV display screen with prayer timetable, next salah, sunrise, Jummah, classes/events carousel, ticker messages and live refresh.
+- Display settings allow mosque admins to change background, panel, accent/tag and text colours with preview and reset-to-default controls.
+- Embed widget includes small card and larger prayer times card options.
+- Register page has updated Qiblah branding and a shorter landing-page style layout.
+
+## Data And Refresh
+
+The app uses Supabase REST endpoints directly from the frontend.
+
+The TV display refreshes live mosque data automatically every 5 minutes, including prayer times, Jummah times, classes/events, ticker messages and display colour settings. This avoids needing to refresh the browser manually on digital signage.
+
+Ticker messages and display colour settings are stored in the existing announcements data so mosque admins can manage everything from the same dashboard.
+
+## Mosque Admin
+
+Mosque admin is available at:
+
+```text
+https://qiblah.co.uk/mosque/
+```
+
+Mosque admins log in with their mosque ID/slug and PIN. After login, refresh keeps them in the dashboard. Pressing sign out clears the saved session. The PIN is not stored locally.
+
+Admin sections include:
+
+- Prayer timetable
+- Jummah times
+- Mosque profile and facilities
+- Services
+- Announcements
+- Classes and events
+- Embed widgets
+- TV display preview
+- TV ticker
+- Display colour settings
+- Raspberry Pi/display setup guide
+
+## TV Display
+
+Each mosque can use a live display URL:
+
+```text
+https://qiblah.co.uk/display/{mosque-slug}
+```
+
+Example:
+
+```text
+https://qiblah.co.uk/display/dar-al-arqam
+```
+
+This is designed for TV screens and Raspberry Pi kiosk setups. Keep the display page open and it will refresh data automatically.
+
+## Raspberry Pi Display Setup
+
+Recommended approach:
+
+1. Install Raspberry Pi OS.
+2. Connect the Pi to the mosque TV.
+3. Open Chromium in kiosk mode.
+4. Load the mosque display URL.
+5. Set the Pi to launch Chromium on startup.
+
+The display URL can also be opened on any browser, smart TV browser, signage player or mini PC.
+
+## Deployment
+
+The project is a static frontend and can be deployed on GitHub Pages or another static host.
+
+Important files:
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Main app (home, mosques, services, Jummah times) |
-| `mosque-admin.html` | Mosque admin portal (prayer times, profile, services, announcements) |
+| `index.html` | Main public app |
+| `register/index.html` | Register landing page |
+| `mosque/index.html` | Mosque admin UI |
+| `mosque/admin.js` | Mosque admin logic |
+| `admin/index.html` | Super admin dashboard |
+| `display.html` | TV display screen |
+| `embed.html` | Embeddable widget |
+| `CNAME` | Custom domain config |
+| `vercel.json` | Routing support for clean URLs |
+| `sw.js` | Service worker |
+| `manifest.json` | PWA metadata |
 
-## Deploy to GitHub Pages
+## GitHub Pages
 
-1. Create a repo named `yourusername.github.io`
-2. Upload both files
-3. Go to Settings → Pages → Source: `main` branch, `/ (root)`
-4. Live at `https://yourusername.github.io`
+1. Push changes to the `main` branch.
+2. In GitHub, go to Settings -> Pages.
+3. Set source to `main` branch and `/ (root)`.
+4. Make sure `CNAME` points to `qiblah.co.uk` if using the live domain.
 
-## Admin Portal
+## Notes
 
-Access at `https://yourusername.github.io/mosque-admin.html`
-
-Demo credentials:
-- `east-london-mosque` / `1234`
-- `dar-al-arqam` / `2345`
-- `markazi-masjid` / `3456`
-- `bow-central` / `4567`
-- `redbridge-islamic-centre` / `5678`
-
-## Embed in Squarespace
-
-Add a Code Block and paste:
-
-```html
-<iframe src="https://yourusername.github.io" width="100%" style="min-height:100vh;border:none" frameborder="0"></iframe>
-```
-
-## Mosques covered
-
-- **Tower Hamlets** — 55 mosques across Bethnal Green, Bow, Docklands, Limehouse, Mile End, Poplar, Shadwell, Shoreditch, Stepney, Wapping, Whitechapel
-- **Newham** — 40 mosques across Forest Gate, East Ham, Plaistow, Stratford, Canning Town
-- **Redbridge** — 23 mosques across Ilford, Seven Kings, Newbury Park, Woodford, Chadwell Heath
+- Do not commit private service-role keys.
+- The public Supabase anon key is used by the frontend.
+- Keep Supabase row-level security and table policies aligned with the admin and public read/write flows.
+- When changing display or admin behaviour, test both local file URLs and deployed clean URLs.
