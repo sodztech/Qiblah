@@ -712,8 +712,6 @@ select.inline-sel:focus { border-color: var(--gold-border); }
           <div class="field"><label>Jummah 2</label><input type="text" id="jummah-time-2" placeholder="14:15"></div>
           <div class="field"><label>Jummah 3</label><input type="text" id="jummah-time-3" placeholder="15:00"></div>
         </div>
-        <div class="field"><label>Language</label><input type="text" id="jummah-lang" placeholder="e.g. English, Bengali"></div>
-        <div class="field"><label>Notes (optional)</label><textarea id="jummah-notes" placeholder="e.g. Sisters welcome." style="min-height:60px"></textarea></div>
         <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveJummah()">Save Jummah</button></div>
       </div>
     </div>
@@ -730,7 +728,6 @@ select.inline-sel:focus { border-color: var(--gold-border); }
         <div class="field"><label>Website</label><input type="text" id="profile-website" placeholder="https://..."></div>
       </div>
       <div class="field"><label>Email</label><input type="email" id="profile-email"></div>
-      <div class="field"><label>About</label><textarea id="profile-about"></textarea></div>
       <div class="field"><label>Facilities (comma separated)</label><input type="text" id="profile-facilities" placeholder="Parking, Sisters Section, Wudu Area"></div>
       <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveProfile()">Save Profile</button></div>
     </div>
@@ -792,9 +789,8 @@ select.inline-sel:focus { border-color: var(--gold-border); }
         </div>
         <div class="row-3">
           <div class="field" style="margin-bottom:10px"><label>Start Date</label><input type="text" id="new-ann-date" placeholder="DD/MM/YYYY"></div>
-          <div class="field" style="margin-bottom:10px"><label>Weeks (course)</label><input type="number" id="new-ann-weeks" placeholder="e.g. 6" min="1"></div>
-          <div class="field" style="margin-bottom:10px"><label>Show on Display</label>
-            <select id="new-ann-active"><option value="true">Yes — active</option><option value="false">No — hidden</option></select>
+          <div class="field" style="margin-bottom:10px"><label>Visible on Qiblah</label>
+            <select id="new-ann-active"><option value="true">Yes — visible</option><option value="false">No — hidden</option></select>
           </div>
         </div>
         <div style="display:flex;gap:8px">

@@ -341,7 +341,6 @@ function renderProfile() {
   byId('profile-phone').value = currentMosque.phone || '';
   byId('profile-website').value = currentMosque.website || '';
   byId('profile-email').value = currentMosque.email || '';
-  byId('profile-about').value = currentMosque.about || '';
   byId('profile-facilities').value = Array.isArray(currentMosque.facilities) ? currentMosque.facilities.join(', ') : (currentMosque.facilities || '');
   renderJummahFields();
 }
@@ -352,7 +351,6 @@ function saveProfile() {
     phone: byId('profile-phone').value.trim(),
     website: byId('profile-website').value.trim(),
     email: byId('profile-email').value.trim(),
-    about: byId('profile-about').value.trim(),
     facilities: byId('profile-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean)
   };
   showSaveStatus('Saving profile...', false);
@@ -432,7 +430,7 @@ function showAddAnnouncement() {
 function resetAnnForm() {
   editingAnnouncementId = null;
   editingAnnouncementIndex = -1;
-  ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-order', 'new-ann-date', 'new-ann-weeks'].forEach(function(id) { byId(id).value = ''; });
+  ['new-ann-title', 'new-ann-desc', 'new-ann-time', 'new-ann-order', 'new-ann-date'].forEach(function(id) { byId(id).value = ''; });
   byId('new-ann-day').value = '';
   byId('new-ann-tag').value = 'Class';
   byId('new-ann-active').value = 'true';
@@ -477,7 +475,6 @@ function readAnnouncementPayload() {
     time: byId('new-ann-time').value || null,
     sort_order: byId('new-ann-order').value ? Number(byId('new-ann-order').value) : null,
     start_date: parseAdminDate(byId('new-ann-date').value),
-    weeks: byId('new-ann-weeks').value ? Number(byId('new-ann-weeks').value) : null,
     active: byId('new-ann-active').value === 'true'
   };
 }
@@ -513,7 +510,6 @@ function editAnnouncement(idx) {
   byId('new-ann-time').value = a.time || '';
   byId('new-ann-order').value = a.sort_order || '';
   byId('new-ann-date').value = formatAdminDate(a.start_date || a.date || '');
-  byId('new-ann-weeks').value = a.weeks || '';
   byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
   byId('ann-submit-btn').textContent = 'Save';
   byId('add-ann-form').style.display = 'block';
