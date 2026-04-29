@@ -1090,6 +1090,7 @@
         <div class="tablet-audio-time" id="quran-audio-time">00:00 / 00:00</div>
       </div>
       <audio id="quran-audio" preload="auto" playsinline></audio>
+      <audio id="athan-audio" preload="auto" playsinline src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
     </section>
 
     <div class="tablet-action-dock" aria-label="Tablet actions">
@@ -1134,6 +1135,7 @@ const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi
 const PNAMES  = ['fajr','zuhr','asr','maghrib','isha'];
 const PLABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
 const QURAN_API = 'https://api.quran.com/api/v4';
+const ATHAN_AUDIO_URL = 'https://www.islamcan.com/audio/adhan/azan1.mp3';
 const QURAN_FALLBACK_CHAPTERS = [
   { id: 1, name_simple: 'Al-Fatihah' },
   { id: 18, name_simple: 'Al-Kahf' },
@@ -1191,6 +1193,8 @@ let liveAsrOpinion = 'first';
 let eventRotateTimer = null;
 let eventsSignature = '';
 let jummahRotateTimer = null;
+let athanSchedulerTimer = null;
+let athanResumeQuran = false;
 
 function getSlug() {
   const params = new URLSearchParams(location.search);
@@ -1489,6 +1493,7 @@ async function initQuranPlayer() {
   const reciterSelect = document.getElementById('quran-reciter-select');
   const seekEl = document.getElementById('quran-audio-seek');
   const volumeEl = document.getElementById('quran-audio-volume');
+  const athanAudio = document.getElementById('athan-audio');
   if (!audio || !playBtn || !surahSelect || !reciterSelect || !seekEl || !volumeEl) return;
 
   renderQuranSelects();
@@ -1497,6 +1502,7 @@ async function initQuranPlayer() {
   const startingVolume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) : 80;
   volumeEl.value = String(startingVolume);
   audio.volume = startingVolume / 100;
+  if (athanAudio) athanAudio.volume = startingVolume / 100;
   audio.addEventListener('loadedmetadata', updateQuranTime);
   audio.addEventListener('timeupdate', updateQuranTime);
   audio.addEventListener('play', () => setQuranPlayIcon(true));
@@ -1516,7 +1522,9 @@ async function initQuranPlayer() {
   volumeEl.addEventListener('input', () => {
     const value = Math.max(0, Math.min(100, Number(volumeEl.value) || 0));
     audio.volume = value / 100;
+    if (athanAudio) athanAudio.volume = value / 100;
     audio.muted = value === 0;
+    if (athanAudio) athanAudio.muted = value === 0;
     localStorage.setItem('quranTabletVolume', String(value));
   });
   surahSelect.addEventListener('change', () => {
@@ -1532,6 +1540,77 @@ async function initQuranPlayer() {
 
   await loadQuranLists();
   await loadQuranAudio();
+}
+
+function athanStorageKey(prayer, date = new Date()) {
+  return `qiblahAthanPlayed:${localDateKey(date)}:${prayer}`;
+}
+
+function wasAthanPlayed(prayer, date = new Date()) {
+  return localStorage.getItem(athanStorageKey(prayer, date)) === '1';
+}
+
+function markAthanPlayed(prayer, date = new Date()) {
+  localStorage.setItem(athanStorageKey(prayer, date), '1');
+}
+
+async function playAthanForPrayer(prayer) {
+  const athanAudio = document.getElementById('athan-audio');
+  if (!athanAudio) return;
+  const quranAudio = document.getElementById('quran-audio');
+  athanResumeQuran = Boolean(quranAudio && !quranAudio.paused && !quranAudio.ended);
+  if (quranAudio && athanResumeQuran) quranAudio.pause();
+
+  athanAudio.src = ATHAN_AUDIO_URL;
+  athanAudio.currentTime = 0;
+  athanAudio.muted = false;
+  try {
+    await athanAudio.play();
+  } catch (err) {
+    console.warn('Athan playback blocked by browser autoplay policy', err);
+  }
+}
+
+function initAthanPlayer() {
+  const athanAudio = document.getElementById('athan-audio');
+  if (!athanAudio) return;
+  athanAudio.src = ATHAN_AUDIO_URL;
+  athanAudio.addEventListener('ended', () => {
+    const quranAudio = document.getElementById('quran-audio');
+    if (athanResumeQuran && quranAudio && quranAudio.src) {
+      quranAudio.play().catch(() => {});
+    }
+    athanResumeQuran = false;
+  });
+
+  function primeAthanAudio() {
+    athanAudio.load();
+    document.removeEventListener('pointerdown', primeAthanAudio);
+    document.removeEventListener('keydown', primeAthanAudio);
+  }
+  document.addEventListener('pointerdown', primeAthanAudio, { once: true });
+  document.addEventListener('keydown', primeAthanAudio, { once: true });
+}
+
+function startAthanScheduler() {
+  if (athanSchedulerTimer) clearInterval(athanSchedulerTimer);
+  function tick() {
+    const tod = liveTod;
+    if (!tod) return;
+    const now = new Date();
+    const nowS = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    PNAMES.forEach(prayer => {
+      const begins = toMins(tod[`${prayer}_begins`]);
+      if (begins === null || wasAthanPlayed(prayer, now)) return;
+      const diff = nowS - begins * 60;
+      if (diff >= 0 && diff <= 45) {
+        markAthanPlayed(prayer, now);
+        playAthanForPrayer(prayer);
+      }
+    });
+  }
+  tick();
+  athanSchedulerTimer = setInterval(tick, 1000);
 }
 
 function fmt(s) {
@@ -1556,6 +1635,13 @@ function toMins(s) {
   const pl = s.match(/^(\d+):(\d+)$/);
   if (pl) return +pl[1] * 60 + +pl[2];
   return null;
+}
+
+function localDateKey(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function ukDate(d) { return d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' }); }
@@ -2177,9 +2263,11 @@ async function init() {
     await initEvents(mosque.id);
     renderRows(tod, tom);
     initQuranPlayer();
+    initAthanPlayer();
     setDailyReminder();
     startClock();
     startActiveTracking(tod, tom);
+    startAthanScheduler();
     startLiveRefresh(slug);
 
     const midnight = new Date(); midnight.setHours(24, 0, 30, 0);
