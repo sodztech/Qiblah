@@ -2059,6 +2059,11 @@ function fmt12(t) {
   return h12 + ':' + m + ' ' + ap;
 }
 
+function fmt12NoAmPm(t) {
+  var s = fmt12(t);
+  return s ? s.replace(/\s*(AM|PM)$/i, '').trim() : '';
+}
+
 function normaliseFacilities(value) {
   if (Array.isArray(value)) return value.filter(Boolean);
   if (!value) return [];
@@ -2177,11 +2182,14 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
   ) : '';
 
   var ptRows = prayers.map(function(p) {
+    var beginsText = fmt12NoAmPm(p.begins);
+    var jamaahText = fmt12NoAmPm(p.jamaah);
+    var tomorrowText = fmt12NoAmPm(p.tomorrow);
     return '<div class="pt-row">' +
       '<span class="pname">' + p.name + '</span>' +
-      '<span class="begins">' + p.begins + '</span>' +
-      '<span class="jamaah">' + p.jamaah + '</span>' +
-      '<span class="tomorrow">' + p.tomorrow + (p.next ? '<span class="next-bar"></span>' : '') + '</span>' +
+      '<span class="begins">' + beginsText + '</span>' +
+      '<span class="jamaah">' + jamaahText + '</span>' +
+      '<span class="tomorrow">' + tomorrowText + (p.next ? '<span class="next-bar"></span>' : '') + '</span>' +
     '</div>';
   }).join('');
   var FACILITY_ICONS = {
