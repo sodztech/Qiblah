@@ -1540,7 +1540,9 @@ async function initEvents() {
 
 
 </script>
-<script src="admin.js"></script>
+<script>
+  document.write('<script src="' + (location.protocol === 'file:' ? 'admin.js' : '/mosque/admin.js') + '"><\/script>');
+</script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
