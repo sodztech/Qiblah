@@ -74,9 +74,19 @@ function normaliseTime(s) {
   var m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
   return m ? String(Number(m[1])).padStart(2, '0') + ':' + m[2] : s;
 }
+function normaliseSlugInput(s) {
+  return String(s || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\/[^/]+/i, '')
+    .replace(/^\/?(mosque|mosques|display|admin)\//, '')
+    .replace(/[?#].*$/, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 function doLogin() {
-  var slug = byId('mosque-id-input').value.trim().toLowerCase();
+  var slug = normaliseSlugInput(byId('mosque-id-input').value);
   var pin = byId('pin-input').value.trim();
   byId('login-error').style.display = 'none';
   if (!slug || !pin) { showLoginError('Please enter your Mosque ID and PIN.'); return; }
@@ -635,7 +645,7 @@ function copyDisplayPreviewLink() {
   navigator.clipboard.writeText(url).then(function() {
     showSaveStatus('Display link copied', true);
   }).catch(function() {
-    window.prompt('Copy display link', url);
+    showSaveStatus('Copy failed. Link: ' + url, false);
   });
 }
 window.openDisplayPreview = openDisplayPreview;
