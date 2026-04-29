@@ -420,7 +420,7 @@ function renderAnnouncements() {
   el.innerHTML = currentData.announcements.map(function(a, i) {
     return '<div class="ann-item"><div class="ann-body"><div class="ann-title">' + esc(a.title) +
       '<span class="badge badge-' + String(a.tag || a.category || 'event').toLowerCase() + '">' + esc(a.tag || a.category || 'Event') + '</span>' +
-      '<span class="badge ' + (a.is_active === false ? 'badge-hidden' : 'badge-active') + '">' + (a.is_active === false ? 'Hidden' : 'Active') + '</span></div>' +
+      '<span class="badge ' + (isAnnouncementActive(a) ? 'badge-active' : 'badge-hidden') + '">' + (isAnnouncementActive(a) ? 'Active' : 'Hidden') + '</span></div>' +
       '<div class="ann-meta">' + esc([a.day, a.time, a.start_date || a.date].filter(Boolean).join(' · ')) + '</div>' +
       '<div class="ann-desc">' + esc(a.description || '') + '</div></div>' +
       '<button class="icon-btn" onclick="editAnnouncement(' + i + ')">Edit</button><button class="del-btn" onclick="deleteAnnouncement(' + i + ')">x</button></div>';
@@ -440,7 +440,7 @@ function readAnnouncementPayload() {
     sort_order: byId('new-ann-order').value ? Number(byId('new-ann-order').value) : null,
     start_date: byId('new-ann-date').value.trim() || null,
     weeks: byId('new-ann-weeks').value ? Number(byId('new-ann-weeks').value) : null,
-    is_active: byId('new-ann-active').value === 'true'
+    active: byId('new-ann-active').value === 'true'
   };
 }
 function addAnnouncement() {
@@ -472,9 +472,14 @@ function editAnnouncement(idx) {
   byId('new-ann-order').value = a.sort_order || '';
   byId('new-ann-date').value = a.start_date || a.date || '';
   byId('new-ann-weeks').value = a.weeks || '';
-  byId('new-ann-active').value = a.is_active === false ? 'false' : 'true';
+  byId('new-ann-active').value = isAnnouncementActive(a) ? 'true' : 'false';
   byId('ann-submit-btn').textContent = 'Save';
   byId('add-ann-form').style.display = 'block';
+}
+function isAnnouncementActive(a) {
+  if (a && a.active === false) return false;
+  if (a && a.is_active === false) return false;
+  return true;
 }
 function deleteAnnouncement(idx) {
   var a = currentData.announcements[idx];
