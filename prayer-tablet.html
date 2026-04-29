@@ -133,10 +133,7 @@
     flex-shrink: 0;
   }
   .tablet-next-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-    gap: clamp(16px, 2vw, 28px);
+    display: block;
     padding: 6px 4px 8px;
   }
   .tablet-kicker { display: none; }
@@ -155,6 +152,7 @@
     color: var(--text);
     margin-top: 10px;
   }
+  .tablet-next-summary { display: none; }
   .tablet-countdown-label {
     font-size: clamp(0.7rem, 0.95vw, 0.88rem);
     color: var(--text3);
@@ -171,9 +169,7 @@
     color: var(--gold);
   }
   .tablet-side-card {
-    display: grid;
-    grid-template-columns: auto minmax(190px, 240px);
-    gap: 18px;
+    display: block;
     align-items: start;
     text-align: right;
     padding: 6px 4px 8px;
@@ -198,12 +194,12 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 6px;
+    gap: 8px;
     color: var(--text2);
   }
   .tablet-temp {
-    font-size: clamp(1.45rem, 2.6vw, 2.6rem);
-    font-weight: 560;
+    font-size: clamp(3rem, 6vw, 5.6rem);
+    font-weight: 750;
     color: var(--text);
     line-height: 1;
   }
@@ -213,17 +209,18 @@
     gap: 8px;
   }
   .tablet-weather-icon svg {
-    width: 28px;
-    height: 28px;
+    width: clamp(36px, 4vw, 54px);
+    height: clamp(36px, 4vw, 54px);
     color: var(--text);
   }
-  .tablet-location,
-  .tablet-sun-times {
-    font-size: clamp(0.78rem, 1vw, 0.95rem);
+  .tablet-location {
+    font-size: clamp(1.05rem, 1.55vw, 1.45rem);
     color: var(--text2);
     line-height: 1.4;
   }
+  .tablet-sun-times { display: none; }
   .tablet-selector {
+    display: none;
     margin-top: 14px;
   }
   .tablet-selector label {
@@ -790,7 +787,7 @@
         <div class="tablet-mosque" id="tablet-mosque">—</div>
         <div class="tablet-next-name" id="tablet-next-name">—</div>
       </div>
-      <div>
+      <div class="tablet-next-summary">
         <div class="tablet-countdown-label" id="tablet-next-phase">Begins in</div>
         <div class="tablet-countdown" id="tablet-next-countdown">--:--:--</div>
       </div>
@@ -809,13 +806,11 @@
           <div class="tablet-sun-times" id="tablet-sun-times">Sunrise — · Sunset —</div>
         </div>
       </div>
-      <div>
-        <div class="tablet-selector">
-          <label for="tablet-mosque-select">Mosque</label>
-          <select id="tablet-mosque-select">
-            <option value="">Loading mosques...</option>
-          </select>
-        </div>
+      <div class="tablet-selector" aria-hidden="true">
+        <label for="tablet-mosque-select">Mosque</label>
+        <select id="tablet-mosque-select" tabindex="-1">
+          <option value="">Loading mosques...</option>
+        </select>
       </div>
       <div class="tablet-reminder">
         <div class="tablet-reminder-title">Daily Reminder</div>
