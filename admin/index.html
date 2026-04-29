@@ -582,6 +582,25 @@ function escapeHtml(s) {
 function escapeAttr(s) {
   return (s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+function boolValue(v, fallback) {
+  if (v === true || v === false) return v;
+  return fallback;
+}
+function numberOrNull(v) {
+  var n = String(v || '').trim();
+  if (!n) return null;
+  var parsed = Number(n);
+  return isNaN(parsed) ? null : parsed;
+}
+function facilitiesText(v) {
+  return Array.isArray(v) ? v.join(', ') : (v || '');
+}
+function clearPublicAppCache() {
+  try {
+    localStorage.removeItem('qiblah_static_v1');
+    localStorage.removeItem('qiblah_prayers_v1');
+  } catch(e) {}
+}
 
 function openModal(type, data) {
   currentModal = type;
@@ -600,9 +619,19 @@ function openModal(type, data) {
       '<div class="form-group"><label>Borough</label><select id="f-borough"><option value="">Select borough</option>' +
       ['Tower Hamlets','Newham','Redbridge'].map(function(b){ return '<option value="' + b + '"' + (data&&data.borough===b?' selected':'') + '>' + b + '</option>'; }).join('') +
       '</select></div>' +
-      '<div class="form-group full"><label>Jummah Times</label><input id="f-jummah" value="' + escapeAttr(data&&data.jummah) + '" placeholder="1:30 PM, 2:30 PM"></div>' +
+      '<div class="form-group"><label>Jummah 1</label><input id="f-jummah" value="' + escapeAttr(data&&data.jummah) + '" placeholder="13:30"></div>' +
+      '<div class="form-group"><label>Jummah 2</label><input id="f-jummah2" value="' + escapeAttr(data&&data.jummah2) + '" placeholder="14:15"></div>' +
+      '<div class="form-group"><label>Jummah 3</label><input id="f-jummah3" value="' + escapeAttr(data&&data.jummah3) + '" placeholder="15:00"></div>' +
+      '<div class="form-group"><label>Visible On Website</label><select id="f-visible"><option value="true"' + (boolValue(data&&data.is_hidden, false) ? '' : ' selected') + '>Yes</option><option value="false"' + (boolValue(data&&data.is_hidden, false) ? ' selected' : '') + '>No</option></select></div>' +
       '<div class="form-group"><label>Phone</label><input id="f-phone" value="' + escapeAttr(data&&data.phone) + '" placeholder="020 7650 3000"></div>' +
       '<div class="form-group"><label>Website</label><input id="f-website" value="' + escapeAttr(data&&data.website) + '" placeholder="https://..."></div>' +
+      '<div class="form-group"><label>Email</label><input id="f-email" value="' + escapeAttr(data&&data.email) + '" placeholder="info@example.com"></div>' +
+      '<div class="form-group"><label>Profile URL</label><input id="f-url" value="' + escapeAttr(data&&data.url) + '" placeholder="https://..."></div>' +
+      '<div class="form-group"><label>Latitude</label><input id="f-lat" value="' + escapeAttr(data&&data.lat) + '" placeholder="51.515"></div>' +
+      '<div class="form-group"><label>Longitude</label><input id="f-lon" value="' + escapeAttr(data&&data.lon) + '" placeholder="-0.071"></div>' +
+      '<div class="form-group"><label>Sisters Area</label><select id="f-sisters"><option value="false"' + (data&&data.sisters ? '' : ' selected') + '>No</option><option value="true"' + (data&&data.sisters ? ' selected' : '') + '>Yes</option></select></div>' +
+      '<div class="form-group"><label>Logo URL</label><input id="f-logo" value="' + escapeAttr(data&&data.logo) + '" placeholder="https://..."></div>' +
+      '<div class="form-group full"><label>Facilities</label><input id="f-facilities" value="' + escapeAttr(facilitiesText(data&&data.facilities)) + '" placeholder="Wudu facilities, Sisters area, Parking"></div>' +
       '<div class="form-group full"><label>About</label><textarea id="f-about">' + escapeHtml(data&&data.about) + '</textarea></div>' +
     '</div>' +
     (data ? '<div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Services <span style="font-size:11px;color:var(--muted);font-weight:400">(toggle sponsored to feature in app)</span></div><div id="modal-services">Loading...</div></div>' : '');
@@ -637,13 +666,14 @@ function openModal(type, data) {
   } else if (type === 'course') {
     title.textContent = data ? 'Edit Course' : 'Add Course';
     body.innerHTML = '<div class="form-grid">' +
-      '<div class="form-group full"><label>Course Name</label><input id="f-name" value="' + (data&&data.name||'') + '"></div>' +
-      '<div class="form-group"><label>Provider</label><input id="f-provider" value="' + (data&&data.provider||'') + '"></div>' +
-      '<div class="form-group"><label>Type</label><select id="f-type"><option>Quran</option><option>Arabic</option><option>Fiqh</option><option>Aqeedah</option><option>Hadith</option><option>Seerah</option><option>History</option><option>Spirituality</option></select></div>' +
-      '<div class="form-group"><label>Level</label><input id="f-level" value="' + (data&&data.level||'All levels') + '"></div>' +
-      '<div class="form-group"><label>Price</label><select id="f-price"><option>Free</option><option>Paid</option></select></div>' +
-      '<div class="form-group full"><label>URL</label><input id="f-url" value="' + (data&&data.url||'') + '" placeholder="https://..."></div>' +
-      '<div class="form-group full"><label>Description</label><textarea id="f-description">' + (data&&data.description||'') + '</textarea></div>' +
+      '<div class="form-group full"><label>Course Name</label><input id="f-name" value="' + escapeAttr(data&&data.name) + '"></div>' +
+      '<div class="form-group"><label>Provider</label><input id="f-provider" value="' + escapeAttr(data&&data.provider) + '"></div>' +
+      '<div class="form-group"><label>Type</label><select id="f-type">' + ['Quran','Arabic','Fiqh','Aqeedah','Hadith','Seerah','History','Spirituality'].map(function(t){ return '<option' + (data&&data.type===t?' selected':'') + '>' + t + '</option>'; }).join('') + '</select></div>' +
+      '<div class="form-group"><label>Level</label><input id="f-level" value="' + escapeAttr(data&&data.level || 'All levels') + '"></div>' +
+      '<div class="form-group"><label>Price</label><select id="f-price">' + ['Free','Paid'].map(function(p){ return '<option' + (data&&data.price===p?' selected':'') + '>' + p + '</option>'; }).join('') + '</select></div>' +
+      '<div class="form-group"><label>Status</label><select id="f-active"><option value="true"' + (data&&data.active===false?'':' selected') + '>Active</option><option value="false"' + (data&&data.active===false?' selected':'') + '>Hidden</option></select></div>' +
+      '<div class="form-group full"><label>URL</label><input id="f-url" value="' + escapeAttr(data&&data.url) + '" placeholder="https://..."></div>' +
+      '<div class="form-group full"><label>Description</label><textarea id="f-description">' + escapeHtml(data&&data.description) + '</textarea></div>' +
       '<div class="form-group"><label>Sponsored?</label><select id="f-sponsored"><option value="false">No</option><option value="true"' + (data&&data.is_sponsored?' selected':'') + '>Yes</option></select></div>' +
     '</div>';
   } else if (type === 'pin') {
@@ -706,7 +736,7 @@ function loadModalServices(mosqueId) {
       }
       el.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px">' + rows.map(function(s) {
         var checked = s.is_featured ? ' checked' : '';
-        return '<div style="display:flex;align-items:center;gap:10px;background:var(--surface-2,#f8f5f0);border:1px solid var(--border);border-radius:10px;padding:10px 12px">' +
+        return '<div style="display:flex;align-items:center;gap:10px;background:var(--surface2,#1a2d45);border:1px solid var(--border);border-radius:10px;padding:10px 12px">' +
           '<div style="flex:1;min-width:0">' +
             '<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(s.name) + '</div>' +
             '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">' +
@@ -741,7 +771,7 @@ function loadModalServices(mosqueId) {
           // Persist to Supabase
           var url = SB + '/rest/v1/services?id=eq.' + svcId;
           fetch(url, { method: 'PATCH', headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify({ is_featured: featured }) })
-            .then(function(r) { toast(r.ok ? (featured ? 'Marked as featured' : 'Featured removed') : 'Error saving', r.ok ? 'success' : 'error'); })
+            .then(function(r) { if (r.ok) clearPublicAppCache(); toast(r.ok ? (featured ? 'Marked as featured' : 'Featured removed') : 'Error saving', r.ok ? 'success' : 'error'); })
             .catch(function() { toast('Connection error', 'error'); });
         });
       });
@@ -769,8 +799,18 @@ function saveMosque() {
     area: document.getElementById('f-area').value.trim(),
     borough: document.getElementById('f-borough').value,
     jummah: document.getElementById('f-jummah').value.trim(),
+    jummah2: document.getElementById('f-jummah2').value.trim(),
+    jummah3: document.getElementById('f-jummah3').value.trim(),
+    is_hidden: document.getElementById('f-visible').value !== 'true',
     phone: document.getElementById('f-phone').value.trim(),
     website: document.getElementById('f-website').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    url: document.getElementById('f-url').value.trim(),
+    lat: numberOrNull(document.getElementById('f-lat').value),
+    lon: numberOrNull(document.getElementById('f-lon').value),
+    sisters: document.getElementById('f-sisters').value === 'true',
+    logo: document.getElementById('f-logo').value.trim(),
+    facilities: document.getElementById('f-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
     about: document.getElementById('f-about').value.trim()
   };
   if (!payload.name || !payload.slug) { toast('Name and Slug are required', 'error'); return; }
@@ -780,6 +820,7 @@ function saveMosque() {
     if (!editId && result && result[0] && result[0].id) {
       sb('mosque_admins', { method: 'POST', body: JSON.stringify({ mosque_id: result[0].id, pin_hash: '0000' }) });
     }
+    clearPublicAppCache();
     closeModal(); toast('Mosque ' + (editId?'updated':'added'), 'success'); loadAll();
   }).catch(function(){ toast('Error saving mosque', 'error'); });
 }
@@ -807,6 +848,7 @@ function saveInstitute() {
       // Auto-create institute_admins entry with default PIN 0000
       sb('institute_admins', { method: 'POST', body: JSON.stringify({ institute_id: result[0].id, pin_hash: '0000' }) });
     }
+    clearPublicAppCache();
     closeModal(); toast('Institute saved', 'success'); loadAll();
   });
 }
@@ -820,11 +862,13 @@ function saveCourse() {
     price: document.getElementById('f-price').value,
     url: document.getElementById('f-url').value.trim(),
     description: document.getElementById('f-description').value.trim(),
-    is_sponsored: document.getElementById('f-sponsored').value === 'true'
+    is_sponsored: document.getElementById('f-sponsored').value === 'true',
+    active: document.getElementById('f-active').value === 'true'
   };
   var method = editId ? 'PATCH' : 'POST';
   var path = editId ? 'courses?id=eq.' + editId : 'courses';
   sb(path, { method: method, body: JSON.stringify(payload) }).then(function(){
+    clearPublicAppCache();
     closeModal(); toast('Course saved', 'success'); loadAll();
   });
 }
@@ -844,15 +888,15 @@ function editPin(id, pin, name) { editId = id; currentModal = 'pin'; openModal('
 
 function deleteMosque(id, name) {
   if (!confirm('Delete ' + name + '? This will also delete their timetable, services and announcements.')) return;
-  sb('mosques?id=eq.' + id, { method: 'DELETE' }).then(function(){ toast('Mosque deleted', 'success'); loadAll(); });
+  sb('mosques?id=eq.' + id, { method: 'DELETE' }).then(function(){ clearPublicAppCache(); toast('Mosque deleted', 'success'); loadAll(); });
 }
 function deleteInstitute(id) {
   if (!confirm('Delete this institute?')) return;
-  sb('institutes?id=eq.' + id, { method: 'DELETE' }).then(function(){ toast('Deleted', 'success'); loadAll(); });
+  sb('institutes?id=eq.' + id, { method: 'DELETE' }).then(function(){ clearPublicAppCache(); toast('Deleted', 'success'); loadAll(); });
 }
 function deleteCourse(id) {
   if (!confirm('Delete this course?')) return;
-  sb('courses?id=eq.' + id, { method: 'DELETE' }).then(function(){ toast('Deleted', 'success'); loadAll(); });
+  sb('courses?id=eq.' + id, { method: 'DELETE' }).then(function(){ clearPublicAppCache(); toast('Deleted', 'success'); loadAll(); });
 }
 
 // INIT
@@ -908,14 +952,14 @@ function saveBanner() {
   var method = editId ? 'PATCH' : 'POST';
   var path = editId ? 'banners?id=eq.' + editId : 'banners';
   sb(path, { method: method, body: JSON.stringify(payload) })
-    .then(function() { closeModal(); toast('Banner saved', 'success'); loadAll(); })
+    .then(function() { clearPublicAppCache(); closeModal(); toast('Banner saved', 'success'); loadAll(); })
     .catch(function() { toast('Error saving banner', 'error'); });
 }
 
 function deleteBanner(id) {
   if (!confirm('Delete this banner?')) return;
   sb('banners?id=eq.' + id, { method: 'DELETE' })
-    .then(function() { toast('Banner deleted', 'success'); loadAll(); });
+    .then(function() { clearPublicAppCache(); toast('Banner deleted', 'success'); loadAll(); });
 }
 
 </script>
