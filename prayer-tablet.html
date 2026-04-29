@@ -117,6 +117,115 @@
   }
   .mi-logo { height: 48px; width: auto; object-fit: contain; flex-shrink: 0; opacity: 0.95; }
 
+  /* ── PRAYER TABLET HOME MODE ── */
+  body.prayer-tablet {
+    background:
+      radial-gradient(circle at 12% 12%, rgba(var(--gold-rgb),0.16), transparent 32%),
+      linear-gradient(135deg, var(--bg) 0%, #0b1522 100%);
+  }
+  body.prayer-tablet #app { gap: 10px; padding: clamp(12px, 1.4vw, 24px); }
+  body.prayer-tablet #mobile-info { display: none !important; }
+  #tablet-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.75fr);
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .tablet-next-card,
+  .tablet-side-card {
+    background: rgba(16,30,47,0.86);
+    border: 1px solid rgba(var(--gold-rgb),0.28);
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+  }
+  .tablet-next-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(18px, 3vw, 42px);
+    padding: clamp(18px, 2.6vw, 38px);
+    min-height: clamp(150px, 22vh, 230px);
+  }
+  .tablet-kicker {
+    font-size: clamp(0.72rem, 1vw, 0.95rem);
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .tablet-mosque {
+    font-size: clamp(1.25rem, 2.2vw, 2.45rem);
+    font-weight: 650;
+    color: var(--text);
+    margin-top: 8px;
+    line-height: 1.1;
+  }
+  .tablet-next-name {
+    font-size: clamp(2.7rem, 7vw, 6.8rem);
+    font-weight: 760;
+    line-height: 0.92;
+    color: var(--text);
+  }
+  .tablet-countdown-label {
+    font-size: clamp(0.78rem, 1.1vw, 1rem);
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    text-align: right;
+  }
+  .tablet-countdown {
+    margin-top: 8px;
+    font-size: clamp(2rem, 5vw, 5.3rem);
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--gold);
+  }
+  .tablet-side-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    padding: clamp(18px, 2vw, 28px);
+  }
+  .tablet-clock {
+    font-size: clamp(2rem, 4vw, 4.2rem);
+    font-weight: 520;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .tablet-ampm { font-size: 0.34em; color: var(--muted); margin-left: 4px; }
+  .tablet-date,
+  .tablet-hijri,
+  .tablet-reminder-text {
+    color: var(--text2);
+    font-size: clamp(0.92rem, 1.25vw, 1.2rem);
+    line-height: 1.45;
+  }
+  .tablet-hijri { color: var(--gold); }
+  .tablet-reminder {
+    border-top: 1px solid var(--border2);
+    padding-top: 14px;
+  }
+  .tablet-reminder-title {
+    font-size: 0.72rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 6px;
+  }
+  body.prayer-tablet #slide-wrap { gap: 10px; }
+  body.prayer-tablet #events-panel,
+  body.prayer-tablet .main,
+  body.prayer-tablet .footer-row,
+  body.prayer-tablet #mobile-banner {
+    border-radius: 16px;
+    background: rgba(16,30,47,0.82);
+  }
+  body.prayer-tablet .main { border-bottom: 1px solid rgba(var(--gold-rgb),0.28); }
+  body.prayer-tablet #mobile-banner { margin-top: 10px; }
+
   /* ── SLIDE WRAP ── */
   #slide-wrap {
     display: flex; flex-direction: row;
@@ -377,6 +486,9 @@
   @media (max-width: 768px) {
     html { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     body { background: var(--bg2); overflow-y: auto; height: 100%; }
+    #tablet-hero { grid-template-columns: 1fr; }
+    .tablet-next-card { align-items: flex-start; flex-direction: column; }
+    .tablet-countdown-label { text-align: left; }
     #app {
       display: flex !important; flex-direction: column !important;
       align-items: stretch !important; height: 100vh !important;
@@ -445,7 +557,7 @@
   .f-jummah-item.hidden { display: none; }
 </style>
 </head>
-<body>
+<body class="prayer-tablet">
 
 <div id="loading">
   <div class="l-logo">qiblah</div>
@@ -470,6 +582,33 @@
     <div class="mi-divider"></div>
     <div class="mi-clock"><span id="mi-time">12:00</span><span class="mi-ampm" id="mi-ampm"> AM</span></div>
   </div>
+
+  <section id="tablet-hero">
+    <div class="tablet-next-card">
+      <div>
+        <div class="tablet-kicker">Prayer Tablet</div>
+        <div class="tablet-mosque" id="tablet-mosque">—</div>
+      </div>
+      <div>
+        <div class="tablet-next-name" id="tablet-next-name">—</div>
+      </div>
+      <div>
+        <div class="tablet-countdown-label">Iqamah in</div>
+        <div class="tablet-countdown" id="tablet-next-countdown">--:--:--</div>
+      </div>
+    </div>
+    <div class="tablet-side-card">
+      <div>
+        <div class="tablet-clock"><span id="tablet-time">12:00</span><span class="tablet-ampm" id="tablet-ampm">AM</span></div>
+        <div class="tablet-date" id="tablet-date">—</div>
+        <div class="tablet-hijri" id="tablet-hijri">—</div>
+      </div>
+      <div class="tablet-reminder">
+        <div class="tablet-reminder-title">Daily Reminder</div>
+        <div class="tablet-reminder-text" id="tablet-reminder">Remember Allah often and keep your salah at its appointed time.</div>
+      </div>
+    </div>
+  </section>
 
   <div id="slide-wrap">
 
@@ -578,6 +717,15 @@ const DEFAULT_TICKERS = [
   'Astaghfirullah \u00d73'
 ];
 const DISPLAY_REFRESH_MS = 5 * 60 * 1000;
+const DAILY_REMINDERS = [
+  'Pray at the beginning of its time when you are able.',
+  'Keep your tongue moist with the remembrance of Allah.',
+  'Send salawat upon the Prophet \uFDFA throughout the day.',
+  'Recite Ayat-ul-Kursi after every fard prayer.',
+  'Make a small dua before you leave the prayer mat.',
+  'Read a portion of Qur\u2019an today, even if it is short.',
+  'Renew your intention and make today pleasing to Allah.'
+];
 let liveTod = null;
 let liveTom = null;
 let liveBlackout = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
@@ -718,6 +866,15 @@ function hijriDate(d) {
   catch { return ''; }
 }
 
+function setDailyReminder() {
+  const el = document.getElementById('tablet-reminder');
+  if (!el) return;
+  const dayStart = new Date();
+  dayStart.setHours(0, 0, 0, 0);
+  const index = Math.floor(dayStart.getTime() / 86400000) % DAILY_REMINDERS.length;
+  el.textContent = DAILY_REMINDERS[index];
+}
+
 // ── RENDER ROWS ───────────────────────────────────────────────────────────────
 function renderRows(tod, tom) {
   tod = applyAsrOpinion(tod);
@@ -771,6 +928,14 @@ function startClock() {
     const miAmpm = document.getElementById('mi-ampm');
     if (miTime) miTime.textContent = `${h12}:${mm}`;
     if (miAmpm) miAmpm.textContent = ` ${ap}`;
+    const tabletTime = document.getElementById('tablet-time');
+    const tabletAmpm = document.getElementById('tablet-ampm');
+    const tabletDate = document.getElementById('tablet-date');
+    const tabletHijri = document.getElementById('tablet-hijri');
+    if (tabletTime) tabletTime.textContent = `${h12}:${mm}`;
+    if (tabletAmpm) tabletAmpm.textContent = ap;
+    if (tabletDate) tabletDate.textContent = ukDate(now);
+    if (tabletHijri) tabletHijri.textContent = hijriDate(now);
     const miHijri = document.getElementById('mi-hijri');
     if (miHijri) miHijri.textContent = hijriDate(now);
     if (gregEl) gregEl.textContent = ukDate(now);
@@ -825,8 +990,12 @@ function startActiveTracking(tod, tom) {
     document.getElementById('mb-prayer').textContent = PLABELS[nextP] || nextP;
     const diff = Math.max(0, target - nowS);
     const hh = Math.floor(diff/3600), mm = Math.floor(diff%3600/60), ss = diff%60;
-    document.getElementById('mb-countdown').textContent =
-      `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    const countdown = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    document.getElementById('mb-countdown').textContent = countdown;
+    const tabletNext = document.getElementById('tablet-next-name');
+    const tabletCountdown = document.getElementById('tablet-next-countdown');
+    if (tabletNext) tabletNext.textContent = PLABELS[nextP] || nextP;
+    if (tabletCountdown) tabletCountdown.textContent = countdown;
   }
   tickBanner(); setInterval(tickBanner, 1000);
 
@@ -1144,6 +1313,8 @@ function applyMosqueInfo(mosque) {
   const miInfo = document.getElementById('mobile-info');
   if (miName) miName.textContent = mosque.name || '';
   if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
+  const tabletMosque = document.getElementById('tablet-mosque');
+  if (tabletMosque) tabletMosque.textContent = mosque.name || '';
 
   const logoWrap = document.getElementById('mi-logo-wrap');
   const logoImg  = document.getElementById('mi-logo');
@@ -1193,6 +1364,7 @@ async function init() {
 
     await initEvents(mosque.id);
     renderRows(tod, tom);
+    setDailyReminder();
     startClock();
     startActiveTracking(tod, tom);
     startLiveRefresh(slug);
