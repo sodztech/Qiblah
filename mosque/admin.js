@@ -195,7 +195,6 @@ function loadFromSupabase() {
     renderPrayerRows();
     renderMonthTable();
     renderYearlyOverview();
-    renderServices();
     renderAnnouncements();
     renderTickers();
     renderDisplayTheme();
@@ -208,7 +207,7 @@ function loadFromSupabase() {
 }
 
 function switchTab(tab) {
-  var tabs = ['times', 'profile', 'services', 'announce', 'display', 'embed'];
+  var tabs = ['times', 'profile', 'announce', 'display', 'embed'];
   tabs.forEach(function(t) {
     byId('tab-' + t).style.display = t === tab ? 'block' : 'none';
   });
@@ -615,76 +614,6 @@ function saveJummah() {
       showSaveStatus('Jummah saved', true);
     })
     .catch(function(err) { showSaveStatus('Jummah save failed: ' + err.message.slice(0, 80), false); });
-}
-
-function showAddService() {
-  resetServiceForm();
-  byId('add-service-form').style.display = 'block';
-}
-function renderServices() {
-  var el = byId('services-list');
-  if (!currentData.services.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px">No services yet.</p>'; return; }
-  el.innerHTML = currentData.services.map(function(s, i) {
-    var typeCls = 't-' + (s.type || 'Community').replace(/\s+/g, '');
-    return '<div class="service-item"><div style="flex:1;min-width:0"><div class="sname">' + esc(s.name) +
-      '<span class="type-badge ' + typeCls + '">' + esc(s.type || 'Community') + '</span></div><div class="smeta">' +
-      esc([s.days, s.time].filter(Boolean).join(' · ')) + '</div></div><div style="display:flex;gap:6px;flex-shrink:0">' +
-      '<button class="icon-btn text-btn" onclick="editService(' + i + ')">Edit</button>' +
-      '<button class="del-btn" onclick="deleteService(' + i + ')">x</button></div></div>';
-  }).join('');
-}
-function resetServiceForm() {
-  editingServiceId = null;
-  editingServiceIndex = -1;
-  ['new-svc-name', 'new-svc-days', 'new-svc-time'].forEach(function(id) { byId(id).value = ''; });
-  byId('new-svc-type').value = 'Education';
-  if (byId('service-submit-btn')) byId('service-submit-btn').textContent = 'Add';
-  byId('add-service-form').style.display = 'none';
-}
-function editService(idx) {
-  var s = currentData.services[idx];
-  if (!s) return;
-  editingServiceId = s.id || null;
-  editingServiceIndex = idx;
-  byId('new-svc-name').value = s.name || '';
-  byId('new-svc-type').value = s.type || 'Community';
-  byId('new-svc-days').value = s.days || '';
-  byId('new-svc-time').value = s.time || '';
-  if (byId('service-submit-btn')) byId('service-submit-btn').textContent = 'Save';
-  byId('add-service-form').style.display = 'block';
-}
-function addService() {
-  var name = byId('new-svc-name').value.trim();
-  if (!name) { alert('Service name required'); return; }
-  var payload = {
-    mosque_id: currentMosque.id,
-    name: name,
-    type: byId('new-svc-type').value,
-    days: byId('new-svc-days').value.trim(),
-    time: byId('new-svc-time').value.trim()
-  };
-  var isEditing = editingServiceId && editingServiceIndex > -1;
-  var request = isEditing
-    ? sbFetch('services?id=eq.' + editingServiceId, { method: 'PATCH', body: JSON.stringify(payload) })
-    : sbFetch('services', { method: 'POST', body: JSON.stringify(payload) });
-  showSaveStatus(isEditing ? 'Saving service...' : 'Adding service...', false);
-  request.then(function(rows) {
-    var saved = rows && rows[0] ? rows[0] : Object.assign({}, currentData.services[editingServiceIndex] || {}, payload);
-    if (isEditing) currentData.services[editingServiceIndex] = saved;
-    else currentData.services.push(saved);
-    resetServiceForm();
-    renderServices();
-    showSaveStatus(isEditing ? 'Service saved' : 'Service added', true);
-  }).catch(function(err) { showSaveStatus('Service save failed: ' + err.message.slice(0, 80), false); });
-}
-function deleteService(idx) {
-  var s = currentData.services[idx];
-  if (!s || !confirm('Delete "' + s.name + '"?')) return;
-  sbFetch('services?id=eq.' + s.id, { method: 'DELETE' }).then(function() {
-    currentData.services.splice(idx, 1);
-    renderServices();
-    showSaveStatus('Service deleted', true);
-  }).catch(function(err) { showSaveStatus('Delete failed: ' + err.message.slice(0, 80), false); });
 }
 
 function showAddAnnouncement() {

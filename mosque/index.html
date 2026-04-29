@@ -573,11 +573,9 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     padding: 12px;
     border-radius: 10px;
   }
-  #add-service-form > div:last-child,
   #add-ann-form > div:last-child {
     flex-direction: column;
   }
-  #add-service-form .btn,
   #add-ann-form .btn {
     width: 100% !important;
   }
@@ -760,7 +758,6 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   <div class="tabs">
     <button class="tab active" onclick="switchTab('times')">Prayer Times</button>
     <button class="tab" onclick="switchTab('profile')">Profile</button>
-    <button class="tab" onclick="switchTab('services')">Services</button>
     <button class="tab" onclick="switchTab('announce')">Announcements</button>
     <button class="tab" onclick="switchTab('display')">Display</button>
     <button class="tab" onclick="switchTab('embed')">Embed</button>
@@ -922,33 +919,6 @@ select.inline-sel:focus { border-color: var(--gold-border); }
       <div class="field"><label>Email</label><input type="email" id="profile-email"></div>
       <div class="field"><label>Facilities (comma separated)</label><input type="text" id="profile-facilities" placeholder="Parking, Sisters Section, Wudu Area"></div>
       <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveProfile()">Save Profile</button></div>
-    </div>
-  </div>
-
-  <!-- SERVICES -->
-  <div id="tab-services" style="display:none">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Services</span>
-        <button onclick="showAddService()" class="act-btn">+ Add</button>
-      </div>
-      <div id="services-list"></div>
-      <div id="add-service-form" style="display:none" class="add-form">
-        <div class="row-2">
-          <div class="field" style="margin-bottom:10px"><label>Service Name</label><input type="text" id="new-svc-name" placeholder="e.g. Quran Classes"></div>
-          <div class="field" style="margin-bottom:10px"><label>Type</label>
-            <select id="new-svc-type"><option>Education</option><option>Youth</option><option>Welfare</option><option>Community</option></select>
-          </div>
-        </div>
-        <div class="row-2">
-          <div class="field" style="margin-bottom:10px"><label>Days</label><input type="text" id="new-svc-days" placeholder="e.g. Sat &amp; Sun"></div>
-          <div class="field" style="margin-bottom:10px"><label>Time</label><input type="text" id="new-svc-time" placeholder="e.g. 10:00 AM"></div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost" id="service-submit-btn" style="padding:8px 16px;font-size:13px;width:auto" onclick="addService()">Add</button>
-          <button class="btn btn-sec" style="padding:8px 16px;font-size:13px;width:auto" onclick="resetServiceForm()">Cancel</button>
-        </div>
-      </div>
     </div>
   </div>
 
