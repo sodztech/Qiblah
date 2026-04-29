@@ -147,8 +147,8 @@
   .ev-footer {
     flex-shrink: 0;
     border-top: 1px solid rgba(200,164,110,0.35);
-    min-height: 86px;
-    height: max(var(--footer-h, 56px), 86px);
+    min-height: 68px;
+    height: max(var(--footer-h, 56px), 68px);
     overflow: hidden;
     display: flex; align-items: center;
     padding: 0 22px;
@@ -158,20 +158,20 @@
   .ev-ticker {
     display: flex; white-space: nowrap; align-items: center;
     animation: ticker 42s linear infinite;
-    font-size: clamp(1.25rem, 2.55vh, 2rem);
+    font-size: clamp(1rem, 2vh, 1.55rem);
     color: var(--text);
     font-weight: 500;
     line-height: 1;
     will-change: transform; transform: translateZ(0); backface-visibility: hidden;
   }
-  .ev-ticker > span { display: inline-flex; align-items: center; padding-right: 80px; flex-shrink: 0; }
+  .ev-ticker > span { display: inline-flex; align-items: center; padding-right: 72px; flex-shrink: 0; }
   .ticker-entry {
     color: var(--text);
     text-shadow: 0 0 22px rgba(200,164,110,0.12);
   }
   .ticker-sep {
     color: var(--gold);
-    padding: 0 18px;
+    padding: 0 14px;
     opacity: 0.9;
   }
   @keyframes ticker {
