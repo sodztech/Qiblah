@@ -903,6 +903,16 @@ select.inline-sel:focus { border-color: var(--gold-border); }
   <!-- DISPLAY -->
   <div id="tab-display" style="display:none">
     <div class="card">
+      <div class="card-head"><span class="card-title">TV Ticker</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Add up to five short messages for the moving ticker on the TV display.</p>
+      <div class="field"><label>Ticker 1</label><input type="text" id="ticker-entry-1" maxlength="120"></div>
+      <div class="field"><label>Ticker 2</label><input type="text" id="ticker-entry-2" maxlength="120"></div>
+      <div class="field"><label>Ticker 3</label><input type="text" id="ticker-entry-3" maxlength="120"></div>
+      <div class="field"><label>Ticker 4</label><input type="text" id="ticker-entry-4" maxlength="120"></div>
+      <div class="field"><label>Ticker 5</label><input type="text" id="ticker-entry-5" maxlength="120"></div>
+      <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveTickers()">Save Ticker</button></div>
+    </div>
+    <div class="card">
       <div class="card-head"><span class="card-title">Display Colours</span></div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Customise the TV display background, panels, tags and text colour.</p>
       <div class="display-colour-preview" id="display-colour-preview">
@@ -924,16 +934,6 @@ select.inline-sel:focus { border-color: var(--gold-border); }
         <button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveDisplayTheme()">Save Colours</button>
         <button class="btn btn-sec" style="width:auto;flex:1" onclick="resetDisplayTheme()">Reset</button>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><span class="card-title">TV Ticker</span></div>
-      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Add up to five short messages for the moving ticker on the TV display.</p>
-      <div class="field"><label>Ticker 1</label><input type="text" id="ticker-entry-1" maxlength="120"></div>
-      <div class="field"><label>Ticker 2</label><input type="text" id="ticker-entry-2" maxlength="120"></div>
-      <div class="field"><label>Ticker 3</label><input type="text" id="ticker-entry-3" maxlength="120"></div>
-      <div class="field"><label>Ticker 4</label><input type="text" id="ticker-entry-4" maxlength="120"></div>
-      <div class="field"><label>Ticker 5</label><input type="text" id="ticker-entry-5" maxlength="120"></div>
-      <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveTickers()">Save Ticker</button></div>
     </div>
     <div class="card">
       <div class="card-head"><span class="card-title">TV Display</span></div>
