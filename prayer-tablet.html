@@ -137,37 +137,6 @@
     padding: 6px 4px 8px;
   }
   .tablet-kicker { display: none; }
-  .tablet-mosque {
-    font-size: clamp(0.95rem, 1.4vw, 1.3rem);
-    font-weight: 500;
-    color: var(--text);
-    margin-top: 8px;
-    line-height: 1.1;
-    opacity: 0.86;
-  }
-  .tablet-next-name {
-    font-size: clamp(1.7rem, 3.4vw, 3.2rem);
-    font-weight: 720;
-    line-height: 1;
-    color: var(--text);
-    margin-top: 10px;
-  }
-  .tablet-next-summary { display: none; }
-  .tablet-countdown-label {
-    font-size: clamp(0.7rem, 0.95vw, 0.88rem);
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    text-align: right;
-  }
-  .tablet-countdown {
-    margin-top: 8px;
-    font-size: clamp(1.3rem, 2.5vw, 2.25rem);
-    font-weight: 600;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    color: var(--gold);
-  }
   .tablet-side-card {
     display: block;
     align-items: start;
@@ -707,7 +676,6 @@
     .tablet-next-card { grid-template-columns: 1fr; align-items: flex-start; }
     .tablet-side-card { grid-template-columns: 1fr; text-align: left; }
     .tablet-weather { align-items: flex-start; }
-    .tablet-countdown-label { text-align: left; }
     #tablet-prayer-card { display: none; }
     #app {
       display: flex !important; flex-direction: column !important;
@@ -811,12 +779,6 @@
         <div class="tablet-clock"><span id="tablet-time">12:00</span><span class="tablet-ampm" id="tablet-ampm">AM</span></div>
         <div class="tablet-date" id="tablet-date">—</div>
         <div class="tablet-hijri" id="tablet-hijri">—</div>
-        <div class="tablet-mosque" id="tablet-mosque">—</div>
-        <div class="tablet-next-name" id="tablet-next-name">—</div>
-      </div>
-      <div class="tablet-next-summary">
-        <div class="tablet-countdown-label" id="tablet-next-phase">Begins in</div>
-        <div class="tablet-countdown" id="tablet-next-countdown">--:--:--</div>
       </div>
     </div>
     <div class="tablet-side-card">
@@ -1239,13 +1201,7 @@ function startActiveTracking(tod, tom) {
     const hh = Math.floor(diff/3600), mm = Math.floor(diff%3600/60), ss = diff%60;
     const countdown = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
     document.getElementById('mb-countdown').textContent = countdown;
-    const tabletNext = document.getElementById('tablet-next-name');
-    const tabletCountdown = document.getElementById('tablet-next-countdown');
-    const tabletPhase = document.getElementById('tablet-next-phase');
     const tabletCardCountdown = document.getElementById('tablet-card-countdown');
-    if (tabletNext) tabletNext.textContent = PLABELS[nextP] || nextP;
-    if (tabletCountdown) tabletCountdown.textContent = countdown;
-    if (tabletPhase) tabletPhase.textContent = phase;
     if (tabletCardCountdown) tabletCardCountdown.textContent = countdown;
     document.querySelectorAll('.tablet-prayer-tile').forEach(tile => {
       tile.classList.toggle('active', tile.dataset.cardPrayer === nextP);
@@ -1635,8 +1591,6 @@ function applyMosqueInfo(mosque) {
   const miInfo = document.getElementById('mobile-info');
   if (miName) miName.textContent = mosque.name || '';
   if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
-  const tabletMosque = document.getElementById('tablet-mosque');
-  if (tabletMosque) tabletMosque.textContent = mosque.name || '';
   const cardMosque = document.getElementById('tablet-card-mosque');
   const cardArea = document.getElementById('tablet-card-area');
   if (cardMosque) cardMosque.textContent = mosque.name || '';
