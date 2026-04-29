@@ -913,6 +913,20 @@ select.inline-sel:focus { border-color: var(--gold-border); }
       <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveTickers()">Save Ticker</button></div>
     </div>
     <div class="card">
+      <div class="card-head"><span class="card-title">Blackout Minutes</span></div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Set how long the TV display should blackout after each Jama'ah time. Use 0 to turn blackout off for a prayer.</p>
+      <div class="row-3">
+        <div class="field"><label>Fajr</label><input type="number" id="blackout-fajr" min="0" max="60" step="1" value="12"></div>
+        <div class="field"><label>Zuhr</label><input type="number" id="blackout-zuhr" min="0" max="60" step="1" value="12"></div>
+        <div class="field"><label>Asr</label><input type="number" id="blackout-asr" min="0" max="60" step="1" value="12"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Maghrib</label><input type="number" id="blackout-maghrib" min="0" max="60" step="1" value="12"></div>
+        <div class="field"><label>Isha</label><input type="number" id="blackout-isha" min="0" max="60" step="1" value="12"></div>
+      </div>
+      <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveDisplayBlackout()">Save Blackout Minutes</button></div>
+    </div>
+    <div class="card">
       <div class="card-head"><span class="card-title">Display Colours</span></div>
       <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">Customise the TV display background, panels, tags and text colour.</p>
       <div class="display-colour-preview" id="display-colour-preview">

@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -181,7 +181,8 @@ function loadFromSupabase() {
       .sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
       .slice(0, 5);
     currentData.displayTheme = announcementRows.find(isDisplayThemeRow) || null;
-    currentData.announcements = announcementRows.filter(function(row) { return !isTickerRow(row) && !isDisplayThemeRow(row); });
+    currentData.displayBlackout = announcementRows.find(isDisplayBlackoutRow) || null;
+    currentData.announcements = announcementRows.filter(function(row) { return !isSystemDisplayRow(row); });
     currentData.times = {};
     (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
     renderPrayerRows();
@@ -191,6 +192,7 @@ function loadFromSupabase() {
     renderAnnouncements();
     renderTickers();
     renderDisplayTheme();
+    renderDisplayBlackout();
     showSaveStatus('Loaded', true);
   }).catch(function(err) {
     showSaveStatus('Could not load data: ' + err.message.slice(0, 80), false);
@@ -633,6 +635,13 @@ function isDisplayThemeRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'displaytheme';
 }
+function isDisplayBlackoutRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'displayblackout';
+}
+function isSystemDisplayRow(row) {
+  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row);
+}
 function defaultDisplayTheme() {
   return {
     bg: '#101e2f',
@@ -750,6 +759,59 @@ function resetDisplayTheme() {
   setDisplayThemeInputs(theme);
   saveDisplayTheme(theme);
 }
+function defaultDisplayBlackout() {
+  return { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
+}
+function parseDisplayBlackout(row) {
+  var defaults = defaultDisplayBlackout();
+  if (!row || !row.description) return defaults;
+  try {
+    var parsed = JSON.parse(row.description);
+    PNAMES.forEach(function(p) {
+      var value = Number(parsed[p]);
+      if (!isNaN(value) && value >= 0) defaults[p] = Math.min(60, Math.round(value));
+    });
+  } catch (e) {}
+  return defaults;
+}
+function renderDisplayBlackout() {
+  var blackout = parseDisplayBlackout(currentData.displayBlackout);
+  PNAMES.forEach(function(p) {
+    var input = byId('blackout-' + p);
+    if (input) input.value = blackout[p];
+  });
+}
+function displayBlackoutFromInputs() {
+  var blackout = {};
+  PNAMES.forEach(function(p) {
+    var input = byId('blackout-' + p);
+    var value = input ? Number(input.value) : 12;
+    blackout[p] = Math.max(0, Math.min(60, isNaN(value) ? 12 : Math.round(value)));
+  });
+  return blackout;
+}
+function saveDisplayBlackout() {
+  var blackout = displayBlackoutFromInputs();
+  var payload = {
+    title: 'Display Blackout',
+    tag: 'DisplayBlackout',
+    category: 'DisplayBlackout',
+    description: JSON.stringify(blackout),
+    active: true,
+    sort_order: 0
+  };
+  var request = currentData.displayBlackout && currentData.displayBlackout.id
+    ? sbFetch('announcements?id=eq.' + currentData.displayBlackout.id, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
+  showSaveStatus('Saving blackout minutes...', false);
+  request.then(function(rows) {
+    currentData.displayBlackout = rows && rows[0] ? rows[0] : Object.assign({}, currentData.displayBlackout || {}, payload);
+    renderDisplayBlackout();
+    showSaveStatus('Blackout minutes saved', true);
+  }).catch(function(err) {
+    showSaveStatus('Blackout save failed: ' + err.message.slice(0, 80), false);
+  });
+}
 function renderTickers() {
   for (var i = 0; i < 5; i++) {
     var input = byId('ticker-entry-' + (i + 1));
@@ -802,7 +864,8 @@ function saveTickers() {
     var allRows = rows || [];
     currentData.tickers = allRows.filter(isTickerRow).sort(function(a, b) { return (a.sort_order || 0) - (b.sort_order || 0); }).slice(0, 5);
     currentData.displayTheme = allRows.find(isDisplayThemeRow) || null;
-    currentData.announcements = allRows.filter(function(row) { return !isTickerRow(row) && !isDisplayThemeRow(row); });
+    currentData.displayBlackout = allRows.find(isDisplayBlackoutRow) || null;
+    currentData.announcements = allRows.filter(function(row) { return !isSystemDisplayRow(row); });
     renderTickers();
     renderAnnouncements();
     showSaveStatus('Ticker saved', true);

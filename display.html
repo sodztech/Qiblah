@@ -576,6 +576,7 @@ const DEFAULT_TICKERS = [
 const DISPLAY_REFRESH_MS = 5 * 60 * 1000;
 let liveTod = null;
 let liveTom = null;
+let liveBlackout = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
 let eventRotateTimer = null;
 let jummahRotateTimer = null;
 
@@ -632,6 +633,19 @@ function parseThemeRow(row) {
   if (!row || !row.description) return null;
   try { return JSON.parse(row.description); }
   catch (e) { return null; }
+}
+
+function parseBlackoutRow(row) {
+  const defaults = { fajr: 12, zuhr: 12, asr: 12, maghrib: 12, isha: 12 };
+  if (!row || !row.description) return defaults;
+  try {
+    const parsed = JSON.parse(row.description);
+    PNAMES.forEach(p => {
+      const value = Number(parsed[p]);
+      if (!Number.isNaN(value) && value >= 0) defaults[p] = Math.min(60, Math.round(value));
+    });
+  } catch (e) {}
+  return defaults;
 }
 
 function fmt(s) {
@@ -783,7 +797,8 @@ function startActiveTracking(tod, tom) {
     let inBlackout = false, prayerName = '';
     for (const p of PNAMES) {
       const jM = toMins(tod[`${p}_jamaah`]);
-      if (jM !== null && nowM >= jM && nowM < jM + 12) { inBlackout = true; prayerName = PLABELS[p]; break; }
+      const blackoutMinutes = Math.max(0, Number(liveBlackout[p]) || 0);
+      if (blackoutMinutes && jM !== null && nowM >= jM && nowM < jM + blackoutMinutes) { inBlackout = true; prayerName = PLABELS[p]; break; }
     }
     if (inBlackout) { boPr.textContent = prayerName; bo.classList.add('active'); }
     else { bo.classList.remove('active'); }
@@ -829,7 +844,9 @@ async function initEvents(mosqueId) {
         '&active=eq.true&order=sort_order.asc&limit=100'
       );
       const themeRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displaytheme');
+      const blackoutRow = (tickerRows || []).find(row => String(row.tag || row.category || '').toLowerCase() === 'displayblackout');
       applyDisplayTheme(parseThemeRow(themeRow));
+      liveBlackout = parseBlackoutRow(blackoutRow);
       const tickers = (tickerRows || [])
         .filter(row => String(row.tag || row.category || '').toLowerCase() === 'ticker')
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))

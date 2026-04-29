@@ -27,9 +27,9 @@ Live site: https://qiblah.co.uk
 - Service times display in 12-hour AM/PM format.
 - Prayer countdown logic follows the same flow as the local mosque countdown: begins first, then Jamaah.
 - Super admin dashboard for managing mosques and core site data.
-- Mosque admin dashboard for mosque teams to manage their own profile, prayer timetable, Jummah times, services, announcements, classes/events, embed widgets, TV ticker and display colours.
+- Mosque admin dashboard for mosque teams to manage their own profile, prayer timetable, Jummah times, services, announcements, classes/events, embed widgets, TV ticker, blackout minutes and display colours.
 - Mosque admin stays logged in after refresh unless the user signs out.
-- TV display screen with prayer timetable, next salah, sunrise, Jummah, classes/events carousel, ticker messages and live refresh.
+- TV display screen with prayer timetable, next salah, sunrise, Jummah, classes/events carousel, ticker messages, per-prayer blackout minutes and live refresh.
 - Display settings allow mosque admins to change background, panel, accent/tag and text colours with preview and reset-to-default controls.
 - Embed widget includes small card and larger prayer times card options.
 - Register page has updated Qiblah branding and a shorter landing-page style layout.
@@ -56,7 +56,7 @@ Supabase stores the app data:
 - Classes and events
 - Mosque admin PIN records
 - TV ticker messages
-- TV display colour settings
+- TV display colour settings and blackout minutes
 
 Vercel serves the website and clean URLs:
 
@@ -89,6 +89,7 @@ Admin sections include:
 - Embed widgets
 - TV display preview
 - TV ticker
+- Blackout minutes for each prayer
 - Display colour settings
 - Raspberry Pi/display setup guide
 
