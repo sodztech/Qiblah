@@ -469,6 +469,9 @@
     height: clamp(22px, 2.3vw, 28px);
     margin-left: 2px;
   }
+  .tablet-audio-play.is-playing svg {
+    margin-left: 0;
+  }
   .tablet-audio-kicker {
     font-size: clamp(0.68rem, 0.85vw, 0.78rem);
     font-weight: 650;
@@ -970,9 +973,7 @@
 
     <section class="tablet-audio-player" aria-label="Qur'an audio player">
       <button class="tablet-audio-play" id="quran-play-btn" type="button" aria-label="Play Qur'an audio">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M8 5.9v12.2c0 .72.78 1.17 1.4.8l9.5-6.1a.95.95 0 0 0 0-1.6L9.4 5.1A.93.93 0 0 0 8 5.9Z"/>
-        </svg>
+        <span id="quran-play-icon" aria-hidden="true"></span>
       </button>
       <div class="tablet-audio-copy">
         <div class="tablet-audio-kicker">Qur'an Audio</div>
@@ -991,7 +992,7 @@
         <div class="tablet-audio-time" id="quran-audio-time">00:00 / 00:00</div>
         <div class="tablet-audio-bar"><div class="tablet-audio-progress" id="quran-audio-progress"></div></div>
       </div>
-      <audio id="quran-audio" preload="metadata"></audio>
+      <audio id="quran-audio" preload="auto" playsinline></audio>
     </section>
 
     <div class="tablet-action-dock" aria-label="Tablet actions">
@@ -1174,8 +1175,11 @@ const quranState = {
   reciters: QURAN_FALLBACK_RECITERS,
   chapterId: 18,
   reciterId: 7,
-  currentUrl: ''
+  currentUrl: '',
+  loading: false
 };
+const QURAN_PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.9v12.2c0 .72.78 1.17 1.4.8l9.5-6.1a.95.95 0 0 0 0-1.6L9.4 5.1A.93.93 0 0 0 8 5.9Z"/></svg>';
+const QURAN_PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-13Zm6 0c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-13Z"/></svg>';
 
 function quranFmtTime(seconds) {
   if (!Number.isFinite(seconds)) return '00:00';
@@ -1226,6 +1230,21 @@ function updateQuranTrackText() {
   if (reciterEl) reciterEl.textContent = quranReciterName(reciter);
 }
 
+function setQuranPlayIcon(isPlaying) {
+  const iconEl = document.getElementById('quran-play-icon');
+  const playBtn = document.getElementById('quran-play-btn');
+  if (iconEl) iconEl.innerHTML = isPlaying ? QURAN_PAUSE_ICON : QURAN_PLAY_ICON;
+  if (playBtn) {
+    playBtn.classList.toggle('is-playing', isPlaying);
+    playBtn.setAttribute('aria-label', isPlaying ? "Pause Qur'an audio" : "Play Qur'an audio");
+  }
+}
+
+function setQuranStatus(text) {
+  const reciterEl = document.getElementById('quran-track-reciter');
+  if (reciterEl) reciterEl.textContent = text;
+}
+
 function updateQuranTime() {
   const audio = document.getElementById('quran-audio');
   const timeEl = document.getElementById('quran-audio-time');
@@ -1271,6 +1290,7 @@ async function loadQuranAudio() {
   const audio = document.getElementById('quran-audio');
   if (!audio) return;
   updateQuranTrackText();
+  quranState.loading = true;
   try {
     const data = await fetchQuranJson(`/chapter_recitations/${quranState.reciterId}/${quranState.chapterId}`);
     const url = data && data.audio_file && data.audio_file.audio_url;
@@ -1283,8 +1303,27 @@ async function loadQuranAudio() {
     }
   } catch (err) {
     console.warn('Quran audio unavailable', err);
-    const reciterEl = document.getElementById('quran-track-reciter');
-    if (reciterEl) reciterEl.textContent = 'Audio unavailable for this selection';
+    setQuranStatus('Audio unavailable for this selection');
+  } finally {
+    quranState.loading = false;
+  }
+}
+
+async function playQuranAudio() {
+  const audio = document.getElementById('quran-audio');
+  if (!audio) return;
+  if (!audio.src || quranState.loading) await loadQuranAudio();
+  if (!audio.src) return;
+  try {
+    audio.muted = false;
+    audio.volume = 1;
+    await audio.play();
+    setQuranPlayIcon(true);
+    updateQuranTrackText();
+  } catch (err) {
+    console.warn('Quran playback blocked', err);
+    setQuranPlayIcon(false);
+    setQuranStatus('Tap play again to start audio');
   }
 }
 
@@ -1296,21 +1335,24 @@ async function initQuranPlayer() {
   if (!audio || !playBtn || !surahSelect || !reciterSelect) return;
 
   renderQuranSelects();
+  setQuranPlayIcon(false);
   audio.addEventListener('loadedmetadata', updateQuranTime);
   audio.addEventListener('timeupdate', updateQuranTime);
-  audio.addEventListener('ended', updateQuranTime);
+  audio.addEventListener('play', () => setQuranPlayIcon(true));
+  audio.addEventListener('pause', () => setQuranPlayIcon(false));
+  audio.addEventListener('ended', () => { setQuranPlayIcon(false); updateQuranTime(); });
   playBtn.addEventListener('click', async () => {
-    if (!audio.src) await loadQuranAudio();
-    if (!audio.src) return;
-    if (audio.paused) audio.play().catch(err => console.warn('Quran playback blocked', err));
+    if (audio.paused) await playQuranAudio();
     else audio.pause();
   });
   surahSelect.addEventListener('change', () => {
     quranState.chapterId = Number(surahSelect.value);
+    setQuranPlayIcon(false);
     loadQuranAudio();
   });
   reciterSelect.addEventListener('change', () => {
     quranState.reciterId = Number(reciterSelect.value);
+    setQuranPlayIcon(false);
     loadQuranAudio();
   });
 
