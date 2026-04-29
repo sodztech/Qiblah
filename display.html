@@ -572,6 +572,11 @@ const DEFAULT_TICKERS = [
   'Recite Ayat-ul-Kursi after every prayer',
   'Astaghfirullah \u00d73'
 ];
+const DISPLAY_REFRESH_MS = 60000;
+let liveTod = null;
+let liveTom = null;
+let eventRotateTimer = null;
+let jummahRotateTimer = null;
 
 function getSlug() {
   const params = new URLSearchParams(location.search);
@@ -636,6 +641,8 @@ function hijriDate(d) {
 
 // ── RENDER ROWS ───────────────────────────────────────────────────────────────
 function renderRows(tod, tom) {
+  liveTod = tod;
+  liveTom = tom;
   const cont = document.getElementById('rows');
   cont.innerHTML = '';
   PNAMES.forEach(p => {
@@ -693,7 +700,11 @@ function startClock() {
 
 // ── ACTIVE ROW TRACKING ───────────────────────────────────────────────────────
 function startActiveTracking(tod, tom) {
+  liveTod = tod;
+  liveTom = tom;
   function tick() {
+    const tod = liveTod, tom = liveTom;
+    if (!tod) return;
     const now  = new Date();
     const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
     const nowM = now.getHours()*60 + now.getMinutes();
@@ -719,6 +730,8 @@ function startActiveTracking(tod, tom) {
 
   // Banner countdown
   function tickBanner() {
+    const tod = liveTod, tom = liveTom;
+    if (!tod) return;
     const now  = new Date();
     const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
     let target = null, nextP = null;
@@ -738,6 +751,8 @@ function startActiveTracking(tod, tom) {
 
   // Blackout
   function checkBlackout() {
+    const tod = liveTod;
+    if (!tod) return;
     const now = new Date(), nowM = now.getHours()*60 + now.getMinutes();
     const bo = document.getElementById('blackout'), boPr = document.getElementById('bo-prayer');
     let inBlackout = false, prayerName = '';
@@ -755,6 +770,7 @@ function startActiveTracking(tod, tom) {
 function initJummahAnimator(mosque) {
   const wrap = document.getElementById('jummah-wrap');
   if (!wrap) return;
+  if (jummahRotateTimer) clearInterval(jummahRotateTimer);
   const times = [mosque.jummah, mosque.jummah2, mosque.jummah3].filter(Boolean);
   if (!times.length) { wrap.textContent = '\u2014'; return; }
   if (times.length === 1) {
@@ -768,7 +784,7 @@ function initJummahAnimator(mosque) {
     wrap.textContent = fmt(times[idx]);
   }
   show();
-  setInterval(() => { idx = (idx + 1) % times.length; show(); }, 10000);
+  jummahRotateTimer = setInterval(() => { idx = (idx + 1) % times.length; show(); }, 10000);
 }
 
 // ── EVENTS ────────────────────────────────────────────────────────────────────
@@ -776,6 +792,9 @@ async function initEvents(mosqueId) {
   const list   = document.getElementById('ev-list');
   const dotsEl = document.getElementById('ev-dots');
   if (!list) return;
+  if (eventRotateTimer) clearInterval(eventRotateTimer);
+  list.innerHTML = '';
+  if (dotsEl) dotsEl.innerHTML = '';
 
   try {
     try {
@@ -927,7 +946,7 @@ async function initEvents(mosqueId) {
       pageEls[current].classList.add('active');
       if (dotEls[current]) dotEls[current].classList.add('active');
     }
-    setInterval(() => goTo((current + 1) % pages.length), 15000);
+    eventRotateTimer = setInterval(() => goTo((current + 1) % pages.length), 15000);
 
   } catch(e) { console.warn('Events load failed', e); }
 }
@@ -957,6 +976,57 @@ function fetchSunrise(lat, lon, address) {
   }
 }
 
+async function fetchDisplayBundle(slug) {
+  const mosques = await sbGet('mosques?select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,url,lat,lon,sisters,facilities,logo&slug=eq.' + slug + '&limit=1');
+  const mosque  = mosques[0];
+  if (!mosque) throw new Error('not found');
+
+  const today = new Date().toISOString().split('T')[0];
+  const tmrD  = new Date(); tmrD.setDate(tmrD.getDate() + 1);
+  const tmr   = tmrD.toISOString().split('T')[0];
+
+  const prayers = await sbGet(
+    'prayer_timetables?select=date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah&mosque_id=eq.' + mosque.id +
+    '&date=in.(' + today + ',' + tmr + ')&order=date.asc'
+  );
+
+  const tod = prayers.find(p => p.date === today);
+  const tom = prayers.find(p => p.date === tmr);
+  if (!tod) throw new Error('no prayer times for today');
+  return { mosque, tod, tom };
+}
+
+function applyMosqueInfo(mosque) {
+  const miName = document.getElementById('mi-name');
+  const miInfo = document.getElementById('mobile-info');
+  if (miName) miName.textContent = mosque.name || '';
+  if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
+
+  const logoWrap = document.getElementById('mi-logo-wrap');
+  const logoImg  = document.getElementById('mi-logo');
+  if (logoWrap && logoImg && mosque.logo) {
+    logoImg.src = mosque.logo; logoImg.alt = mosque.name || '';
+    logoWrap.style.display = 'flex';
+  }
+  document.title = `${mosque.name} \u2014 Prayer Times`;
+  fetchSunrise(mosque.lat, mosque.lon, mosque.address);
+  initJummahAnimator(mosque);
+}
+
+function startLiveRefresh(slug) {
+  if (!slug) return;
+  setInterval(async () => {
+    try {
+      const fresh = await fetchDisplayBundle(slug);
+      applyMosqueInfo(fresh.mosque);
+      renderRows(fresh.tod, fresh.tom);
+      await initEvents(fresh.mosque.id);
+    } catch (err) {
+      console.warn('Live display refresh failed', err);
+    }
+  }, DISPLAY_REFRESH_MS);
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function init() {
   const slug   = getSlug();
@@ -965,22 +1035,7 @@ async function init() {
   const errEl  = document.getElementById('error');
 
   async function launch(mosque, tod, tom) {
-    // Info card
-    const miName = document.getElementById('mi-name');
-    const miInfo = document.getElementById('mobile-info');
-    if (miName) miName.textContent = mosque.name || '';
-    if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
-
-    const logoWrap = document.getElementById('mi-logo-wrap');
-    const logoImg  = document.getElementById('mi-logo');
-    if (logoWrap && logoImg && mosque.logo) {
-      logoImg.src = mosque.logo; logoImg.alt = mosque.name || '';
-      logoWrap.style.display = 'flex';
-    }
-    document.title = `${mosque.name} \u2014 Prayer Times`;
-
-    // Sunrise
-    fetchSunrise(mosque.lat, mosque.lon, mosque.address);
+    applyMosqueInfo(mosque);
 
     // Ticker init
     requestAnimationFrame(() => {
@@ -994,10 +1049,10 @@ async function init() {
     });
 
     renderRows(tod, tom);
-    initJummahAnimator(mosque);
     await initEvents(mosque.id);
     startClock();
     startActiveTracking(tod, tom);
+    startLiveRefresh(slug);
 
     const midnight = new Date(); midnight.setHours(24, 0, 30, 0);
     setTimeout(() => location.reload(), midnight - new Date());
@@ -1009,24 +1064,8 @@ async function init() {
   if (!slug) { launch({ ...DEMO.mosque, id: null }, DEMO.today, DEMO.tomorrow); return; }
 
   try {
-    const mosques = await sbGet('mosques?select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,url,lat,lon,sisters,facilities,logo&slug=eq.' + slug + '&limit=1');
-    const mosque  = mosques[0];
-    if (!mosque) throw new Error('not found');
-
-    const today = new Date().toISOString().split('T')[0];
-    const tmrD  = new Date(); tmrD.setDate(tmrD.getDate() + 1);
-    const tmr   = tmrD.toISOString().split('T')[0];
-
-    const prayers = await sbGet(
-      'prayer_timetables?select=date,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah&mosque_id=eq.' + mosque.id +
-      '&date=in.(' + today + ',' + tmr + ')&order=date.asc'
-    );
-
-    const tod = prayers.find(p => p.date === today);
-    const tom = prayers.find(p => p.date === tmr);
-    if (!tod) throw new Error('no prayer times for today');
-
-    launch(mosque, tod, tom);
+    const bundle = await fetchDisplayBundle(slug);
+    launch(bundle.mosque, bundle.tod, bundle.tom);
 
   } catch (err) {
     console.error(err);
