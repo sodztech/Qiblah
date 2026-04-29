@@ -310,8 +310,8 @@ textarea{resize:vertical;min-height:80px}
         </div>
         <div class="card-body">
           <table>
-            <thead><tr><th>Name</th><th>Area</th><th>Borough</th><th>Jummah</th><th>Actions</th></tr></thead>
-            <tbody id="mosques-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+            <thead><tr><th>Name</th><th>Area</th><th>Borough</th><th>Jummah</th><th>TV Display</th><th>Actions</th></tr></thead>
+            <tbody id="mosques-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -576,13 +576,15 @@ function renderAnalytics() {
 }
 
 function renderMosques() {
-  if (!state.mosques.length) { document.getElementById('mosques-tbody').innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No mosques yet</p></div></td></tr>'; return; }
+  if (!state.mosques.length) { document.getElementById('mosques-tbody').innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No mosques yet</p></div></td></tr>'; return; }
   document.getElementById('mosques-tbody').innerHTML = state.mosques.map(function(m){
+    var displayDisabled = m.slug ? '' : ' disabled title="Add a slug first"';
     return '<tr>' +
       '<td><strong>' + m.name + '</strong><div style="font-size:11px;color:var(--muted);margin-top:2px">' + (m.address||'') + '</div></td>' +
       '<td><span class="badge badge-gold">' + (m.area||'—') + '</span></td>' +
       '<td>' + (m.borough||'—') + '</td>' +
       '<td style="font-size:12px">' + (m.jummah||'—') + '</td>' +
+      '<td><button class="btn btn-primary btn-sm" data-action="open-display" data-id="' + m.id + '"' + displayDisabled + '>Open TV</button> <button class="btn btn-ghost btn-sm" data-action="copy-display" data-id="' + m.id + '"' + displayDisabled + '>Copy Link</button></td>' +
       '<td><button class="btn btn-ghost btn-sm" data-action="edit-mosque" data-id="' + m.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-mosque" data-id="' + m.id + '">Delete</button></td>' +
     '</tr>';
   }).join('');
@@ -591,8 +593,34 @@ function renderMosques() {
       var id = this.dataset.id;
       if (this.dataset.action === 'edit-mosque') editMosque(id);
       else if (this.dataset.action === 'delete-mosque') deleteMosque(id, state.mosques.find(function(m){return m.id===id;}).name);
+      else if (this.dataset.action === 'open-display') openDisplay(id);
+      else if (this.dataset.action === 'copy-display') copyDisplayLink(id);
     });
   });
+}
+
+function displayUrlForMosque(mosque) {
+  if (!mosque || !mosque.slug) return '';
+  var url = new URL('../display.html', location.href);
+  url.searchParams.set('mosque', mosque.slug);
+  return url.href;
+}
+function openDisplay(id) {
+  var mosque = state.mosques.find(function(m){ return m.id === id; });
+  var url = displayUrlForMosque(mosque);
+  if (!url) { toast('Add a slug before opening TV display', 'error'); return; }
+  window.open(url, '_blank', 'noopener');
+}
+function copyDisplayLink(id) {
+  var mosque = state.mosques.find(function(m){ return m.id === id; });
+  var url = displayUrlForMosque(mosque);
+  if (!url) { toast('Add a slug before copying display link', 'error'); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function(){ toast('TV display link copied', 'success'); })
+      .catch(function(){ prompt('TV display link', url); });
+  } else {
+    prompt('TV display link', url);
+  }
 }
 
 function renderAdmins() {
