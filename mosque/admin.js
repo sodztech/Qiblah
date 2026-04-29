@@ -608,6 +608,68 @@ function addAnnouncement() {
     showSaveStatus('Announcement saved', true);
   }).catch(function(err) { showSaveStatus('Announcement save failed: ' + err.message.slice(0, 80), false); });
 }
+function parseBulkAnnouncementRows(text) {
+  var lines = String(text || '').split(/\r?\n/).filter(function(line) { return line.trim(); });
+  if (!lines.length) return [];
+  var useTabs = lines[0].indexOf('\t') !== -1;
+  var table = useTabs ? lines.map(function(line) { return line.split('\t'); }) : parseCSV(text);
+  var head = (table.shift() || []).map(function(h) { return String(h || '').trim().toLowerCase(); });
+  function col(names) {
+    for (var i = 0; i < names.length; i++) {
+      var idx = head.indexOf(names[i]);
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  }
+  var cols = {
+    day: col(['day']),
+    startDate: col(['start_date', 'start date', 'date']),
+    weeks: col(['weeks']),
+    time: col(['time']),
+    title: col(['title']),
+    desc: col(['desc', 'description']),
+    tag: col(['tag', 'category'])
+  };
+  if (cols.title === -1 || cols.tag === -1) throw new Error('Missing title or tag column.');
+  return table.map(function(row, i) {
+    function value(idx) { return idx === -1 ? '' : String(row[idx] || '').trim(); }
+    var payload = {
+      mosque_id: currentMosque.id,
+      title: value(cols.title),
+      tag: value(cols.tag) || 'Event',
+      category: value(cols.tag) || 'Event',
+      description: value(cols.desc),
+      day: value(cols.day) || null,
+      start_date: parseAdminDate(value(cols.startDate)),
+      weeks: value(cols.weeks) || null,
+      time: normaliseTime(value(cols.time)) || null,
+      sort_order: currentData.announcements.length + i + 1,
+      active: true
+    };
+    return payload.title ? payload : null;
+  }).filter(Boolean);
+}
+function bulkImportAnnouncements() {
+  var input = byId('ann-bulk-input');
+  var text = input ? input.value : '';
+  var rows;
+  try {
+    rows = parseBulkAnnouncementRows(text);
+  } catch (err) {
+    showSaveStatus('Import failed: ' + err.message.slice(0, 80), false);
+    return;
+  }
+  if (!rows.length) { showSaveStatus('Paste rows to import first.', false); return; }
+  showSaveStatus('Importing ' + rows.length + ' rows...', false);
+  sbFetch('announcements', { method: 'POST', body: JSON.stringify(rows) })
+    .then(function(saved) {
+      currentData.announcements = (saved || rows).concat(currentData.announcements);
+      if (input) input.value = '';
+      renderAnnouncements();
+      showSaveStatus(rows.length + ' rows imported', true);
+    })
+    .catch(function(err) { showSaveStatus('Import failed: ' + err.message.slice(0, 80), false); });
+}
 function editAnnouncement(idx) {
   var a = currentData.announcements[idx];
   if (!a) return;
