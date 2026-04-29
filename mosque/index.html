@@ -707,7 +707,11 @@ select.inline-sel:focus { border-color: var(--gold-border); }
     <div id="subt-jummah" style="display:none">
       <div class="card">
         <div class="card-head"><span class="card-title">Jummah Prayer</span></div>
-        <div class="field"><label>Jummah Times (comma separated)</label><input type="text" id="jummah-times-input" placeholder="e.g. 1:00 PM, 1:45 PM, 2:30 PM"></div>
+        <div class="row-3">
+          <div class="field"><label>Jummah 1</label><input type="text" id="jummah-time-1" placeholder="13:30"></div>
+          <div class="field"><label>Jummah 2</label><input type="text" id="jummah-time-2" placeholder="14:15"></div>
+          <div class="field"><label>Jummah 3</label><input type="text" id="jummah-time-3" placeholder="15:00"></div>
+        </div>
         <div class="field"><label>Language</label><input type="text" id="jummah-lang" placeholder="e.g. English, Bengali"></div>
         <div class="field"><label>Notes (optional)</label><textarea id="jummah-notes" placeholder="e.g. Sisters welcome." style="min-height:60px"></textarea></div>
         <div class="save-row"><button class="btn btn-ghost" style="width:auto;flex:1" onclick="saveJummah()">Save Jummah</button></div>
