@@ -936,10 +936,12 @@
   }
   .tablet-adhkar-controls {
     display: flex;
-    gap: 10px;
+    justify-content: flex-end;
+    gap: 12px;
     margin-top: 14px;
   }
   .tablet-adhkar-control {
+    min-width: 96px;
     min-height: 40px;
     border: 1px solid rgba(var(--gold-rgb),0.32);
     border-radius: 12px;
@@ -1012,6 +1014,11 @@
   .tablet-settings-entry.compact {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+  .tablet-settings-entry.has-range {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 12px;
   }
   .tablet-settings-entry:last-child {
     border-bottom: none;
@@ -1105,6 +1112,28 @@
     display: grid;
     gap: 9px;
     min-width: 190px;
+  }
+  .tablet-settings-entry.has-range .tablet-settings-control-stack {
+    width: 100%;
+    min-width: 0;
+  }
+  .tablet-settings-audio-stack {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    justify-items: end;
+    min-width: 220px;
+  }
+  .tablet-settings-audio-stack .tablet-switch {
+    grid-column: 2;
+    justify-self: end;
+  }
+  .tablet-settings-audio-stack .tablet-settings-range,
+  .tablet-settings-audio-stack .tablet-settings-level {
+    grid-column: 1 / -1;
+  }
+  .tablet-settings-slider-stack {
+    justify-items: end;
+    min-width: 220px;
   }
   .tablet-settings-range {
     width: 100%;
@@ -1982,24 +2011,24 @@
             </div>
             <button class="tablet-switch is-on" type="button" aria-label="Prayer notifications"></button>
           </div>
-          <div class="tablet-settings-entry">
+          <div class="tablet-settings-entry has-range">
             <div>
               <div class="tablet-settings-label">Adhan sound</div>
               <div class="tablet-settings-hint">Play adhan at prayer time</div>
             </div>
-            <div class="tablet-settings-control-stack">
+            <div class="tablet-settings-control-stack tablet-settings-audio-stack">
               <button class="tablet-switch is-on" id="tablet-adhan-enabled" type="button" aria-label="Adhan sound"></button>
               <input class="tablet-settings-range" id="tablet-adhan-volume" type="range" min="0" max="100" value="80" step="1" aria-label="Adhan volume">
               <div class="tablet-settings-level" id="tablet-adhan-volume-label">80%</div>
             </div>
           </div>
           <div class="tablet-settings-section">Display</div>
-          <div class="tablet-settings-entry">
+          <div class="tablet-settings-entry has-range">
             <div>
               <div class="tablet-settings-label">Brightness</div>
               <div class="tablet-settings-hint">Dim the tablet screen</div>
             </div>
-            <div class="tablet-settings-control-stack">
+            <div class="tablet-settings-control-stack tablet-settings-slider-stack">
               <input class="tablet-settings-range" id="tablet-brightness-level" type="range" min="25" max="100" value="100" step="1" aria-label="Screen brightness">
               <div class="tablet-settings-level" id="tablet-brightness-label">100%</div>
             </div>
