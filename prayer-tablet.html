@@ -867,6 +867,28 @@
     gap: 12px;
     align-items: center;
   }
+  .tablet-home-volume-wrap {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+  }
+  .tablet-home-volume-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--gold);
+    font-size: clamp(0.7rem, 0.84vw, 0.8rem);
+    font-weight: 650;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .tablet-home-volume-label svg {
+    width: 15px;
+    height: 15px;
+  }
   .tablet-home-player-time {
     color: var(--gold);
     font-size: clamp(0.76rem, 0.92vw, 0.88rem);
@@ -1932,7 +1954,13 @@
               </div>
             </div>
             <div class="tablet-home-player-controls">
-              <input class="tablet-home-volume" id="tablet-home-audio-volume" type="range" min="0" max="100" value="80" step="1" aria-label="Audio volume">
+              <label class="tablet-home-volume-wrap" for="tablet-home-audio-volume">
+                <span class="tablet-home-volume-label">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9.5v5h4l5 4v-13l-5 4H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  Vol
+                </span>
+                <input class="tablet-home-volume" id="tablet-home-audio-volume" type="range" min="0" max="100" value="80" step="1" aria-label="Audio volume">
+              </label>
               <div class="tablet-home-player-time" id="tablet-home-audio-time">00:00 / 00:00</div>
             </div>
           </div>
