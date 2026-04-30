@@ -625,6 +625,80 @@
     background: var(--gold);
     box-shadow: 0 0 0 4px rgba(var(--gold-rgb),0.12);
   }
+  .tablet-quran-translation {
+    width: min(1040px, 92vw);
+    max-height: min(42vh, 390px);
+    margin: clamp(14px, 1.8vw, 22px) auto 0;
+    padding: clamp(18px, 2.4vw, 30px);
+    border-radius: 18px;
+    background: rgba(16,26,40,0.96);
+    color: var(--text);
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--gold-rgb),0.2),
+      0 14px 30px rgba(7,12,18,0.16);
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .tablet-quran-translation-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: baseline;
+    flex-shrink: 0;
+  }
+  .tablet-quran-translation-title {
+    margin-top: 6px;
+    color: rgba(255,255,255,0.92);
+    font-size: clamp(1.25rem, 2vw, 1.9rem);
+    font-weight: 520;
+    line-height: 1.15;
+  }
+  .tablet-quran-translation-source {
+    color: var(--muted);
+    font-size: clamp(0.78rem, 1vw, 0.95rem);
+    white-space: nowrap;
+  }
+  .tablet-quran-verses {
+    display: grid;
+    gap: 12px;
+    margin-top: clamp(14px, 1.8vw, 22px);
+    padding-right: 6px;
+    overflow: auto;
+    min-height: 0;
+  }
+  .tablet-quran-verse {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 13px 0;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .tablet-quran-verse:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .tablet-quran-verse-key {
+    min-width: 42px;
+    padding-top: 2px;
+    color: var(--gold);
+    font-size: clamp(0.78rem, 1vw, 0.95rem);
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tablet-quran-verse-text {
+    color: rgba(255,255,255,0.86);
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    font-weight: 400;
+    line-height: 1.55;
+  }
+  .tablet-quran-empty {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: clamp(0.9rem, 1.12vw, 1.05rem);
+  }
   @media (max-width: 720px) {
     .tablet-audio-player {
       grid-template-columns: auto minmax(0, 1fr);
@@ -637,6 +711,13 @@
     }
     .tablet-volume-bar {
       width: min(140px, 42vw);
+    }
+    .tablet-quran-translation-head {
+      display: grid;
+      gap: 4px;
+    }
+    .tablet-quran-translation-source {
+      white-space: normal;
     }
   }
   @media (max-height: 780px) {
@@ -730,6 +811,19 @@
     .tablet-audio-time {
       font-size: clamp(0.82rem, 1vw, 0.95rem);
     }
+    .tablet-quran-translation {
+      max-height: min(34vh, 260px);
+      margin-top: 10px;
+      padding: 16px 20px;
+      border-radius: 16px;
+    }
+    .tablet-quran-verses {
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .tablet-quran-verse {
+      padding: 9px 0;
+    }
     .tablet-action-dock {
       bottom: 10px;
     }
@@ -745,6 +839,7 @@
   }
   #tablet-home-page,
   .tablet-audio-player,
+  #tablet-quran-translation,
   #tablet-schedule-page,
   #tablet-adhkar-page,
   #tablet-settings-page {
@@ -765,6 +860,9 @@
   }
   body.tablet-view-quran .tablet-audio-player {
     display: grid;
+  }
+  body.tablet-view-quran #tablet-quran-translation {
+    display: flex;
   }
   .tablet-home-widgets {
     display: grid;
@@ -2260,6 +2358,19 @@
       <audio id="tablet-adhkar-audio" preload="metadata" playsinline></audio>
     </section>
 
+    <section id="tablet-quran-translation" class="tablet-quran-translation" aria-label="English Quran translation">
+      <div class="tablet-quran-translation-head">
+        <div>
+          <div class="tablet-audio-kicker">English Translation</div>
+          <div class="tablet-quran-translation-title" id="quran-translation-title">Surah Al-Kahf</div>
+        </div>
+        <div class="tablet-quran-translation-source" id="quran-translation-source">Quran.com</div>
+      </div>
+      <div class="tablet-quran-verses" id="quran-translation-verses">
+        <div class="tablet-quran-empty">Loading English translation...</div>
+      </div>
+    </section>
+
     <section id="tablet-adhkar-page" class="tablet-page-card" aria-label="Adhkar audio">
       <div class="tablet-page-kicker">Adhkar</div>
       <div class="tablet-page-title">Morning & Evening Adhkar</div>
@@ -2472,6 +2583,7 @@ const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi
 const PNAMES  = ['fajr','zuhr','asr','maghrib','isha'];
 const PLABELS = { fajr:'Fajr', zuhr:'Zuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
 const QURAN_API = 'https://api.quran.com/api/v4';
+const QURAN_ENGLISH_TRANSLATION_ID = 20;
 const ATHAN_AUDIO_URL = 'https://www.islamcan.com/audio/adhan/azan1.mp3';
 const QURAN_FALLBACK_CHAPTERS = [
   { id: 1, name_simple: 'Al-Fatihah' },
@@ -2694,7 +2806,8 @@ const quranState = {
   reciterId: 7,
   currentUrl: '',
   loading: false,
-  seeking: false
+  seeking: false,
+  translations: new Map()
 };
 const QURAN_PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.9v12.2c0 .72.78 1.17 1.4.8l9.5-6.1a.95.95 0 0 0 0-1.6L9.4 5.1A.93.93 0 0 0 8 5.9Z"/></svg>';
 const QURAN_PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-13Zm6 0c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-13Z"/></svg>';
@@ -2792,9 +2905,70 @@ function updateQuranTrackText() {
   const reciter = quranState.reciters.find(rec => Number(rec.id) === Number(quranState.reciterId));
   const titleEl = document.getElementById('quran-track-title');
   const reciterEl = document.getElementById('quran-track-reciter');
+  const translationTitleEl = document.getElementById('quran-translation-title');
   if (titleEl) titleEl.textContent = chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'Select Surah';
   if (reciterEl) reciterEl.textContent = quranReciterName(reciter);
+  if (translationTitleEl) translationTitleEl.textContent = chapter ? `Surah ${chapter.name_simple || chapter.name_complex}` : 'Select Surah';
   updateHomeAudioControl();
+}
+
+function quranCleanTranslationText(value) {
+  const temp = document.createElement('textarea');
+  temp.innerHTML = String(value || '')
+    .replace(/<sup[^>]*>.*?<\/sup>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, ' ');
+  return temp.value
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function quranTranslationVerseNumber(verse, index = 0) {
+  const key = String(verse.verse_key || '').split(':').pop();
+  return key || String(verse.verse_number || verse.id || index + 1);
+}
+
+function renderQuranTranslation(rows, source = 'Quran.com') {
+  const sourceEl = document.getElementById('quran-translation-source');
+  const versesEl = document.getElementById('quran-translation-verses');
+  updateQuranTrackText();
+  if (sourceEl) sourceEl.textContent = source || 'Quran.com';
+  if (!versesEl) return;
+  if (!rows || !rows.length) {
+    versesEl.innerHTML = '<div class="tablet-quran-empty">English translation unavailable for this Surah.</div>';
+    return;
+  }
+  versesEl.innerHTML = rows.map((verse, index) => {
+    const number = quranTranslationVerseNumber(verse, index);
+    const text = quranCleanTranslationText(verse.text);
+    return `
+      <div class="tablet-quran-verse">
+        <div class="tablet-quran-verse-key">${escTicker(number)}</div>
+        <div class="tablet-quran-verse-text">${escTicker(text)}</div>
+      </div>
+    `;
+  }).join('');
+  versesEl.scrollTop = 0;
+}
+
+async function loadQuranTranslation() {
+  const versesEl = document.getElementById('quran-translation-verses');
+  const chapterId = Number(quranState.chapterId || 18);
+  updateQuranTrackText();
+  if (quranState.translations.has(chapterId)) {
+    renderQuranTranslation(quranState.translations.get(chapterId), 'Saheeh International');
+    return;
+  }
+  if (versesEl) versesEl.innerHTML = '<div class="tablet-quran-empty">Loading English translation...</div>';
+  try {
+    const data = await fetchQuranJson(`/quran/translations/${QURAN_ENGLISH_TRANSLATION_ID}?chapter_number=${chapterId}`);
+    const rows = data && data.translations ? data.translations : [];
+    quranState.translations.set(chapterId, rows);
+    renderQuranTranslation(rows, (data.meta && data.meta.translation_name) || 'Saheeh International');
+  } catch (err) {
+    console.warn('Quran translation unavailable', err);
+    renderQuranTranslation([], 'Quran.com');
+  }
 }
 
 function setQuranPlayIcon(isPlaying) {
@@ -3080,6 +3254,7 @@ async function initQuranPlayer() {
     quranState.chapterId = Number(surahSelect.value);
     setQuranPlayIcon(false);
     loadQuranAudio();
+    loadQuranTranslation();
   });
   reciterSelect.addEventListener('change', () => {
     quranState.reciterId = Number(reciterSelect.value);
@@ -3089,6 +3264,7 @@ async function initQuranPlayer() {
 
   await loadQuranLists();
   await loadQuranAudio();
+  await loadQuranTranslation();
 }
 
 function setTabletAdhkarStatus(text) {
