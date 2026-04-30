@@ -660,44 +660,68 @@
     white-space: nowrap;
   }
   .tablet-quran-verses {
-    display: grid;
-    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     margin-top: clamp(14px, 1.8vw, 22px);
-    padding-right: 6px;
-    overflow: auto;
+    padding: clamp(18px, 2.4vw, 28px);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.035);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
     min-height: 0;
+    flex: 1;
   }
   .tablet-quran-verse {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 12px;
-    align-items: start;
-    padding: 13px 0;
-    border-top: 1px solid rgba(255,255,255,0.07);
-  }
-  .tablet-quran-verse:first-child {
-    border-top: 0;
-    padding-top: 0;
+    gap: clamp(10px, 1.4vw, 16px);
   }
   .tablet-quran-verse-key {
-    min-width: 42px;
-    padding-top: 2px;
     color: var(--gold);
     font-size: clamp(0.78rem, 1vw, 0.95rem);
     font-weight: 650;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
     font-variant-numeric: tabular-nums;
   }
   .tablet-quran-verse-text {
     color: rgba(255,255,255,0.86);
-    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    font-size: clamp(1.3rem, 2.2vw, 2.15rem);
     font-weight: 400;
-    line-height: 1.55;
+    line-height: 1.45;
   }
   .tablet-quran-empty {
     margin-top: 18px;
     color: var(--muted);
     font-size: clamp(0.9rem, 1.12vw, 1.05rem);
+  }
+  .tablet-quran-translation-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: clamp(12px, 1.4vw, 18px);
+    flex-shrink: 0;
+  }
+  .tablet-quran-verse-btn {
+    min-width: 92px;
+    height: 42px;
+    border: 1px solid rgba(var(--gold-rgb),0.32);
+    border-radius: 999px;
+    background: rgba(var(--gold-rgb),0.08);
+    color: var(--gold);
+    font: inherit;
+    font-size: clamp(0.78rem, 1vw, 0.95rem);
+    font-weight: 560;
+    cursor: pointer;
+  }
+  .tablet-quran-verse-btn:disabled {
+    opacity: 0.38;
+    cursor: default;
+  }
+  .tablet-quran-verse-count {
+    color: var(--muted);
+    font-size: clamp(0.78rem, 1vw, 0.95rem);
+    font-variant-numeric: tabular-nums;
   }
   @media (max-width: 720px) {
     .tablet-audio-player {
@@ -818,11 +842,15 @@
       border-radius: 16px;
     }
     .tablet-quran-verses {
-      gap: 8px;
       margin-top: 10px;
+      padding: 14px 16px;
     }
-    .tablet-quran-verse {
-      padding: 9px 0;
+    .tablet-quran-verse-text {
+      font-size: clamp(1rem, 1.6vw, 1.35rem);
+    }
+    .tablet-quran-verse-btn {
+      min-width: 76px;
+      height: 36px;
     }
     .tablet-action-dock {
       bottom: 10px;
@@ -2369,6 +2397,11 @@
       <div class="tablet-quran-verses" id="quran-translation-verses">
         <div class="tablet-quran-empty">Loading English translation...</div>
       </div>
+      <div class="tablet-quran-translation-controls">
+        <button class="tablet-quran-verse-btn" id="quran-verse-prev" type="button">Previous</button>
+        <div class="tablet-quran-verse-count" id="quran-verse-count">Verse -- / --</div>
+        <button class="tablet-quran-verse-btn" id="quran-verse-next" type="button">Next</button>
+      </div>
     </section>
 
     <section id="tablet-adhkar-page" class="tablet-page-card" aria-label="Adhkar audio">
@@ -2807,7 +2840,10 @@ const quranState = {
   currentUrl: '',
   loading: false,
   seeking: false,
-  translations: new Map()
+  translations: new Map(),
+  translationRows: [],
+  translationSource: 'Quran.com',
+  translationVerseIndex: 0
 };
 const QURAN_PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.9v12.2c0 .72.78 1.17 1.4.8l9.5-6.1a.95.95 0 0 0 0-1.6L9.4 5.1A.93.93 0 0 0 8 5.9Z"/></svg>';
 const QURAN_PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-13Zm6 0c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-13Z"/></svg>';
@@ -2928,27 +2964,67 @@ function quranTranslationVerseNumber(verse, index = 0) {
   return key || String(verse.verse_number || verse.id || index + 1);
 }
 
-function renderQuranTranslation(rows, source = 'Quran.com') {
+function renderCurrentQuranVerse() {
   const sourceEl = document.getElementById('quran-translation-source');
   const versesEl = document.getElementById('quran-translation-verses');
+  const countEl = document.getElementById('quran-verse-count');
+  const prevBtn = document.getElementById('quran-verse-prev');
+  const nextBtn = document.getElementById('quran-verse-next');
+  const rows = quranState.translationRows || [];
   updateQuranTrackText();
-  if (sourceEl) sourceEl.textContent = source || 'Quran.com';
+  if (sourceEl) sourceEl.textContent = quranState.translationSource || 'Quran.com';
   if (!versesEl) return;
   if (!rows || !rows.length) {
     versesEl.innerHTML = '<div class="tablet-quran-empty">English translation unavailable for this Surah.</div>';
+    if (countEl) countEl.textContent = 'Verse -- / --';
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
     return;
   }
-  versesEl.innerHTML = rows.map((verse, index) => {
-    const number = quranTranslationVerseNumber(verse, index);
-    const text = quranCleanTranslationText(verse.text);
-    return `
-      <div class="tablet-quran-verse">
-        <div class="tablet-quran-verse-key">${escTicker(number)}</div>
-        <div class="tablet-quran-verse-text">${escTicker(text)}</div>
-      </div>
-    `;
-  }).join('');
-  versesEl.scrollTop = 0;
+  quranState.translationVerseIndex = Math.max(0, Math.min(rows.length - 1, Number(quranState.translationVerseIndex) || 0));
+  const index = quranState.translationVerseIndex;
+  const verse = rows[index];
+  const number = quranTranslationVerseNumber(verse, index);
+  const text = quranCleanTranslationText(verse.text);
+  versesEl.innerHTML = `
+    <div class="tablet-quran-verse">
+      <div class="tablet-quran-verse-key">Verse ${escTicker(number)}</div>
+      <div class="tablet-quran-verse-text">${escTicker(text)}</div>
+    </div>
+  `;
+  if (countEl) countEl.textContent = `Verse ${index + 1} / ${rows.length}`;
+  if (prevBtn) prevBtn.disabled = index <= 0;
+  if (nextBtn) nextBtn.disabled = index >= rows.length - 1;
+}
+
+function renderQuranTranslation(rows, source = 'Quran.com') {
+  quranState.translationRows = rows || [];
+  quranState.translationSource = source || 'Quran.com';
+  quranState.translationVerseIndex = 0;
+  renderCurrentQuranVerse();
+}
+
+function syncQuranVerseToAudio() {
+  const audio = document.getElementById('quran-audio');
+  const rows = quranState.translationRows || [];
+  if (!audio || !audio.duration || !rows.length || quranState.seeking) return;
+  const progress = Math.max(0, Math.min(0.999, audio.currentTime / audio.duration));
+  const nextIndex = Math.min(rows.length - 1, Math.floor(progress * rows.length));
+  if (nextIndex !== quranState.translationVerseIndex) {
+    quranState.translationVerseIndex = nextIndex;
+    renderCurrentQuranVerse();
+  }
+}
+
+function moveQuranVerse(delta) {
+  const rows = quranState.translationRows || [];
+  if (!rows.length) return;
+  quranState.translationVerseIndex = Math.max(0, Math.min(rows.length - 1, quranState.translationVerseIndex + delta));
+  const audio = document.getElementById('quran-audio');
+  if (audio && audio.duration) {
+    audio.currentTime = (quranState.translationVerseIndex / rows.length) * audio.duration;
+  }
+  renderCurrentQuranVerse();
 }
 
 async function loadQuranTranslation() {
@@ -3116,6 +3192,7 @@ function updateQuranTime() {
     const value = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
     seekEl.value = String(Math.max(0, Math.min(1000, value)));
   }
+  syncQuranVerseToAudio();
   updateHomeAudioControl();
 }
 
@@ -3214,6 +3291,8 @@ async function initQuranPlayer() {
   const seekEl = document.getElementById('quran-audio-seek');
   const volumeEl = document.getElementById('quran-audio-volume');
   const athanAudio = document.getElementById('athan-audio');
+  const prevVerseBtn = document.getElementById('quran-verse-prev');
+  const nextVerseBtn = document.getElementById('quran-verse-next');
   if (!audio || !playBtn || !surahSelect || !reciterSelect || !seekEl || !volumeEl) return;
 
   renderQuranSelects();
@@ -3235,12 +3314,14 @@ async function initQuranPlayer() {
     else audio.pause();
   });
   seekEl.addEventListener('pointerdown', () => { quranState.seeking = true; });
-  seekEl.addEventListener('pointerup', () => { quranState.seeking = false; updateQuranTime(); });
+  seekEl.addEventListener('pointerup', () => { quranState.seeking = false; updateQuranTime(); syncQuranVerseToAudio(); });
   seekEl.addEventListener('input', () => {
     if (!audio.duration) return;
     audio.currentTime = (Number(seekEl.value) / 1000) * audio.duration;
     updateQuranTime();
   });
+  prevVerseBtn?.addEventListener('click', () => moveQuranVerse(-1));
+  nextVerseBtn?.addEventListener('click', () => moveQuranVerse(1));
   volumeEl.addEventListener('input', () => {
     const value = Math.max(0, Math.min(100, Number(volumeEl.value) || 0));
     audio.volume = value / 100;
