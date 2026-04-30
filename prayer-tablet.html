@@ -2833,6 +2833,11 @@ function setTabletCardNextLabel(text) {
   if (label) label.textContent = text;
 }
 
+function tabletCountdownLabel(prayer, phase) {
+  const name = PLABELS[prayer] || prayer || 'Next';
+  return phase === 'jamaah' ? `${name} Jamat` : `${name} Begins`;
+}
+
 async function sbGet(path) {
   const r = await fetch(`${SB}/rest/v1/${path}`, { headers: { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` } });
   if (!r.ok) throw new Error(`${r.status}`);
@@ -4322,18 +4327,18 @@ function startActiveTracking(tod, tom) {
     if (!tod) return;
     const now  = new Date();
     const nowS = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
-    let target = null, nextP = null, phase = 'Begins in';
+    let target = null, nextP = null, phase = 'begins';
     for (const p of PNAMES) {
       const bM = toMins(tod[p+'_begins']);
       const jM = toMins(tod[p+'_jamaah']);
-      if (bM !== null && bM*60 > nowS) { target = bM*60; nextP = p; phase = 'Begins in'; break; }
-      if (jM !== null && jM*60 > nowS) { target = jM*60; nextP = p; phase = 'Iqamah in'; break; }
+      if (bM !== null && bM*60 > nowS) { target = bM*60; nextP = p; phase = 'begins'; break; }
+      if (jM !== null && jM*60 > nowS) { target = jM*60; nextP = p; phase = 'jamaah'; break; }
     }
     if (!target && tom) {
       const bM = toMins(tom.fajr_begins || tom.fajr_jamaah);
       const jM = toMins(tom.fajr_jamaah);
-      if (bM !== null) { target = (24*60+bM)*60; nextP = 'fajr'; phase = 'Begins in'; }
-      else if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; phase = 'Iqamah in'; }
+      if (bM !== null) { target = (24*60+bM)*60; nextP = 'fajr'; phase = 'begins'; }
+      else if (jM !== null) { target = (24*60+jM)*60; nextP = 'fajr'; phase = 'jamaah'; }
     }
     if (!nextP) return;
     document.getElementById('mb-prayer').textContent = PLABELS[nextP] || nextP;
@@ -4343,6 +4348,7 @@ function startActiveTracking(tod, tom) {
     document.getElementById('mb-countdown').textContent = countdown;
     const tabletCardCountdown = document.getElementById('tablet-card-countdown');
     if (tabletCardCountdown) tabletCardCountdown.textContent = countdown;
+    setTabletCardNextLabel(tabletCountdownLabel(nextP, phase));
     document.querySelectorAll('.tablet-prayer-tile').forEach(tile => {
       tile.classList.toggle('active', tile.dataset.cardPrayer === nextP);
     });
