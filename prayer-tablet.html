@@ -2539,11 +2539,27 @@ let localPrayerRefreshTimer = null;
 
 function getSlug() {
   const params = new URLSearchParams(location.search);
-  if (params.get('local') === '1') return '';
+  if (params.get('local') === '1') {
+    localStorage.setItem('qiblahTabletMode', 'local');
+    localStorage.removeItem('qiblahTabletMosqueSlug');
+    return '';
+  }
   const querySlug = params.get('mosque') || params.get('slug');
-  if (querySlug) return querySlug;
+  if (querySlug) {
+    localStorage.setItem('qiblahTabletMode', 'mosque');
+    localStorage.setItem('qiblahTabletMosqueSlug', querySlug);
+    return querySlug;
+  }
   const m = location.pathname.match(/\/(?:prayer-tablet|display|tv|screen)\/([^/?#]+)/);
-  if (m) return decodeURIComponent(m[1]);
+  if (m) {
+    const pathSlug = decodeURIComponent(m[1]);
+    localStorage.setItem('qiblahTabletMode', 'mosque');
+    localStorage.setItem('qiblahTabletMosqueSlug', pathSlug);
+    return pathSlug;
+  }
+  const savedMode = localStorage.getItem('qiblahTabletMode');
+  const savedSlug = localStorage.getItem('qiblahTabletMosqueSlug');
+  if (savedMode === 'mosque' && savedSlug) return savedSlug;
   return null;
 }
 
@@ -4323,6 +4339,8 @@ async function populateMosqueSelector(selectedSlug) {
       select.onchange = function() {
         const slug = select.value;
         if (slug === 'local') {
+          localStorage.setItem('qiblahTabletMode', 'local');
+          localStorage.removeItem('qiblahTabletMosqueSlug');
           const url = new URL(location.href);
           url.searchParams.delete('mosque');
           url.searchParams.delete('slug');
@@ -4334,6 +4352,7 @@ async function populateMosqueSelector(selectedSlug) {
         }
         if (!slug) return;
         localStorage.setItem('qiblahTabletMode', 'mosque');
+        localStorage.setItem('qiblahTabletMosqueSlug', slug);
         if (location.protocol === 'file:') {
           const url = new URL(location.href);
           url.searchParams.delete('local');
@@ -4414,6 +4433,13 @@ async function init() {
   async function launch(mosque, tod, tom, options = {}) {
     tabletUsingLocalTimes = Boolean(options.local);
     tabletCurrentSlug = options.local ? '' : (slug || mosque.slug || '');
+    if (options.local) {
+      localStorage.setItem('qiblahTabletMode', 'local');
+      localStorage.removeItem('qiblahTabletMosqueSlug');
+    } else if (tabletCurrentSlug) {
+      localStorage.setItem('qiblahTabletMode', 'mosque');
+      localStorage.setItem('qiblahTabletMosqueSlug', tabletCurrentSlug);
+    }
     applyMosqueInfo(mosque);
     setTabletCardNextLabel(options.local ? 'Next Prayer' : "Next Jama'ah");
     populateMosqueSelector(tabletCurrentSlug);
@@ -4474,6 +4500,7 @@ async function init() {
   try {
     const bundle = await fetchDisplayBundle(slug);
     localStorage.setItem('qiblahTabletMode', 'mosque');
+    localStorage.setItem('qiblahTabletMosqueSlug', slug);
     launch(bundle.mosque, bundle.tod, bundle.tom);
 
   } catch (err) {
