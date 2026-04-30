@@ -1009,6 +1009,10 @@
     border-bottom: 1px solid rgba(255,255,255,0.08);
     margin-bottom: 18px;
   }
+  .tablet-settings-entry.compact {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
   .tablet-settings-entry:last-child {
     border-bottom: none;
     margin-bottom: 0;
@@ -1051,11 +1055,17 @@
     white-space: nowrap;
   }
   .tablet-settings-select {
+    display: block;
     appearance: none;
     background:
       linear-gradient(45deg, transparent 50%, var(--muted) 50%) calc(100% - 21px) 52% / 7px 7px no-repeat,
       linear-gradient(135deg, var(--muted) 50%, transparent 50%) calc(100% - 16px) 52% / 7px 7px no-repeat,
       rgba(255,255,255,0.06);
+  }
+  select.tablet-settings-select {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
   }
   .tablet-settings-right .tablet-settings-entry {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1863,16 +1873,19 @@
       <div class="tablet-settings-grid">
         <div class="tablet-settings-panel">
           <div class="tablet-settings-section">Mosque info</div>
+          <div class="tablet-settings-entry compact">
+            <div>
+              <div class="tablet-settings-label">Mosque</div>
+              <div class="tablet-settings-hint">Choose a mosque or use local prayer times</div>
+            </div>
+            <select class="tablet-settings-select" id="tablet-settings-mosque-select" aria-label="Select mosque">
+              <option value="">Loading mosques...</option>
+            </select>
+          </div>
           <div class="tablet-settings-entry">
             <div class="tablet-settings-label">Name</div>
             <div class="tablet-settings-value">
               <div class="tablet-settings-input" id="tablet-settings-mosque-name">Loading</div>
-            </div>
-          </div>
-          <div class="tablet-settings-entry">
-            <div class="tablet-settings-label">Address</div>
-            <div class="tablet-settings-value">
-              <div class="tablet-settings-input" id="tablet-settings-mosque-address">Loading</div>
             </div>
           </div>
           <div class="tablet-settings-section">Prayer times</div>
@@ -1882,7 +1895,14 @@
               <div class="tablet-settings-hint">Affects prayer time calculations</div>
             </div>
             <div class="tablet-settings-value">
-              <div class="tablet-settings-select">ISNA</div>
+              <select class="tablet-settings-select" id="tablet-calculation-method" aria-label="Calculation method">
+                <option value="2">ISNA</option>
+                <option value="3">Muslim World League</option>
+                <option value="1">Karachi</option>
+                <option value="4">Umm Al-Qura</option>
+                <option value="5">Egyptian Authority</option>
+                <option value="15">Moonsighting Committee</option>
+              </select>
             </div>
           </div>
           <div class="tablet-settings-entry">
@@ -2020,6 +2040,15 @@ const QURAN_FALLBACK_RECITERS = [
   { id: 156, name: "Sa'ud ash-Shuraym (Older)" },
   { id: 174, name: 'Yasser ad-Dussary (Alt)' }
 ];
+const TABLET_CALC_METHODS = [
+  { id: 2, label: 'ISNA' },
+  { id: 3, label: 'Muslim World League' },
+  { id: 1, label: 'Karachi' },
+  { id: 4, label: 'Umm Al-Qura' },
+  { id: 5, label: 'Egyptian Authority' },
+  { id: 15, label: 'Moonsighting Committee' }
+];
+const TABLET_LOCAL_COORDS = { lat: 51.5072, lon: -0.1276, label: 'London' };
 
 const DEMO = {
   mosque:   { name:'Dar al Arqam', address:'1 Kitcat Terrace, Bow, London E3 2SA', jummah:'1:00 PM', jummah2:'1:30 PM', jummah3:'2:00 PM', lat:51.527, lon:-0.017 },
@@ -2066,14 +2095,33 @@ let quranSchedule = null;
 let quranScheduleSavedTimer = null;
 let tabletAdhkarUtterance = null;
 let tabletAdhkarActive = '';
+let tabletCurrentSlug = '';
+let tabletUsingLocalTimes = false;
+let localPrayerRefreshTimer = null;
 
 function getSlug() {
   const params = new URLSearchParams(location.search);
+  if (params.get('local') === '1') return '';
   const querySlug = params.get('mosque') || params.get('slug');
   if (querySlug) return querySlug;
   const m = location.pathname.match(/\/(?:prayer-tablet|display|tv|screen)\/([^/?#]+)/);
   if (m) return decodeURIComponent(m[1]);
   return null;
+}
+
+function getTabletCalcMethod() {
+  const saved = Number(localStorage.getItem('qiblahTabletCalcMethod') || 2);
+  return TABLET_CALC_METHODS.some(method => method.id === saved) ? saved : 2;
+}
+
+function tabletCalcMethodLabel(id) {
+  const method = TABLET_CALC_METHODS.find(item => Number(item.id) === Number(id));
+  return method ? method.label : 'ISNA';
+}
+
+function setTabletCardNextLabel(text) {
+  const label = document.querySelector('.tablet-card-next-label');
+  if (label) label.textContent = text;
 }
 
 async function sbGet(path) {
@@ -2520,6 +2568,22 @@ function initTabletAdhkarAudio() {
   });
 }
 
+function initTabletSettingsLogic() {
+  const methodSelect = document.getElementById('tablet-calculation-method');
+  if (methodSelect) {
+    methodSelect.value = String(getTabletCalcMethod());
+    methodSelect.addEventListener('change', () => {
+      localStorage.setItem('qiblahTabletCalcMethod', methodSelect.value || '2');
+      if (tabletUsingLocalTimes) {
+        applyLocalPrayerTimes().catch(err => console.warn('Local prayer times failed', err));
+      }
+    });
+  }
+  document.querySelectorAll('.tablet-switch').forEach(button => {
+    button.addEventListener('click', () => button.classList.toggle('is-on'));
+  });
+}
+
 function defaultQuranSchedule() {
   return {
     id: '',
@@ -2897,6 +2961,16 @@ function fmt(s) {
   return `${h % 12 || 12}:${String(m).padStart(2, '0')}`;
 }
 
+function tabletTimeValue(value) {
+  if (!value) return '';
+  const match = String(value).match(/(\d{1,2}):(\d{2})/);
+  return match ? `${match[1]}:${match[2]}` : '';
+}
+
+function ddmmyyyy(date) {
+  return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+}
+
 function toMins(s) {
   if (!s) return null;
   s = String(s).trim();
@@ -3083,6 +3157,7 @@ function initJummahAnimator(mosque) {
   if (!times.length) {
     wrap.textContent = '\u2014';
     if (cardWrap) cardWrap.textContent = '\u2014';
+    if (cardLabel) cardLabel.textContent = "Jumu'ah";
     return;
   }
   if (times.length === 1) {
@@ -3418,6 +3493,103 @@ function fetchSunrise(lat, lon, address) {
   }
 }
 
+function aladhanParams(lat, lon, date, method) {
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    method: String(method || 2),
+    school: '0',
+    timezonestring: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London'
+  });
+  if (Number(method) === 15) params.set('shafaq', 'general');
+  return `https://api.aladhan.com/v1/timings/${ddmmyyyy(date)}?${params.toString()}`;
+}
+
+async function fetchLocalTimings(lat, lon, date, method) {
+  const res = await fetch(aladhanParams(lat, lon, date, method));
+  if (!res.ok) throw new Error('local prayer timings unavailable');
+  const data = await res.json();
+  return data && data.data && data.data.timings ? data.data.timings : null;
+}
+
+function buildLocalPrayerRow(timings, date) {
+  if (!timings) return null;
+  const value = key => tabletTimeValue(timings[key]);
+  return {
+    date: date.toISOString().slice(0, 10),
+    fajr_begins: value('Fajr'),
+    fajr_jamaah: value('Fajr'),
+    zuhr_begins: value('Dhuhr'),
+    zuhr_jamaah: value('Dhuhr'),
+    asr_begins: value('Asr'),
+    asr_jamaah: value('Asr'),
+    maghrib_begins: value('Maghrib'),
+    maghrib_jamaah: value('Maghrib'),
+    isha_begins: value('Isha'),
+    isha_jamaah: value('Isha'),
+    sunrise: value('Sunrise')
+  };
+}
+
+function getDeviceCoords() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) {
+      resolve(TABLET_LOCAL_COORDS);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude, label: 'Current location' }),
+      () => resolve(TABLET_LOCAL_COORDS),
+      { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 }
+    );
+  });
+}
+
+async function getLocalPrayerBundle(method) {
+  const coords = await getDeviceCoords();
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  const todayTimings = await fetchLocalTimings(coords.lat, coords.lon, today, method);
+  const tomorrowTimings = await fetchLocalTimings(coords.lat, coords.lon, tomorrow, method);
+  const tod = buildLocalPrayerRow(todayTimings, today);
+  const tom = buildLocalPrayerRow(tomorrowTimings, tomorrow);
+  if (!tod) throw new Error('local timings unavailable');
+  return {
+    mosque: {
+      id: null,
+      slug: 'local',
+      name: 'Local Prayer Times',
+      area: tabletCalcMethodLabel(method),
+      address: coords.label || 'Current location',
+      lat: coords.lat,
+      lon: coords.lon,
+      jummah: ''
+    },
+    tod,
+    tom
+  };
+}
+
+async function applyLocalPrayerTimes() {
+  tabletUsingLocalTimes = true;
+  localStorage.setItem('qiblahTabletMode', 'local');
+  document.querySelectorAll('#tablet-mosque-select, #tablet-settings-mosque-select').forEach(select => {
+    if (select) select.value = 'local';
+  });
+  const method = getTabletCalcMethod();
+  const bundle = await getLocalPrayerBundle(method);
+  applyMosqueInfo(bundle.mosque);
+  setTicker(DEFAULT_TICKERS);
+  liveAsrOpinion = 'first';
+  renderRows(bundle.tod, bundle.tom);
+  const cardSunrise = document.getElementById('tablet-card-sunrise');
+  if (cardSunrise && bundle.tod.sunrise) cardSunrise.textContent = fmt(bundle.tod.sunrise);
+  setTabletCardNextLabel('Next Prayer');
+  initJummahAnimator(bundle.mosque);
+  return bundle;
+}
+
 async function fetchDisplayBundle(slug) {
   const mosques = await sbGet('mosques?select=id,slug,name,address,area,borough,jummah,jummah2,jummah3,phone,website,email,about,url,lat,lon,sisters,facilities,logo&slug=eq.' + slug + '&limit=1');
   const mosque  = mosques[0];
@@ -3439,39 +3611,53 @@ async function fetchDisplayBundle(slug) {
 }
 
 async function populateMosqueSelector(selectedSlug) {
-  const select = document.getElementById('tablet-mosque-select');
-  if (!select) return;
+  const selects = ['tablet-mosque-select', 'tablet-settings-mosque-select']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+  if (!selects.length) return;
+  function setAll(html) { selects.forEach(select => { select.innerHTML = html; }); }
+  function bindAll() {
+    selects.forEach(select => {
+      select.onchange = function() {
+        const slug = select.value;
+        if (slug === 'local') {
+          const url = new URL(location.href);
+          url.searchParams.delete('mosque');
+          url.searchParams.delete('slug');
+          url.searchParams.set('local', '1');
+          history.replaceState(null, '', url.toString());
+          selects.forEach(other => { other.value = 'local'; });
+          applyLocalPrayerTimes().catch(err => console.warn('Local prayer times failed', err));
+          return;
+        }
+        if (!slug) return;
+        localStorage.setItem('qiblahTabletMode', 'mosque');
+        if (location.protocol === 'file:') {
+          const url = new URL(location.href);
+          url.searchParams.delete('local');
+          url.searchParams.set('mosque', slug);
+          location.href = url.toString();
+          return;
+        }
+        location.href = '/prayer-tablet/' + encodeURIComponent(slug);
+      };
+    });
+  }
   try {
     const rows = await sbGet('mosques?select=slug,name,area&is_hidden=eq.false&order=name');
-    select.innerHTML = '';
-    if (!rows.length) {
-      const opt = document.createElement('option');
-      opt.value = '';
-      opt.textContent = 'No mosques available';
-      select.appendChild(opt);
-      return;
-    }
+    let html = '<option value="local">Local Prayer Times</option>';
     rows.forEach(function(m) {
       if (!m.slug) return;
-      const opt = document.createElement('option');
-      opt.value = m.slug;
-      opt.textContent = m.name + (m.area ? ' - ' + m.area : '');
-      select.appendChild(opt);
+      html += '<option value="' + escTicker(m.slug) + '">' + escTicker(m.name + (m.area ? ' - ' + m.area : '')) + '</option>';
     });
-    if (selectedSlug) select.value = selectedSlug;
-    select.onchange = function() {
-      const slug = select.value;
-      if (!slug) return;
-      if (location.protocol === 'file:') {
-        const url = new URL(location.href);
-        url.searchParams.set('mosque', slug);
-        location.href = url.toString();
-        return;
-      }
-      location.href = '/prayer-tablet/' + encodeURIComponent(slug);
-    };
+    setAll(html);
+    selects.forEach(select => { select.value = tabletUsingLocalTimes ? 'local' : (selectedSlug || 'local'); });
+    bindAll();
   } catch (err) {
-    select.innerHTML = '<option value="">Mosques unavailable</option>';
+    setAll('<option value="local">Local Prayer Times</option>');
+    selects.forEach(select => { select.value = 'local'; });
+    bindAll();
+    if (!tabletUsingLocalTimes) applyLocalPrayerTimes().catch(() => {});
   }
 }
 
@@ -3483,11 +3669,9 @@ function applyMosqueInfo(mosque) {
   const cardMosque = document.getElementById('tablet-card-mosque');
   const cardArea = document.getElementById('tablet-card-area');
   const settingsMosqueName = document.getElementById('tablet-settings-mosque-name');
-  const settingsMosqueAddress = document.getElementById('tablet-settings-mosque-address');
   if (cardMosque) cardMosque.textContent = mosque.name || '';
   if (cardArea) cardArea.textContent = mosque.area || mosque.borough || mosque.address || '';
   if (settingsMosqueName) settingsMosqueName.textContent = mosque.name || 'Mosque';
-  if (settingsMosqueAddress) settingsMosqueAddress.textContent = mosque.address || mosque.area || mosque.borough || 'Address unavailable';
   const locationEl = document.getElementById('tablet-location');
   if (locationEl) locationEl.textContent = 'Finding location';
 
@@ -3499,7 +3683,10 @@ function applyMosqueInfo(mosque) {
   }
   document.title = `${mosque.name} \u2014 Prayer Tablet`;
   fetchSunrise(mosque.lat, mosque.lon, mosque.address);
-  updateTabletDeviceLocation(mosque.area || mosque.borough || mosque.address || 'Location unavailable', mosque.lat, mosque.lon);
+  const fallbackLocation = tabletUsingLocalTimes
+    ? (mosque.address || 'Current location')
+    : (mosque.area || mosque.borough || mosque.address || 'Location unavailable');
+  updateTabletDeviceLocation(fallbackLocation, mosque.lat, mosque.lon);
   initJummahAnimator(mosque);
 }
 
@@ -3524,9 +3711,12 @@ async function init() {
   const appEl  = document.getElementById('app');
   const errEl  = document.getElementById('error');
 
-  async function launch(mosque, tod, tom) {
+  async function launch(mosque, tod, tom, options = {}) {
+    tabletUsingLocalTimes = Boolean(options.local);
+    tabletCurrentSlug = options.local ? '' : (slug || mosque.slug || '');
     applyMosqueInfo(mosque);
-    populateMosqueSelector(slug || mosque.slug || '');
+    setTabletCardNextLabel(options.local ? 'Next Prayer' : "Next Jama'ah");
+    populateMosqueSelector(tabletCurrentSlug);
 
     // Ticker init
     requestAnimationFrame(() => {
@@ -3539,17 +3729,28 @@ async function init() {
       if (footer) document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
     });
 
-    await initEvents(mosque.id);
+    if (mosque.id) await initEvents(mosque.id);
+    else setTicker(DEFAULT_TICKERS);
     renderRows(tod, tom);
+    if (options.local && tod.sunrise) {
+      const cardSunrise = document.getElementById('tablet-card-sunrise');
+      if (cardSunrise) cardSunrise.textContent = fmt(tod.sunrise);
+    }
     await initQuranPlayer();
     initQuranSchedulePage();
     initTabletAdhkarAudio();
+    initTabletSettingsLogic();
     initAthanPlayer();
     setDailyReminder();
     startClock();
     startActiveTracking(tod, tom);
     startAthanScheduler();
-    startLiveRefresh(slug);
+    if (options.local) {
+      if (localPrayerRefreshTimer) clearInterval(localPrayerRefreshTimer);
+      localPrayerRefreshTimer = setInterval(() => applyLocalPrayerTimes().catch(() => {}), DISPLAY_REFRESH_MS);
+    } else {
+      startLiveRefresh(slug);
+    }
 
     const midnight = new Date(); midnight.setHours(24, 0, 30, 0);
     setTimeout(() => location.reload(), midnight - new Date());
@@ -3558,16 +3759,31 @@ async function init() {
     setTimeout(() => { loadEl.style.display = 'none'; appEl.classList.add('visible'); }, 700);
   }
 
-  if (!slug) { launch({ ...DEMO.mosque, id: null }, DEMO.today, DEMO.tomorrow); return; }
+  if (!slug) {
+    try {
+      const localBundle = await getLocalPrayerBundle(getTabletCalcMethod());
+      launch(localBundle.mosque, localBundle.tod, localBundle.tom, { local: true });
+    } catch (err) {
+      console.warn('Local prayer times unavailable, using demo times', err);
+      launch({ ...DEMO.mosque, id: null }, DEMO.today, DEMO.tomorrow, { local: true });
+    }
+    return;
+  }
 
   try {
     const bundle = await fetchDisplayBundle(slug);
+    localStorage.setItem('qiblahTabletMode', 'mosque');
     launch(bundle.mosque, bundle.tod, bundle.tom);
 
   } catch (err) {
     console.error(err);
     if (err.message === 'not found') {
-      launch({ ...DEMO.mosque, id: null }, DEMO.today, DEMO.tomorrow);
+      try {
+        const localBundle = await getLocalPrayerBundle(getTabletCalcMethod());
+        launch(localBundle.mosque, localBundle.tod, localBundle.tom, { local: true });
+      } catch (localErr) {
+        launch({ ...DEMO.mosque, id: null }, DEMO.today, DEMO.tomorrow, { local: true });
+      }
     } else {
       loadEl.style.display = 'none';
       errEl.classList.add('show');
