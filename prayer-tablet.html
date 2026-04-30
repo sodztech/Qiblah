@@ -742,8 +742,210 @@
       height: 26px;
     }
   }
-  #tablet-schedule-page {
+  #tablet-home-page,
+  .tablet-audio-player,
+  #tablet-schedule-page,
+  #tablet-adhkar-page,
+  #tablet-settings-page {
     display: none;
+  }
+  body.tablet-view-home #tablet-home-page {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 1.5vw, 18px);
+    min-height: 0;
+  }
+  body.tablet-view-quran .tablet-audio-player {
+    display: grid;
+  }
+  body.tablet-view-schedule #tablet-schedule-page,
+  body.tablet-view-adhkar #tablet-adhkar-page,
+  body.tablet-view-settings #tablet-settings-page {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .tablet-home-widgets {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.75fr);
+    gap: clamp(12px, 1.6vw, 18px);
+    min-height: 0;
+  }
+  .tablet-home-card,
+  .tablet-page-card {
+    background: rgba(16,26,40,0.95);
+    color: var(--text);
+    border-radius: 18px;
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--gold-rgb),0.2),
+      0 14px 30px rgba(7,12,18,0.14);
+  }
+  .tablet-home-card {
+    padding: clamp(14px, 1.8vw, 22px);
+  }
+  .tablet-home-kicker,
+  .tablet-page-kicker {
+    font-size: clamp(0.66rem, 0.82vw, 0.78rem);
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .tablet-home-title {
+    margin-top: 8px;
+    color: rgba(255,255,255,0.9);
+    font-size: clamp(1.05rem, 1.45vw, 1.45rem);
+    font-weight: 520;
+    line-height: 1.25;
+  }
+  .tablet-home-arabic {
+    margin-top: 12px;
+    color: rgba(255,255,255,0.86);
+    font-size: clamp(1.25rem, 2vw, 2rem);
+    line-height: 1.75;
+    text-align: right;
+  }
+  .tablet-home-text {
+    margin-top: 10px;
+    color: var(--text2);
+    font-size: clamp(0.82rem, 1vw, 1rem);
+    line-height: 1.5;
+  }
+  .tablet-home-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .tablet-home-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    min-height: 42px;
+  }
+  .tablet-home-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--gold-rgb),0.12);
+    color: var(--gold);
+  }
+  .tablet-home-dot svg {
+    width: 19px;
+    height: 19px;
+  }
+  .tablet-home-row-title {
+    color: rgba(255,255,255,0.86);
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    font-weight: 520;
+  }
+  .tablet-home-row-meta {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: clamp(0.72rem, 0.9vw, 0.85rem);
+  }
+  .tablet-page-card {
+    width: min(900px, 92vw);
+    max-height: min(58vh, 500px);
+    margin: clamp(14px, 1.8vw, 22px) auto 0;
+    padding: clamp(16px, 2vw, 26px);
+  }
+  .tablet-page-title {
+    margin-top: 5px;
+    font-size: clamp(1.25rem, 2vw, 1.9rem);
+    font-weight: 520;
+    color: rgba(255,255,255,0.92);
+  }
+  .tablet-page-copy {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: clamp(0.86rem, 1.05vw, 1rem);
+    line-height: 1.45;
+  }
+  .tablet-adhkar-tabs {
+    display: flex;
+    gap: 9px;
+    margin-top: 18px;
+  }
+  .tablet-pill-btn {
+    border: 1px solid rgba(var(--gold-rgb),0.22);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+    color: var(--text2);
+    font: inherit;
+    font-size: 0.9rem;
+    padding: 9px 14px;
+  }
+  .tablet-pill-btn.active {
+    background: rgba(var(--gold-rgb),0.16);
+    color: var(--gold-bright);
+  }
+  .tablet-dhikr-card {
+    margin-top: 16px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.045);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+    padding: clamp(14px, 1.8vw, 22px);
+  }
+  .tablet-dhikr-arabic {
+    color: rgba(255,255,255,0.9);
+    font-size: clamp(1.45rem, 2.4vw, 2.4rem);
+    line-height: 1.7;
+    text-align: right;
+  }
+  .tablet-dhikr-translation {
+    margin-top: 14px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .tablet-dhikr-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .tablet-count-btn {
+    min-width: 130px;
+    min-height: 44px;
+    border: 1px solid rgba(var(--gold-rgb),0.35);
+    border-radius: 14px;
+    background: rgba(var(--gold-rgb),0.14);
+    color: var(--gold-bright);
+    font: inherit;
+    font-weight: 560;
+  }
+  .tablet-settings-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .tablet-settings-row {
+    display: grid;
+    grid-template-columns: minmax(140px, 0.55fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.045);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+  }
+  .tablet-settings-label {
+    color: var(--muted);
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 650;
+  }
+  .tablet-settings-value {
+    color: rgba(255,255,255,0.88);
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.35;
+  }
+  #tablet-schedule-page {
     width: min(760px, 92vw);
     max-height: min(54vh, 430px);
     margin: clamp(14px, 1.8vw, 22px) auto 0;
@@ -754,15 +956,6 @@
     box-shadow:
       inset 0 0 0 1px rgba(var(--gold-rgb),0.2),
       0 14px 30px rgba(7,12,18,0.18);
-  }
-  body.tablet-schedule-open #tablet-prayer-card,
-  body.tablet-schedule-open .tablet-audio-player {
-    display: none;
-  }
-  body.tablet-schedule-open #tablet-schedule-page {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
   }
   .tablet-schedule-head {
     display: flex;
@@ -1318,53 +1511,87 @@
 
   <div id="slide-wrap">
 
-    <section id="tablet-prayer-card">
-      <div class="tablet-card-head">
-        <div>
-          <div class="tablet-card-title" id="tablet-card-mosque">—</div>
-          <div class="tablet-card-area" id="tablet-card-area">—</div>
+    <section id="tablet-home-page" aria-label="Tablet home">
+      <section id="tablet-prayer-card">
+        <div class="tablet-card-head">
+          <div>
+            <div class="tablet-card-title" id="tablet-card-mosque">—</div>
+            <div class="tablet-card-area" id="tablet-card-area">—</div>
+          </div>
+          <div class="tablet-card-next">
+            <div class="tablet-card-next-label">Next Jama'ah</div>
+            <div class="tablet-card-next-time" id="tablet-card-countdown">--:--:--</div>
+          </div>
         </div>
-        <div class="tablet-card-next">
-          <div class="tablet-card-next-label">Next Jama'ah</div>
-          <div class="tablet-card-next-time" id="tablet-card-countdown">--:--:--</div>
+        <div class="tablet-prayer-strip" id="tablet-prayer-strip">
+          <div class="tablet-prayer-tile" data-card-prayer="fajr">
+            <div class="tablet-prayer-name">Fajr</div>
+            <div class="tablet-prayer-time" id="tablet-card-fajr">—</div>
+            <div class="tablet-prayer-begins" id="tablet-card-fajr-begins">Begins —</div>
+          </div>
+          <div class="tablet-prayer-tile" data-card-prayer="zuhr">
+            <div class="tablet-prayer-name">Dhuhr</div>
+            <div class="tablet-prayer-time" id="tablet-card-zuhr">—</div>
+            <div class="tablet-prayer-begins" id="tablet-card-zuhr-begins">Begins —</div>
+          </div>
+          <div class="tablet-prayer-tile" data-card-prayer="asr">
+            <div class="tablet-prayer-name">Asr</div>
+            <div class="tablet-prayer-time" id="tablet-card-asr">—</div>
+            <div class="tablet-prayer-begins" id="tablet-card-asr-begins">Begins —</div>
+          </div>
+          <div class="tablet-prayer-tile" data-card-prayer="maghrib">
+            <div class="tablet-prayer-name">Maghrib</div>
+            <div class="tablet-prayer-time" id="tablet-card-maghrib">—</div>
+            <div class="tablet-prayer-begins" id="tablet-card-maghrib-begins">Begins —</div>
+          </div>
+          <div class="tablet-prayer-tile" data-card-prayer="isha">
+            <div class="tablet-prayer-name">Isha</div>
+            <div class="tablet-prayer-time" id="tablet-card-isha">—</div>
+            <div class="tablet-prayer-begins" id="tablet-card-isha-begins">Begins —</div>
+          </div>
         </div>
-      </div>
-      <div class="tablet-prayer-strip" id="tablet-prayer-strip">
-        <div class="tablet-prayer-tile" data-card-prayer="fajr">
-          <div class="tablet-prayer-name">Fajr</div>
-          <div class="tablet-prayer-time" id="tablet-card-fajr">—</div>
-          <div class="tablet-prayer-begins" id="tablet-card-fajr-begins">Begins —</div>
+        <div class="tablet-card-footer">
+          <div class="tablet-card-footer-item">
+            <div class="tablet-card-footer-label">Sunrise</div>
+            <div class="tablet-card-footer-value" id="tablet-card-sunrise">—</div>
+          </div>
+          <div class="tablet-card-footer-item">
+            <div class="tablet-card-footer-label" id="tablet-card-jummah-label">Jumu'ah</div>
+            <div class="tablet-card-footer-value" id="tablet-card-jummah">—</div>
+          </div>
         </div>
-        <div class="tablet-prayer-tile" data-card-prayer="zuhr">
-          <div class="tablet-prayer-name">Dhuhr</div>
-          <div class="tablet-prayer-time" id="tablet-card-zuhr">—</div>
-          <div class="tablet-prayer-begins" id="tablet-card-zuhr-begins">Begins —</div>
-        </div>
-        <div class="tablet-prayer-tile" data-card-prayer="asr">
-          <div class="tablet-prayer-name">Asr</div>
-          <div class="tablet-prayer-time" id="tablet-card-asr">—</div>
-          <div class="tablet-prayer-begins" id="tablet-card-asr-begins">Begins —</div>
-        </div>
-        <div class="tablet-prayer-tile" data-card-prayer="maghrib">
-          <div class="tablet-prayer-name">Maghrib</div>
-          <div class="tablet-prayer-time" id="tablet-card-maghrib">—</div>
-          <div class="tablet-prayer-begins" id="tablet-card-maghrib-begins">Begins —</div>
-        </div>
-        <div class="tablet-prayer-tile" data-card-prayer="isha">
-          <div class="tablet-prayer-name">Isha</div>
-          <div class="tablet-prayer-time" id="tablet-card-isha">—</div>
-          <div class="tablet-prayer-begins" id="tablet-card-isha-begins">Begins —</div>
-        </div>
-      </div>
-      <div class="tablet-card-footer">
-        <div class="tablet-card-footer-item">
-          <div class="tablet-card-footer-label">Sunrise</div>
-          <div class="tablet-card-footer-value" id="tablet-card-sunrise">—</div>
-        </div>
-        <div class="tablet-card-footer-item">
-          <div class="tablet-card-footer-label" id="tablet-card-jummah-label">Jumu'ah</div>
-          <div class="tablet-card-footer-value" id="tablet-card-jummah">—</div>
-        </div>
+      </section>
+
+      <div class="tablet-home-widgets">
+        <article class="tablet-home-card">
+          <div class="tablet-home-kicker">Today's Hadith</div>
+          <div class="tablet-home-arabic" dir="rtl">إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ</div>
+          <div class="tablet-home-title">Actions are judged by intentions.</div>
+          <div class="tablet-home-text">A quiet daily reminder for the home screen while the prayer card stays central.</div>
+        </article>
+        <article class="tablet-home-card">
+          <div class="tablet-home-kicker">Quick Actions</div>
+          <div class="tablet-home-list">
+            <div class="tablet-home-row">
+              <span class="tablet-home-dot" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M5 5.5C5 4.1 6.1 3 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5v-15Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 7h7M8 10h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </span>
+              <div>
+                <div class="tablet-home-row-title">Qur'an player</div>
+                <div class="tablet-home-row-meta">Surah and reciter controls</div>
+              </div>
+            </div>
+            <div class="tablet-home-row">
+              <span class="tablet-home-dot" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M8 3v4M16 3v4M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </span>
+              <div>
+                <div class="tablet-home-row-title">Schedule</div>
+                <div class="tablet-home-row-meta">Daily Qur'an playback</div>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -1437,14 +1664,73 @@
       <div class="tablet-schedule-list" id="quran-schedule-list" aria-label="Saved Quran schedules"></div>
     </section>
 
+    <section id="tablet-adhkar-page" class="tablet-page-card" aria-label="Adhkar">
+      <div class="tablet-page-kicker">Adhkar</div>
+      <div class="tablet-page-title">Daily remembrance</div>
+      <div class="tablet-page-copy">A simple counter page for morning, evening and after-prayer adhkar.</div>
+      <div class="tablet-adhkar-tabs" aria-label="Adhkar categories">
+        <button class="tablet-pill-btn active" type="button">Morning</button>
+        <button class="tablet-pill-btn" type="button">Evening</button>
+        <button class="tablet-pill-btn" type="button">After Prayer</button>
+      </div>
+      <div class="tablet-dhikr-card">
+        <div class="tablet-dhikr-arabic" dir="rtl">سُبْحَانَ اللهِ وَبِحَمْدِهِ</div>
+        <div class="tablet-dhikr-translation">Glory is to Allah and praise is to Him.</div>
+        <div class="tablet-dhikr-actions">
+          <div class="tablet-page-copy">Count 100</div>
+          <button class="tablet-count-btn" type="button">Tap Count</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tablet-settings-page" class="tablet-page-card" aria-label="Settings">
+      <div class="tablet-page-kicker">Settings</div>
+      <div class="tablet-page-title">Tablet options</div>
+      <div class="tablet-page-copy">Device settings placeholder for the test build. The live mosque can still be changed from the URL.</div>
+      <div class="tablet-settings-list">
+        <div class="tablet-settings-row">
+          <div class="tablet-settings-label">Mosque</div>
+          <div class="tablet-settings-value" id="tablet-settings-mosque">Loading</div>
+        </div>
+        <div class="tablet-settings-row">
+          <div class="tablet-settings-label">Athan</div>
+          <div class="tablet-settings-value">Plays at beginning times when the browser allows audio.</div>
+        </div>
+        <div class="tablet-settings-row">
+          <div class="tablet-settings-label">Schedule</div>
+          <div class="tablet-settings-value">Use the Schedule tab to add multiple daily Qur'an play times.</div>
+        </div>
+        <div class="tablet-settings-row">
+          <div class="tablet-settings-label">Display</div>
+          <div class="tablet-settings-value">Home, Qur'an, Adhkar and schedule pages are available from the dock.</div>
+        </div>
+      </div>
+    </section>
+
     <div class="tablet-action-dock" aria-label="Tablet actions">
-      <button class="tablet-action-btn active" id="tablet-quran-btn" type="button" aria-label="Open Qur'an player" title="Qur'an">
+      <button class="tablet-action-btn active" id="tablet-home-btn" type="button" aria-label="Open home" title="Home">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-8.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        <span class="tablet-action-label">Home</span>
+      </button>
+      <button class="tablet-action-btn" id="tablet-quran-btn" type="button" aria-label="Open Qur'an player" title="Qur'an">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 5.5C5 4.12 6.12 3 7.5 3H20v15.5H7.5A2.5 2.5 0 0 0 5 21.5v-16Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
           <path d="M5 5.5A2.5 2.5 0 0 1 7.5 3M8 7h8M8 10.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           <path d="M5 21.5A2.5 2.5 0 0 1 7.5 19H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
         <span class="tablet-action-label">Qur'an</span>
+      </button>
+      <button class="tablet-action-btn" id="tablet-adhkar-btn" type="button" aria-label="Open adhkar" title="Adhkar">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="5" r="2.4" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="7" cy="12" r="2.4" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="17" cy="12" r="2.4" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="12" cy="19" r="2.4" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M10.4 6.8 8.6 10M13.6 6.8 15.4 10M8.8 14 10.5 17M15.2 14 13.5 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="tablet-action-label">Adhkar</span>
       </button>
       <button class="tablet-action-btn" id="tablet-schedule-btn" type="button" aria-label="Open schedule" title="Schedule">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1453,6 +1739,13 @@
           <path d="M9 14h3.5l2-2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <span class="tablet-action-label">Schedule</span>
+      </button>
+      <button class="tablet-action-btn" id="tablet-settings-btn" type="button" aria-label="Open settings" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 15.4a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8Z" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M19.4 13.3a7.8 7.8 0 0 0 .05-2.6l2-1.55-2-3.45-2.45.98a8.1 8.1 0 0 0-2.25-1.3L14.4 2.8h-4l-.35 2.58a8.1 8.1 0 0 0-2.25 1.3L5.35 5.7l-2 3.45 2 1.55a7.8 7.8 0 0 0 .05 2.6l-2.05 1.6 2 3.45 2.5-1a8.2 8.2 0 0 0 2.2 1.27l.35 2.58h4l.35-2.58a8.2 8.2 0 0 0 2.2-1.27l2.5 1 2-3.45-2.05-1.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span class="tablet-action-label">Settings</span>
       </button>
     </div>
 
@@ -2132,23 +2425,37 @@ function startQuranScheduleRunner() {
 }
 
 function setTabletView(view) {
-  const scheduleOpen = view === 'schedule';
-  document.body.classList.toggle('tablet-schedule-open', scheduleOpen);
-  document.getElementById('tablet-quran-btn')?.classList.toggle('active', !scheduleOpen);
-  document.getElementById('tablet-schedule-btn')?.classList.toggle('active', scheduleOpen);
-  if (scheduleOpen) hydrateQuranScheduleForm();
+  const safeView = ['home', 'quran', 'adhkar', 'schedule', 'settings'].includes(view) ? view : 'home';
+  document.body.classList.remove(
+    'tablet-schedule-open',
+    'tablet-view-home',
+    'tablet-view-quran',
+    'tablet-view-adhkar',
+    'tablet-view-schedule',
+    'tablet-view-settings'
+  );
+  document.body.classList.add(`tablet-view-${safeView}`);
+  document.querySelectorAll('.tablet-action-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(`tablet-${safeView}-btn`)?.classList.add('active');
+  if (safeView === 'schedule') hydrateQuranScheduleForm();
 }
 
 function initQuranSchedulePage() {
+  const homeBtn = document.getElementById('tablet-home-btn');
   const quranBtn = document.getElementById('tablet-quran-btn');
+  const adhkarBtn = document.getElementById('tablet-adhkar-btn');
   const scheduleBtn = document.getElementById('tablet-schedule-btn');
+  const settingsBtn = document.getElementById('tablet-settings-btn');
   const saveBtn = document.getElementById('quran-schedule-save');
   const timeEl = document.getElementById('quran-schedule-time');
   const surahEl = document.getElementById('quran-schedule-surah');
   const reciterEl = document.getElementById('quran-schedule-reciter');
   const enabledEl = document.getElementById('quran-schedule-enabled');
+  homeBtn?.addEventListener('click', () => setTabletView('home'));
   quranBtn?.addEventListener('click', () => setTabletView('quran'));
+  adhkarBtn?.addEventListener('click', () => setTabletView('adhkar'));
   scheduleBtn?.addEventListener('click', () => setTabletView('schedule'));
+  settingsBtn?.addEventListener('click', () => setTabletView('settings'));
   saveBtn?.addEventListener('click', async () => {
     if (quranScheduleSavedTimer) clearTimeout(quranScheduleSavedTimer);
     const nextSchedule = {
@@ -2191,6 +2498,7 @@ function initQuranSchedulePage() {
   });
   hydrateQuranScheduleForm();
   startQuranScheduleRunner();
+  setTabletView('home');
 }
 
 function athanStorageKey(prayer, date = new Date()) {
@@ -2858,8 +3166,10 @@ function applyMosqueInfo(mosque) {
   if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
   const cardMosque = document.getElementById('tablet-card-mosque');
   const cardArea = document.getElementById('tablet-card-area');
+  const settingsMosque = document.getElementById('tablet-settings-mosque');
   if (cardMosque) cardMosque.textContent = mosque.name || '';
   if (cardArea) cardArea.textContent = mosque.area || mosque.borough || mosque.address || '';
+  if (settingsMosque) settingsMosque.textContent = [mosque.name, mosque.area || mosque.borough || mosque.address].filter(Boolean).join(' · ');
   const locationEl = document.getElementById('tablet-location');
   if (locationEl) locationEl.textContent = 'Finding location';
 
