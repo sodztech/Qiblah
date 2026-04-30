@@ -1101,6 +1101,64 @@
     font-size: clamp(0.95rem, 1.2vw, 1.1rem);
     font-weight: 520;
   }
+  .tablet-settings-control-stack {
+    display: grid;
+    gap: 9px;
+    min-width: 190px;
+  }
+  .tablet-settings-range {
+    width: 100%;
+    height: 22px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .tablet-settings-range::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.14);
+  }
+  .tablet-settings-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-top: -5.5px;
+    box-shadow: 0 0 0 4px rgba(var(--gold-rgb),0.11);
+  }
+  .tablet-settings-range::-moz-range-track {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.14);
+  }
+  .tablet-settings-range::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border: none;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px rgba(var(--gold-rgb),0.11);
+  }
+  .tablet-settings-level {
+    color: var(--gold);
+    font-size: 0.84rem;
+    font-weight: 560;
+    text-align: right;
+  }
+  #tablet-dim-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 12;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .tablet-action-dock,
+  #loading,
+  #error {
+    z-index: 20;
+  }
   @media (max-width: 720px) {
     #tablet-settings-page {
       max-height: min(72vh, 660px);
@@ -1630,6 +1688,7 @@
   <h2>Mosque not found</h2>
   <p id="err-msg">Check the URL and try again.</p>
 </div>
+<div id="tablet-dim-overlay" aria-hidden="true"></div>
 
 <div id="app">
 
@@ -1928,15 +1987,22 @@
               <div class="tablet-settings-label">Adhan sound</div>
               <div class="tablet-settings-hint">Play adhan at prayer time</div>
             </div>
-            <button class="tablet-switch is-on" type="button" aria-label="Adhan sound"></button>
+            <div class="tablet-settings-control-stack">
+              <button class="tablet-switch is-on" id="tablet-adhan-enabled" type="button" aria-label="Adhan sound"></button>
+              <input class="tablet-settings-range" id="tablet-adhan-volume" type="range" min="0" max="100" value="80" step="1" aria-label="Adhan volume">
+              <div class="tablet-settings-level" id="tablet-adhan-volume-label">80%</div>
+            </div>
           </div>
           <div class="tablet-settings-section">Display</div>
           <div class="tablet-settings-entry">
             <div>
               <div class="tablet-settings-label">Brightness</div>
-              <div class="tablet-settings-hint">Night mode dims at Isha</div>
+              <div class="tablet-settings-hint">Dim the tablet screen</div>
             </div>
-            <div class="tablet-settings-accent">Auto</div>
+            <div class="tablet-settings-control-stack">
+              <input class="tablet-settings-range" id="tablet-brightness-level" type="range" min="25" max="100" value="100" step="1" aria-label="Screen brightness">
+              <div class="tablet-settings-level" id="tablet-brightness-label">100%</div>
+            </div>
           </div>
           <div class="tablet-settings-entry">
             <div class="tablet-settings-label">App version</div>
@@ -2444,7 +2510,9 @@ async function initQuranPlayer() {
   const startingVolume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) : 80;
   volumeEl.value = String(startingVolume);
   audio.volume = startingVolume / 100;
-  if (athanAudio) athanAudio.volume = startingVolume / 100;
+  const savedAdhanVolume = Number(localStorage.getItem('qiblahTabletAdhanVolume'));
+  const startingAdhanVolume = Number.isFinite(savedAdhanVolume) ? Math.max(0, Math.min(100, savedAdhanVolume)) : 80;
+  if (athanAudio) athanAudio.volume = startingAdhanVolume / 100;
   audio.addEventListener('loadedmetadata', updateQuranTime);
   audio.addEventListener('timeupdate', updateQuranTime);
   audio.addEventListener('play', () => setQuranPlayIcon(true));
@@ -2464,9 +2532,7 @@ async function initQuranPlayer() {
   volumeEl.addEventListener('input', () => {
     const value = Math.max(0, Math.min(100, Number(volumeEl.value) || 0));
     audio.volume = value / 100;
-    if (athanAudio) athanAudio.volume = value / 100;
     audio.muted = value === 0;
-    if (athanAudio) athanAudio.muted = value === 0;
     localStorage.setItem('quranTabletVolume', String(value));
   });
   surahSelect.addEventListener('change', () => {
@@ -2581,6 +2647,42 @@ function initTabletSettingsLogic() {
   }
   document.querySelectorAll('.tablet-switch').forEach(button => {
     button.addEventListener('click', () => button.classList.toggle('is-on'));
+  });
+  const brightnessEl = document.getElementById('tablet-brightness-level');
+  const brightnessLabel = document.getElementById('tablet-brightness-label');
+  const dimOverlay = document.getElementById('tablet-dim-overlay');
+  function applyBrightness(value) {
+    const level = Math.max(25, Math.min(100, Number(value) || 100));
+    if (brightnessEl) brightnessEl.value = String(level);
+    if (brightnessLabel) brightnessLabel.textContent = `${level}%`;
+    if (dimOverlay) dimOverlay.style.opacity = String((100 - level) / 100 * 0.68);
+    localStorage.setItem('qiblahTabletBrightness', String(level));
+  }
+  applyBrightness(localStorage.getItem('qiblahTabletBrightness') || 100);
+  brightnessEl?.addEventListener('input', () => applyBrightness(brightnessEl.value));
+
+  const adhanVolumeEl = document.getElementById('tablet-adhan-volume');
+  const adhanVolumeLabel = document.getElementById('tablet-adhan-volume-label');
+  const adhanEnabledEl = document.getElementById('tablet-adhan-enabled');
+  function applyAdhanVolume(value) {
+    const level = Math.max(0, Math.min(100, Number(value) || 0));
+    const athanAudio = document.getElementById('athan-audio');
+    if (adhanVolumeEl) adhanVolumeEl.value = String(level);
+    if (adhanVolumeLabel) adhanVolumeLabel.textContent = `${level}%`;
+    if (athanAudio) {
+      athanAudio.volume = level / 100;
+      athanAudio.muted = level === 0 || (adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on'));
+    }
+    localStorage.setItem('qiblahTabletAdhanVolume', String(level));
+  }
+  const savedAdhanVolume = localStorage.getItem('qiblahTabletAdhanVolume') || 80;
+  const savedAdhanEnabled = localStorage.getItem('qiblahTabletAdhanEnabled');
+  if (adhanEnabledEl && savedAdhanEnabled === '0') adhanEnabledEl.classList.remove('is-on');
+  applyAdhanVolume(savedAdhanVolume);
+  adhanVolumeEl?.addEventListener('input', () => applyAdhanVolume(adhanVolumeEl.value));
+  adhanEnabledEl?.addEventListener('click', () => {
+    localStorage.setItem('qiblahTabletAdhanEnabled', adhanEnabledEl.classList.contains('is-on') ? '1' : '0');
+    applyAdhanVolume(adhanVolumeEl ? adhanVolumeEl.value : savedAdhanVolume);
   });
 }
 
@@ -2896,6 +2998,8 @@ function markAthanPlayed(prayer, date = new Date()) {
 async function playAthanForPrayer(prayer) {
   const athanAudio = document.getElementById('athan-audio');
   if (!athanAudio) return;
+  const adhanEnabledEl = document.getElementById('tablet-adhan-enabled');
+  if (adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on')) return;
   const quranAudio = document.getElementById('quran-audio');
   athanResumeQuran = Boolean(quranAudio && !quranAudio.paused && !quranAudio.ended);
   if (quranAudio && athanResumeQuran) quranAudio.pause();
