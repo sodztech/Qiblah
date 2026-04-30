@@ -1970,12 +1970,6 @@
               <option value="">Loading mosques...</option>
             </select>
           </div>
-          <div class="tablet-settings-entry">
-            <div class="tablet-settings-label">Name</div>
-            <div class="tablet-settings-value">
-              <div class="tablet-settings-input" id="tablet-settings-mosque-name">Loading</div>
-            </div>
-          </div>
           <div class="tablet-settings-section">Prayer times</div>
           <div class="tablet-settings-entry">
             <div>
@@ -3801,10 +3795,8 @@ function applyMosqueInfo(mosque) {
   if (miInfo && window.innerWidth > 768) miInfo.style.display = 'flex';
   const cardMosque = document.getElementById('tablet-card-mosque');
   const cardArea = document.getElementById('tablet-card-area');
-  const settingsMosqueName = document.getElementById('tablet-settings-mosque-name');
   if (cardMosque) cardMosque.textContent = mosque.name || '';
   if (cardArea) cardArea.textContent = mosque.area || mosque.borough || mosque.address || '';
-  if (settingsMosqueName) settingsMosqueName.textContent = mosque.name || 'Mosque';
   const locationEl = document.getElementById('tablet-location');
   if (locationEl) locationEl.textContent = 'Finding location';
 
