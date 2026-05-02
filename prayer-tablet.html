@@ -665,8 +665,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    text-align: center;
     margin-top: clamp(14px, 1.8vw, 22px);
-    padding: clamp(18px, 2.4vw, 28px);
+    padding: clamp(20px, 2.7vw, 34px);
     border-radius: 16px;
     background: rgba(255,255,255,0.035);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
@@ -676,10 +678,12 @@
   .tablet-quran-verse {
     display: grid;
     gap: clamp(10px, 1.4vw, 16px);
+    justify-items: center;
+    width: min(100%, 880px);
   }
   .tablet-quran-verse-key {
     color: var(--gold);
-    font-size: clamp(0.66rem, 0.82vw, 0.78rem);
+    font-size: clamp(0.74rem, 0.95vw, 0.92rem);
     font-weight: 600;
     letter-spacing: 0.13em;
     text-transform: uppercase;
@@ -687,9 +691,11 @@
   }
   .tablet-quran-verse-text {
     color: rgba(255,255,255,0.86);
-    font-size: clamp(0.95rem, 1.22vw, 1.12rem);
+    font-size: clamp(1.08rem, 1.45vw, 1.32rem);
     font-weight: 400;
-    line-height: 1.45;
+    line-height: 1.62;
+    max-width: 52rem;
+    margin: 0 auto;
   }
   .tablet-quran-empty {
     margin-top: 18px;
@@ -2374,16 +2380,18 @@
     background: rgba(255,255,255,0.7);
   }
   body.prayer-tablet #tablet-prayer-card {
-    background: linear-gradient(180deg, #1b1713 0%, #15120f 100%);
-    box-shadow: 0 18px 40px rgba(55,40,19,0.18), inset 0 0 0 1px rgba(168,133,79,0.18);
-    color: #f6f0e7;
+    background: rgba(255,252,247,0.96);
+    box-shadow:
+      0 12px 28px rgba(76,54,28,0.08),
+      inset 0 0 0 1px rgba(168,133,79,0.16);
+    color: var(--text);
   }
   body.prayer-tablet .tablet-card-head,
   body.prayer-tablet .tablet-card-footer {
     background: transparent;
   }
   body.prayer-tablet .tablet-card-head {
-    border-bottom-color: rgba(168,133,79,0.18);
+    border-bottom-color: rgba(168,133,79,0.14);
   }
   body.prayer-tablet .tablet-card-head::after {
     background: var(--gold-bright);
@@ -2393,19 +2401,19 @@
   body.prayer-tablet .tablet-prayer-name,
   body.prayer-tablet .tablet-card-footer-label,
   body.prayer-tablet .tablet-card-footer-value {
-    color: #f6f0e7;
+    color: var(--text);
   }
   body.prayer-tablet .tablet-card-area,
   body.prayer-tablet .tablet-prayer-begins,
   body.prayer-tablet .tablet-card-footer-label,
   body.prayer-tablet .tablet-card-footer-value {
-    color: rgba(246,240,231,0.7);
+    color: rgba(28,24,19,0.66);
   }
   body.prayer-tablet .tablet-prayer-tile {
-    border-right-color: rgba(168,133,79,0.12);
+    border-right-color: rgba(168,133,79,0.14);
   }
   body.prayer-tablet .tablet-prayer-tile.active {
-    background: rgba(168,133,79,0.12);
+    background: rgba(168,133,79,0.08);
   }
   body.prayer-tablet .tablet-prayer-time,
   body.prayer-tablet .tablet-card-next-time {
@@ -2415,13 +2423,26 @@
   body.prayer-tablet .tablet-page-card,
   body.prayer-tablet .tablet-audio-player,
   body.prayer-tablet .tablet-quran-translation,
-  body.prayer-tablet #tablet-schedule-page,
-  body.prayer-tablet #tablet-settings-page,
-  body.prayer-tablet .tablet-settings-panel {
-    background: rgba(255,252,247,0.92);
+  body.prayer-tablet #tablet-schedule-page {
+    background: rgba(255,252,247,0.94);
     color: var(--text);
-    box-shadow: 0 16px 36px rgba(76,54,28,0.08), inset 0 0 0 1px rgba(168,133,79,0.16);
     border-color: rgba(168,133,79,0.16);
+    box-shadow:
+      0 12px 28px rgba(76,54,28,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.5);
+  }
+  body.prayer-tablet #tablet-settings-page {
+    background: transparent;
+    box-shadow: none;
+    border-color: transparent;
+  }
+  body.prayer-tablet .tablet-settings-panel {
+    background: rgba(255,252,247,0.96);
+    color: var(--text);
+    border-color: rgba(168,133,79,0.2);
+    box-shadow:
+      0 10px 24px rgba(76,54,28,0.06),
+      inset 0 0 0 1px rgba(255,255,255,0.5);
   }
   body.prayer-tablet .tablet-home-kicker,
   body.prayer-tablet .tablet-page-kicker,
@@ -2458,6 +2479,16 @@
   }
   body.prayer-tablet .tablet-quran-verse-key {
     color: var(--gold) !important;
+  }
+  body.prayer-tablet .tablet-quran-translation-head,
+  body.prayer-tablet .tablet-quran-translation-controls {
+    display: none;
+  }
+  body.prayer-tablet .tablet-quran-verses {
+    margin-top: 0;
+  }
+  body.prayer-tablet .tablet-settings-heading {
+    display: none;
   }
   body.prayer-tablet .tablet-home-player-btn,
   body.prayer-tablet .tablet-home-dot,
