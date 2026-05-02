@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Qiblah for mosques: prayer times, mosque profiles, community announcements, online courses and TV display screens in one platform.">
+<title>Qiblah for Mosques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1928;
+  --surface: #132235;
+  --surface-2: #172a41;
+  --gold: #d4ad70;
+  --gold-soft: rgba(212, 173, 112, 0.16);
+  --text: #f2f0ea;
+  --muted: rgba(242, 240, 234, 0.66);
+  --faint: rgba(242, 240, 234, 0.42);
+  --line: rgba(212, 173, 112, 0.26);
+  --line-soft: rgba(255, 255, 255, 0.08);
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(212, 173, 112, 0.12), transparent 28rem),
+    radial-gradient(circle at 86% 18%, rgba(59, 110, 155, 0.14), transparent 30rem),
+    var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px clamp(20px, 5vw, 72px);
+  background: rgba(15, 25, 40, 0.88);
+  border-bottom: 1px solid var(--line-soft);
+  backdrop-filter: blur(18px);
+}
+.brand { font-size: 28px; font-weight: 500; text-decoration: none; }
+.nav-links { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 15px; }
+.nav-links a { text-decoration: none; }
+.nav-cta, .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #e4c991, var(--gold));
+  color: #15100a;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-decoration: none;
+  background: rgba(255,255,255,0.03);
+}
+.hero {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: clamp(54px, 8vw, 96px) clamp(20px, 5vw, 48px) 44px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1.08fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: center;
+}
+.eyebrow {
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+.hero h1, .section h2, .cta-panel h2 {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.hero h1 { max-width: 700px; font-size: clamp(44px, 6.4vw, 78px); line-height: 0.98; }
+.hero p:not(.eyebrow) {
+  margin: 24px 0 0;
+  max-width: 570px;
+  color: var(--muted);
+  font-size: clamp(18px, 2.2vw, 23px);
+  line-height: 1.45;
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+.hero-points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 34px; }
+.point {
+  min-height: 104px;
+  padding: 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: rgba(19, 34, 53, 0.78);
+}
+.point strong { display: block; color: var(--gold); font-size: 26px; font-weight: 500; margin-bottom: 6px; }
+.point span { color: var(--muted); font-size: 13px; line-height: 1.35; }
+.phone-stack { position: relative; min-height: 640px; }
+.phone-shot {
+  position: absolute;
+  width: min(46%, 286px);
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.phone-shot img { width: 100%; height: 560px; object-fit: cover; object-position: top center; }
+.phone-shot.main { right: 7%; top: 0; width: min(54%, 330px); }
+.phone-shot.left { left: 0; top: 110px; }
+.phone-shot.bottom { right: 0; bottom: 0; width: min(48%, 292px); }
+.section { max-width: 1220px; margin: 0 auto; padding: clamp(54px, 7vw, 86px) clamp(20px, 5vw, 48px); }
+.section-head { max-width: 760px; margin-bottom: 34px; }
+.section h2 { font-size: clamp(34px, 4.5vw, 54px); line-height: 1.06; }
+.section-head p:not(.eyebrow) { margin: 18px 0 0; color: var(--muted); font-size: 18px; line-height: 1.55; }
+.visual-grid, .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.visual-card, .feature-card, .display-panel, .steps, .cta-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(19, 34, 53, 0.82);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.18);
+}
+.visual-card { overflow: hidden; }
+.visual-card img { width: 100%; height: 440px; object-fit: cover; object-position: top center; }
+.visual-copy { padding: 20px; border-top: 1px solid var(--line-soft); }
+.visual-copy strong { display: block; font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+.visual-copy span { color: var(--muted); font-size: 15px; line-height: 1.45; }
+.feature-card { padding: 24px; }
+.icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+.icon svg { width: 24px; height: 24px; stroke-width: 1.9; }
+.feature-card h3 { margin: 0 0 10px; font-size: 22px; font-weight: 500; }
+.feature-card p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.5; }
+.display-panel { overflow: hidden; display: grid; grid-template-columns: 1fr 0.55fr; align-items: stretch; }
+.display-panel img { width: 100%; height: 100%; min-height: 420px; object-fit: cover; object-position: center; }
+.display-copy { padding: clamp(28px, 4vw, 44px); display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--line-soft); }
+.display-copy h3 { margin: 0; font-size: clamp(28px, 3.2vw, 42px); line-height: 1.1; font-weight: 500; }
+.display-copy p:not(.eyebrow) { margin: 18px 0 0; color: var(--muted); font-size: 17px; line-height: 1.55; }
+.display-list { display: grid; gap: 12px; margin-top: 26px; }
+.display-list span { display: flex; gap: 10px; align-items: center; color: var(--muted); }
+.display-list span::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: var(--gold); flex: 0 0 auto; }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); overflow: hidden; }
+.step { padding: 26px; min-height: 190px; border-right: 1px solid var(--line-soft); }
+.step:last-child { border-right: 0; }
+.step small { display: block; color: var(--gold); font-size: 13px; font-weight: 600; letter-spacing: 0.15em; margin-bottom: 18px; }
+.step strong { display: block; font-size: 21px; font-weight: 500; margin-bottom: 10px; }
+.step span { color: var(--muted); font-size: 15px; line-height: 1.45; }
+.cta-panel {
+  padding: clamp(32px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(212, 173, 112, 0.12), transparent 42%), rgba(19, 34, 53, 0.92);
+}
+.cta-panel h2 { font-size: clamp(34px, 4.4vw, 56px); line-height: 1.05; }
+.cta-panel p:not(.eyebrow) { margin: 14px 0 0; max-width: 650px; color: var(--muted); font-size: 18px; line-height: 1.5; }
+.footer { padding: 34px clamp(20px, 5vw, 72px); border-top: 1px solid var(--line-soft); color: var(--faint); display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+@media (max-width: 1020px) {
+  .hero { grid-template-columns: 1fr; }
+  .phone-stack { min-height: 560px; max-width: 720px; }
+  .visual-grid, .feature-grid { grid-template-columns: 1fr 1fr; }
+  .display-panel { grid-template-columns: 1fr; }
+  .display-copy { border-left: 0; border-top: 1px solid var(--line-soft); }
+  .steps { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  .nav-links a:not(.nav-cta) { display: none; }
+  .hero { padding-top: 48px; }
+  .hero-points, .visual-grid, .feature-grid, .steps, .cta-panel { grid-template-columns: 1fr; }
+  .phone-stack { min-height: auto; display: grid; gap: 14px; }
+  .phone-shot, .phone-shot.main, .phone-shot.left, .phone-shot.bottom { position: static; width: 100%; max-height: 520px; }
+  .phone-shot img, .visual-card img { height: 520px; }
+  .step { border-right: 0; border-bottom: 1px solid var(--line-soft); }
+  .step:last-child { border-bottom: 0; }
+}
+</style>
+</head>
+<body>
+  <nav class="nav" aria-label="Main navigation">
+    <a class="brand" href="/">Qiblah</a>
+    <div class="nav-links">
+      <a href="#platform">Platform</a>
+      <a href="#display">TV display</a>
+      <a href="#how">How it works</a>
+      <a class="nav-cta" href="/register/#signup">Register</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Your community, one platform</p>
+        <h1>Bring your mosque onto Qiblah.</h1>
+        <p>Qiblah helps worshippers find prayer times, Jummah, services, classes and online courses, while mosque teams manage updates from one simple dashboard.</p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="/register/#signup">Register your mosque</a>
+          <a class="btn-secondary" href="#platform">See what mosques get</a>
+        </div>
+        <div class="hero-points" aria-label="Qiblah highlights">
+          <div class="point"><strong>Live</strong><span>Prayer, Jummah and announcement updates.</span></div>
+          <div class="point"><strong>Local</strong><span>Mosque discovery for East London communities.</span></div>
+          <div class="point"><strong>Display</strong><span>TV screen for prayer halls and entrances.</span></div>
+        </div>
+      </div>
+      <div class="phone-stack" aria-label="Qiblah app screenshots">
+        <figure class="phone-shot left"><img src="assets/mosques.jpg" alt="Qiblah mosque search screen"></figure>
+        <figure class="phone-shot main"><img src="assets/home.jpg" alt="Qiblah home screen"></figure>
+        <figure class="phone-shot bottom"><img src="assets/online.jpg" alt="Qiblah online courses screen"></figure>
+      </div>
+    </section>
+
+    <section class="section" id="platform">
+      <div class="section-head">
+        <p class="eyebrow">For worshippers</p>
+        <h2>A clear place to find what your mosque offers.</h2>
+        <p>Prayer times are only the start. Qiblah brings together mosque profiles, directions, services, classes, announcements and online learning in the same experience.</p>
+      </div>
+      <div class="visual-grid">
+        <article class="visual-card">
+          <img src="assets/mosques.jpg" alt="Mosque list with search, city and area filters">
+          <div class="visual-copy"><strong>Find mosques nearby</strong><span>Search by mosque, city or area, with Fajr and Jummah visible before opening a profile.</span></div>
+        </article>
+        <article class="visual-card">
+          <img src="assets/profile.jpg" alt="Mosque profile prayer times screen">
+          <div class="visual-copy"><strong>Prayer times and Jummah</strong><span>Profiles show next salah logic, begins, Jama'ah, tomorrow and Jummah in a clean mobile layout.</span></div>
+        </article>
+        <article class="visual-card">
+          <img src="assets/online.jpg" alt="Online courses with category filters">
+          <div class="visual-copy"><strong>Services and online learning</strong><span>Classes can appear under mosque services, while online courses sit in their own searchable tab.</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <p class="eyebrow">For mosque teams</p>
+        <h2>Update the community without rebuilding a website.</h2>
+        <p>Mosque admins can keep their profile fresh with practical tools designed around weekly mosque work.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 5h16M4 12h16M4 19h10"/></svg></div>
+          <h3>Prayer timetable</h3>
+          <p>Upload CSV timetables, choose Asr option, manage Jummah and keep daily times in sync.</p>
+        </article>
+        <article class="feature-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 8h10M7 12h7M5 20l3-3h11V5H5z"/></svg></div>
+          <h3>Announcements</h3>
+          <p>Add classes, events, online links, ticker messages and recurring schedules without manual sorting.</p>
+        </article>
+        <article class="feature-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16v11H4z"/><path d="M8 21h8M12 18v3"/></svg></div>
+          <h3>Embeds and display</h3>
+          <p>Use small widgets, full prayer cards, TV display previews and colour settings from mosque admin.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="display">
+      <div class="display-panel">
+        <img src="assets/display.png" alt="Qiblah TV display with announcements and prayer times">
+        <div class="display-copy">
+          <p class="eyebrow">Live TV display</p>
+          <h3>Prayer hall screen included.</h3>
+          <p>Each mosque can have a display page for TV signage, Raspberry Pi or browser-based screens. It shows prayer times, announcements, tickers and colour branding.</p>
+          <div class="display-list">
+            <span>Auto refreshes from the mosque profile data</span>
+            <span>Custom background, panels and accent colours</span>
+            <span>Blackout minutes and ticker controls</span>
+            <span>Works from a simple display URL</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="section-head"><p class="eyebrow">How it works</p><h2>Simple setup, mosque-controlled after launch.</h2></div>
+      <div class="steps">
+        <div class="step"><small>01</small><strong>Register interest</strong><span>Send the mosque details so Qiblah can prepare the profile and admin access.</span></div>
+        <div class="step"><small>02</small><strong>Set up profile</strong><span>Add location, facilities, logo, prayer timetable, Jummah and public information.</span></div>
+        <div class="step"><small>03</small><strong>Manage updates</strong><span>Mosque admin edits announcements, classes, online courses, ticker and display settings.</span></div>
+        <div class="step"><small>04</small><strong>Go live</strong><span>The public app, embeds and display screen all reflect the same mosque data.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="cta-panel">
+        <div><p class="eyebrow">East London launch</p><h2>Ready to bring your mosque onto Qiblah?</h2><p>Register now and we can prepare your mosque profile, admin login and display screen ahead of the wider community launch.</p></div>
+        <a class="btn-primary" href="/register/#signup">Register</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><span>Qiblah</span><span>Prayer times, mosque profiles, services and display screens.</span></footer>
+</body>
+</html>

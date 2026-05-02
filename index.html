@@ -5,23 +5,23 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#1e1c18">
+<meta name="theme-color" content="#f6f1e8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Qiblah">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#f5f0e8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
-<style>html,body{background-color:#f5f0e8!important;margin:0!important;padding:0!important;}
-@media(prefers-color-scheme:dark){html,body{background-color:#0d1520!important;background:radial-gradient(ellipse 120% 120% at 50% 0%,rgba(100,140,255,0.08) 0%,#0d1520 60%) fixed!important;}}
+<meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: dark)">
+<style>html,body{background-color:#0d1520!important;margin:0!important;padding:0!important;}
+@media(prefers-color-scheme:dark){html,body{background-color:#f6f1e8!important;background:linear-gradient(180deg,#f6f1e8 0%,#eee7db 100%) fixed!important;}}
 .sponsored-slider { margin-bottom:8px; width:100%; box-sizing:border-box; }
 .sponsored-track-wrap { overflow:hidden; border-radius:var(--radius); width:100%; }
 .sponsored-track { display:flex; transition:transform 0.5s cubic-bezier(.4,0,.2,1); will-change:transform; }
 .sponsored-slide { min-width:100%; width:100%; flex-shrink:0; box-sizing:border-box; }
 .sponsored-card {
-  background:rgba(155,127,78,0.06);
-  border:1px solid rgba(155,127,78,0.25);
+  background:rgba(var(--gold-rgb),0.06);
+  border:1px solid rgba(var(--gold-rgb),0.25);
   border-left:3px solid var(--gold);
   border-radius:var(--radius);
   padding:12px 14px;
@@ -56,14 +56,16 @@
 }
 .sponsored-card-title {
   font-size:14px;
-  font-weight:600;
+  font-weight:400;
   margin-bottom:2px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  line-height:1.1;
 }
 .sponsored-card-sub {
-  font-size:11px;
+  font-size:13px;
+  font-weight:500;
   color:var(--gold);
   margin-bottom:3px;
   white-space:nowrap;
@@ -97,11 +99,11 @@
     font-size:9px;
   }
   .sponsored-card-title {
-    font-size:13px;
+    font-size:16px;
     margin-bottom:1px;
   }
   .sponsored-card-sub {
-    font-size:10px;
+    font-size:12px;
     margin-bottom:1px;
   }
   .sponsored-card-desc {
@@ -135,13 +137,15 @@
 <style>
 
 :root {
-  --bg:      #f5f0e8;
-  --bg2:     #ede8de;
-  --bg3:     #e5dfd4;
+  --bg:      #f6f1e8;
+  --bg2:     #eee7db;
+  --bg3:     #e6dece;
   --card:    #ffffff;
-  --card2:   #f0ebe0;
-  --gold: #9b7f4e; --gold2: #7d6338;
-  --text: #1e1c18; --muted: #7a7060;
+  --card2:   #f7f2e9;
+  --gold: #a6864a; --gold2: #8d703e;
+  --gold-bright: #c0a36b;
+  --gold-rgb: 166,134,74;
+  --text: #1f1b16; --muted: #857968;
   --border:  rgba(0,0,0,0.08);
   --radius:  16px;
   --green:   #047857;
@@ -149,96 +153,88 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:    #0d1520;
-    --bg2:   #101a28;
-    --bg3:   #132030;
-    --card:  #132030;
-    --card2: #101a28;
-    --gold:  #c9a87a; --gold2: #a8864f;
-    --text:  #e8e6f2; --muted: rgba(255,255,255,0.5);
-    --border: rgba(100,140,255,0.1);
+    --bg:    #f6f1e8;
+    --bg2:   #eee7db;
+    --bg3:   #e6dece;
+    --card:  #ffffff;
+    --card2: #f7f2e9;
+    --gold:  #a6864a; --gold2: #8d703e;
+    --gold-bright: #c0a36b;
+    --gold-rgb: 166,134,74;
+    --text:  #1f1b16; --muted: #857968;
+    --border: rgba(0,0,0,0.08);
     --green: #10b981;
     --red:   #f43f5e;
   }
   body {
-    background: radial-gradient(ellipse 120% 120% at 50% 0%, rgba(100,140,255,0.08) 0%, #0d1520 60%) fixed !important;
-    background-color: #0d1520 !important;
+    background: #f6f1e8 !important;
+    background-color: #f6f1e8 !important;
   }
   nav {
-    background: #0d1520 !important;
+    background: #f6f1e8 !important;
     backdrop-filter: none;
   }
   .area-badge {
-    background: rgba(255,255,255,0.08) !important;
-    color: rgba(255,255,255,0.75) !important;
-    border-color: rgba(255,255,255,0.12) !important;
+    background: rgba(166,134,74,0.08) !important;
+    color: #2d2415 !important;
+    border-color: rgba(166,134,74,0.18) !important;
   }
   .t-Education, .t-Youth, .t-Welfare, .t-Community {
-    background: rgba(255,255,255,0.08) !important;
-    color: rgba(255,255,255,0.75) !important;
+    background: rgba(166,134,74,0.08) !important;
+    color: #2d2415 !important;
   }
   .type-badge {
-    background: rgba(255,255,255,0.08) !important;
-    color: rgba(255,255,255,0.75) !important;
+    background: rgba(166,134,74,0.08) !important;
+    color: #2d2415 !important;
   }
-  .fac-icon {
-    border-color: rgba(139,112,78,0.4) !important;
-  }
+  .fac-icon { border-color: rgba(166,134,74,0.4) !important; }
   .fac-icon svg {
-    color: #c9a87a !important;
+    color: #a6864a !important;
   }
-  .mobile-nav-btn svg {
-    color: rgba(255,255,255,0.5) !important;
-  }
-  .mobile-nav-btn.active svg {
-    color: #c9a87a !important;
-  }
-  .mobile-nav-btn {
-    color: rgba(255,255,255,0.5) !important;
-  }
-  .mobile-nav-btn.active {
-    color: #c9a87a !important;
-  }
+  .mobile-nav-btn svg { color: rgba(0,0,0,0.45) !important; }
+  .mobile-nav-btn.active svg { color: #a6864a !important; }
+  .mobile-nav-btn { color: rgba(0,0,0,0.45) !important; }
+  .mobile-nav-btn.active { color: #a6864a !important; }
   .mosque-card svg[fill="var(--gold)"],
   .mosque-card svg[fill*="9b7f4e"] {
-    fill: #c9a87a !important;
+    fill: #a6864a !important;
   }
   .mosque-card > div[style*="border-radius:10px"] {
-    background: rgba(139,112,78,0.15) !important;
-    border-color: rgba(139,112,78,0.25) !important;
+    background: rgba(166,134,74,0.12) !important;
+    border-color: rgba(166,134,74,0.2) !important;
   }
   #home-ad-banner {
-    background: #132030 !important;
-    border: 1px solid rgba(100,140,255,0.12) !important;
+    background: #201d16 !important;
+    border: 1px solid rgba(166,134,74,0.12) !important;
     border-left: 3px solid var(--gold) !important;
   }
   .area-btn {
-    background: rgba(255,255,255,0.06) !important;
-    color: rgba(255,255,255,0.65) !important;
-    border-color: rgba(255,255,255,0.1) !important;
+    background: rgba(166,134,74,0.06) !important;
+    color: #6f6453 !important;
+    border-color: rgba(166,134,74,0.15) !important;
   }
   .area-btn.active {
-    background: rgba(139,112,78,0.2) !important;
-    color: #c9a87a !important;
-    border-color: rgba(139,112,78,0.35) !important;
+    background: rgba(166,134,74,0.16) !important;
+    color: #a6864a !important;
+    border-color: rgba(166,134,74,0.3) !important;
   }
   .view-toggle {
     background: var(--card2) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(0,0,0,0.08) !important;
   }
   .view-btn { color: var(--muted) !important; }
   .view-btn.active {
-    background: rgba(139,112,78,0.15) !important;
-    color: #c9a87a !important;
+    background: rgba(166,134,74,0.12) !important;
+    color: #a6864a !important;
   }
   .search-wrap input {
     background: var(--card) !important;
     color: var(--text) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(0,0,0,0.08) !important;
   }
   .locate-btn {
-    background: rgba(139,112,78,0.1) !important;
-    border-color: rgba(139,112,78,0.25) !important;
+    background: rgba(166,134,74,0.1) !important;
+    border-color: rgba(166,134,74,0.25) !important;
   }
   .tabs {
     background: var(--card2) !important;
@@ -248,8 +244,8 @@
     background: var(--card) !important;
     color: var(--text) !important;
   }
-  .sub-tab { background: var(--card2) !important; color: var(--muted) !important; border-color: rgba(255,255,255,0.06) !important; }
-  .sub-tab.active { background: rgba(139,112,78,0.15) !important; color: #c9a87a !important; border-color: rgba(139,112,78,0.3) !important; }
+  .sub-tab { background: var(--card2) !important; color: var(--muted) !important; border-color: rgba(0,0,0,0.06) !important; }
+  .sub-tab.active { background: rgba(166,134,74,0.15) !important; color: #a6864a !important; border-color: rgba(166,134,74,0.3) !important; }
   select, #city-select, #area-select, #jummah-area-select {
     background: var(--card) !important;
     background-color: var(--card) !important;
@@ -264,25 +260,25 @@
   #home-prayer-card > div, .jummah-pill, .area-badge, .tag,
   .area-btn, .search-wrap input, .view-toggle, .locate-btn {
     border: none !important;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(155,127,78,0.2) !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(166,134,74,0.2) !important;
   }
-  .area-btn.active { border-color: rgba(139,112,78,0.45) !important; }
-  #home-ad-banner { border: 1px solid rgba(255,255,255,0.12) !important; border-left: 3px solid var(--gold) !important; }
+  .area-btn.active { border-color: rgba(166,134,74,0.35) !important; }
+  #home-ad-banner { border: 1px solid rgba(166,134,74,0.12) !important; border-left: 3px solid var(--gold) !important; }
 }
-html, body { background-color: #f5f0e8 !important; margin: 0 !important; padding: 0 !important; }
+html, body { background-color: #f6f1e8 !important; margin: 0 !important; padding: 0 !important; }
 @media (prefers-color-scheme: dark) {
-  html, body { background-color: #101010 !important; }
+  html, body { background-color: #f6f1e8 !important; }
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 .nav-logo { font-family: 'Outfit', sans-serif; font-weight: 500; }
 h1, h2 { font-family: 'Outfit', sans-serif; font-weight: 400; }
-nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
-.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; color: var(--text); text-decoration: none; }
+nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; border-bottom: 1px solid rgba(0,0,0,0.08); padding: env(safe-area-inset-top,0) 32px 8px; height: calc(60px + env(safe-area-inset-top,0)); display: flex; align-items: flex-end; justify-content: space-between; box-sizing: border-box; }
+.nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: #1f1b16; text-decoration: none; }
 .nav-links { display: flex; gap: 4px; align-items: center; }
-.nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
-.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-.nav-link.active { background: rgba(155,127,78,0.12); color: var(--gold); }
+.nav-link { padding: 6px 16px; border-radius: 8px; font-size: 14px; color: #6f6453; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; background: none; font-family: inherit; }
+.nav-link:hover { color: #1f1b16; background: rgba(166,134,74,0.05); }
+.nav-link.active { background: rgba(166,134,74,0.12); color: #a6864a; }
 .page { display: none; animation: fadeIn 0.3s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -291,7 +287,7 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 @keyframes ptFlipIn  { 0% { opacity:0; transform:translateY(6px); } 100% { opacity:1; transform:translateY(0); } }
 
 .hero { text-align: center; padding: 80px 32px 60px; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(155,127,78,0.08) 0%, transparent 70%); pointer-events: none; }
+.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(166,134,74,0.08) 0%, transparent 70%); pointer-events: none; }
 .hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 600; line-height: 1.1; margin-bottom: 16px; }
 .hero h1 .accent { color: var(--gold); }
 .hero p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0 auto 48px; line-height: 1.6; }
@@ -325,24 +321,67 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
 .section-header h2 { font-size: 16px; font-weight: 500; }
 .section-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.view-all { color: var(--gold); font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
+.view-all { color: #a6864a; font-size: 14px; font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
 .mosque-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .mosque-card { background: var(--card); border: none; border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; width: 100%; animation: cardFadeUp 0.4s ease both; }
 @keyframes cardFadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.mosque-card:hover { border-color: rgba(155,127,78,0.3); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.mosque-card:hover { border-color: rgba(166,134,74,0.3); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 .mosque-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
 .mosque-card-body { padding: 16px; }
-.mosque-card-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.mosque-card-name,
+.mosque-list-name,
+.service-name,
+.profile-detail-title,
+.sponsored-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+.mosque-card-name { margin-bottom: 8px; }
 .mosque-card-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; font-size: 13px; color: var(--muted); }
-.mosque-card-row svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 1px; color: var(--gold); }
+.mosque-card-row svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 1px; color: #a6864a; }
 .mosque-tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
-.tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+.pill-tag,
+.tag,
+.jummah-pill,
+.area-badge,
+.service-type-badge,
+.profile-event-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  border: 1px solid rgba(166,134,74,0.25);
+  background: rgba(166,134,74,0.08);
+  color: #a6864a;
+  box-shadow: inset 0 0 0 1px rgba(166,134,74,0.08);
+}
+.pill-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px; flex-shrink: 0; }
+.pill-tag--compact { min-height: 0; }
+.tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
 .mosque-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 4px; }
-.view-details { color: var(--gold); font-size: 12px; font-weight: 500; text-decoration: none; }
-.area-badge { font-size: 10px; padding: 2px 7px; border-radius: 6px; background: rgba(13,122,95,0.08); color: #0d7a5f; border: 1px solid rgba(13,122,95,0.2); white-space: nowrap; font-weight: 600; }
+.view-details { color: #a6864a; font-size: 12px; font-weight: 500; text-decoration: none; }
+.area-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  border: 1px solid rgba(166,134,74,0.25);
+  background: rgba(166,134,74,0.08);
+  color: #a6864a;
+  box-shadow: inset 0 0 0 1px rgba(166,134,74,0.08);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
 @media (max-width: 480px) { .area-badge { font-size: 9px; padding: 1px 5px; } }
 .mosques-header { padding: 32px 32px 0; }
 .mosques-header h1 { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
@@ -350,31 +389,31 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
 .search-wrap { flex: 1; position: relative; }
 .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
-.search-wrap input { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
-.search-wrap input:focus { border-color: rgba(240,165,0,0.4); }
+.search-wrap input { width: 100%; background: var(--card); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
+.search-wrap input:focus { border-color: rgba(166,134,74,0.4); }
 .search-wrap input::placeholder { color: var(--muted); }
 .view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
 .view-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: none; color: var(--muted); }
-.view-btn.active { background: rgba(155,127,78,0.15); color: var(--gold); }
+.view-btn.active { background: rgba(166,134,74,0.12); color: #a6864a; }
 .view-btn svg { width: 18px; height: 18px; }
-.locate-btn { display: flex; align-items: center; gap: 8px; background: rgba(155,127,78,0.1); border: 1px solid rgba(155,127,78,0.25); color: var(--gold); font-size: 13px; font-weight: 500; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.locate-btn { display: flex; align-items: center; gap: 8px; background: rgba(166,134,74,0.08); border: 1px solid rgba(166,134,74,0.22); color: #a6864a; font-size: 13px; font-weight: 500; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-family: inherit; white-space: nowrap; }
 .locate-btn svg { width: 15px; height: 15px; }
 .area-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-bottom: 4px; }
-.area-btn { font-size: 12px; font-family: inherit; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
-.area-btn.active { background: rgba(155,127,78,0.15); color: var(--gold); border-color: rgba(155,127,78,0.3); }
+.area-btn { font-size: 12px; font-family: inherit; padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.08); background: var(--card); color: var(--muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.area-btn.active { background: rgba(166,134,74,0.12); color: #a6864a; border-color: rgba(166,134,74,0.25); }
 .mosques-results { padding: 20px 32px 48px; }
-.mosque-list-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: grid; grid-template-columns: 160px 1fr; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; }
-.mosque-list-card:hover { border-color: rgba(155,127,78,0.3); }
+.mosque-list-card { background: var(--card); border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius); overflow: hidden; display: grid; grid-template-columns: 160px 1fr; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; }
+.mosque-list-card:hover { border-color: rgba(166,134,74,0.3); }
 .mosque-list-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mosque-list-body { padding: 18px 20px; }
-.mosque-list-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.mosque-list-name { margin-bottom: 8px; }
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
-.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); border-top: 1px solid var(--border); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.1); }
-@media (prefers-color-scheme: dark) { .mobile-nav { background: #0d1520; box-shadow: 0 -2px 12px rgba(0,0,0,0.5); border-top-color: rgba(100,140,255,0.08); } }
+.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #f6f1e8; border-top: 1px solid rgba(0,0,0,0.08); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); }
+@media (prefers-color-scheme: dark) { .mobile-nav { background: #f6f1e8; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); border-top-color: rgba(0,0,0,0.08); } }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
-.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
-.mobile-nav-btn.active { color: var(--gold); font-weight: 600; }
+.mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: #6f6453; cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
+.mobile-nav-btn.active { color: #a6864a; font-weight: 600; }
 .mobile-nav-btn svg { width: 22px; height: 22px; }
 #masajid-app { position: relative; z-index: 1; }
 
@@ -401,13 +440,13 @@ nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bott
 
 /* Nav refinement */
 .nav-logo { letter-spacing: 0.5px; }
-nav { border-bottom: 1px solid var(--border); }
+nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
 nav::after {
   content: '';
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(155,127,78,0.3) 30%, rgba(155,127,78,0.3) 70%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(var(--gold-rgb),0.3) 30%, rgba(var(--gold-rgb),0.3) 70%, transparent);
   pointer-events: none;
 }
 
@@ -416,7 +455,7 @@ nav::after {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(155,127,78,0.3) 30%, rgba(155,127,78,0.3) 70%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(var(--gold-rgb),0.3) 30%, rgba(var(--gold-rgb),0.3) 70%, transparent);
   pointer-events: none;
 }
 
@@ -438,29 +477,29 @@ nav::after {
 
 /* Mosque cards — warmer shadow, smoother transition */
 .mosque-card {
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(155,127,78,0.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(var(--gold-rgb),0.15);
   border: none !important;
   transition: border-color 0.25s, transform 0.25s cubic-bezier(.2,.8,.3,1), box-shadow 0.25s;
 }
 .mosque-card:hover {
-  box-shadow: 0 8px 24px rgba(155,127,78,0.1), 0 2px 8px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(155,127,78,0.35) !important;
+  box-shadow: 0 8px 24px rgba(var(--gold-rgb),0.1), 0 2px 8px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(var(--gold-rgb),0.35) !important;
   transform: translateY(-3px);
 }
 
 /* Service cards */
 .service-card {
-  box-shadow: inset 0 0 0 1px rgba(155,127,78,0.15);
+  box-shadow: inset 0 0 0 1px rgba(var(--gold-rgb),0.15);
   border: none !important;
   transition: border-color 0.25s, transform 0.25s cubic-bezier(.2,.8,.3,1), box-shadow 0.25s;
 }
 .service-card:hover {
-  box-shadow: 0 6px 20px rgba(155,127,78,0.1), inset 0 0 0 1px rgba(155,127,78,0.35) !important;
+  box-shadow: 0 6px 20px rgba(var(--gold-rgb),0.1), inset 0 0 0 1px rgba(var(--gold-rgb),0.35) !important;
   transform: translateY(-2px);
 }
 
 /* Gold shimmer on sponsored card left border */
 .sponsored-card {
-  background: linear-gradient(135deg, rgba(155,127,78,0.05) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(var(--gold-rgb),0.05) 0%, transparent 60%);
 }
 
 /* Area badge refinement */
@@ -483,7 +522,7 @@ nav::after {
 }
 
 /* Detail card refinement */
-.detail-card { box-shadow: 0 1px 6px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(155,127,78,0.12); }
+.detail-card { box-shadow: 0 1px 6px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(var(--gold-rgb),0.12); }
 .detail-card h3 { letter-spacing: 1.5px; }
 
 /* Prayer time header row */
@@ -500,7 +539,7 @@ nav::after {
 
 /* Search input */
 .search-wrap input { transition: border-color 0.2s, box-shadow 0.2s; }
-.search-wrap input:focus { box-shadow: 0 0 0 3px rgba(155,127,78,0.08); }
+.search-wrap input:focus { box-shadow: 0 0 0 3px rgba(var(--gold-rgb),0.08); }
 
 /* Directions button */
 .directions-btn { letter-spacing: 0.5px; transition: background 0.2s, transform 0.15s; }
@@ -513,9 +552,9 @@ nav::after {
 .detail-hero-info h2 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
 .detail-hero-info p { font-size: 13px; color: rgba(255,255,255,0.7); }
 .detail-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 40px; }
-.detail-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: none; box-shadow: 0 1px 8px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(155,127,78,0.15); }
+.detail-card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: none; box-shadow: 0 1px 8px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(var(--gold-rgb),0.15); }
 .detail-card h3 { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
-.pt-section { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: none; box-shadow: 0 1px 8px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(155,127,78,0.15); }
+.pt-section { background: var(--card); border-radius: var(--radius); padding: 16px 18px; border: none; box-shadow: 0 1px 8px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(var(--gold-rgb),0.15); }
 .pt-section h3 { font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; margin-bottom: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
 .pt-header-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; padding: 0 0 10px 0; }
 .pt-header-row span { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
@@ -529,24 +568,25 @@ nav::after {
 .jummah-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
 .jummah-section h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; text-transform: none; letter-spacing: 0; }
 .jummah-times { display: flex; gap: 8px; flex-wrap: wrap; }
-.jummah-pill { background: rgba(155,127,78,0.12); border: 1px solid rgba(155,127,78,0.25); color: var(--gold); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; }
+.jummah-pill { background: rgba(var(--gold-rgb),0.12); border: 1px solid rgba(var(--gold-rgb),0.25); color: var(--gold); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; }
 .facility-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px; }
 .facility-item + .facility-item { border-top: 1px solid var(--border); }
 .fac-icon { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .fac-icon svg { width: 11px; height: 11px; color: var(--gold); }
 .contact-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 13px; }
 .contact-item + .contact-item { margin-top: 2px; }
-.con-icon { width: 32px; height: 32px; background: rgba(155,127,78,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.con-icon { width: 32px; height: 32px; background: rgba(var(--gold-rgb),0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .con-icon svg { width: 15px; height: 15px; color: var(--gold); }
 .service-grid, .course-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .service-card { background: var(--card); border: none; border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: border-color 0.2s; position: relative; }
-.service-card:hover { border-color: rgba(155,127,78,0.3); }
+.service-card:hover { border-color: rgba(var(--gold-rgb),0.3); }
 .service-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .service-icon svg { width: 18px; height: 18px; }
 .institute-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .institute-icon svg { width: 18px; height: 18px; }
 .service-body { flex: 1; min-width: 0; }
-.service-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.service-name { font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; font-weight: 400; }
+.service-provider { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
 .service-mosque { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .service-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .service-type-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
@@ -559,21 +599,21 @@ nav::after {
 .profile-detail-list-spaced { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 .profile-detail-subtitle { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
 .profile-detail-item { background: var(--card); border: none; border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
-.profile-detail-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(155,127,78,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.profile-detail-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(var(--gold-rgb),0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .profile-detail-icon svg { width: 18px; height: 18px; }
 .profile-detail-body { flex: 1; min-width: 0; padding-right: 12px; }
-.profile-detail-title { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-detail-title { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .profile-detail-meta { font-size: 12px; color: var(--muted); line-height: 1.4; text-align: right; flex-shrink: 0; max-width: 44%; }
 .profile-detail-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
-.profile-event-tag { display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; margin-bottom: 5px; }
+.profile-event-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; margin-bottom: 5px; }
 .profile-event-tag.class { background: rgba(96,165,250,0.14); color: #2563eb; }
 .profile-event-tag.online { background: rgba(20,184,166,0.14); color: #0f766e; }
-.profile-event-tag.event { background: rgba(155,127,78,0.14); color: var(--gold); }
+.profile-event-tag.event { background: rgba(var(--gold-rgb),0.14); color: var(--gold); }
 .directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 500; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
 
 .register-page-shell { padding: 20px 16px 40px; }
 .register-onboard { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 16px; align-items: start; }
-.register-panel { background: #132030; border: 1px solid rgba(201,168,122,0.28); border-radius: 16px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.18); }
+.register-panel { background: #201d16; border: 1px solid rgba(166,134,74,0.22); border-radius: 16px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.18); }
 .register-intro { padding: 22px; border-left: 3px solid var(--gold); }
 .register-kicker { font-size: 10px; font-weight: 800; color: var(--gold); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 10px; }
 .register-intro h1 { font-size: clamp(25px, 4vw, 42px); line-height: 1.08; letter-spacing: 0; color: #f5efe4; margin: 0 0 12px; font-weight: 400; }
@@ -599,6 +639,7 @@ nav::after {
   color: #f5efe4 !important; border-radius: 10px !important; padding: 11px 13px !important;
 }
 .reg-submit, .register-cta { background: linear-gradient(135deg, #d9bd82, var(--gold)); color: #141007; border: none; cursor: pointer; font-family: inherit; font-weight: 800; }
+.register-cta { color: #ffffff; font-weight: 500; }
 .register-cta { font-size: 12px; padding: 9px 18px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
 .reg-submit { width: 100%; font-size: 15px; padding: 14px; border-radius: 10px; }
 .reg-submit:disabled { opacity: 0.65; cursor: wait; }
@@ -690,7 +731,7 @@ nav::after {
   <!-- AD BANNER -->
   <div class="section" style="padding-bottom:0;padding-top:12px">
     <div id="banner-home" class="banner-slot"></div>
-    <div id="home-ad-banner" style="background:#132030;border-radius:var(--radius);overflow:hidden;margin-bottom:0">
+      <div id="home-ad-banner" style="background:#201d16;border-radius:var(--radius);overflow:hidden;margin-bottom:0">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
           <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
@@ -912,7 +953,7 @@ nav::after {
   <div style="padding:0 16px 32px;max-width:640px;margin:0 auto">
 
     <!-- Intro -->
-    <div style="background:#132030;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+    <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
       <div style="font-family:'Outfit',sans-serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ</div>
       <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"The best day on which the sun has risen is Friday. On it Adam was created, on it he was made to enter Paradise, on it he was expelled from it, and the Hour will not be established except on Friday."</p>
       <span style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Sahih Muslim</span>
@@ -922,7 +963,7 @@ nav::after {
     <div id="jumuah-sunnahs" style="display:flex;flex-direction:column;gap:10px"></div>
 
     <!-- Special Hour -->
-    <div style="background:#132030;border-radius:var(--radius);padding:20px;margin:16px 0">
+    <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
       <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Sa'at al-Istijabah</div>
       <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px;font-family:'Outfit',sans-serif">Make Abundant Du&#39;a Between Asr &amp; Maghrib</div>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">"Friday has twelve hours. There is one hour during which if a Muslim asks Allah anything, Allah will give it to him, so find it during the last hour after Asr."</p>
@@ -971,7 +1012,7 @@ nav::after {
     </div>
 
     <!-- Audio Player fixed bottom -->
-    <div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#0d1520;border-top:1px solid rgba(100,140,255,0.2);box-shadow:inset 0 1px 0 0 rgba(155,127,78,0.2);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr">
+    <div id="sk-audio-player" style="position:fixed;bottom:0;left:0;right:0;z-index:200;background:#201d16;border-top:1px solid rgba(166,134,74,0.2);box-shadow:inset 0 1px 0 0 rgba(155,127,78,0.2);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));direction:ltr">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="flex:1;min-width:0">
           <div id="sk-reciter-name" style="font-size:13px;font-weight:600;color:#e8e6f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Loading...</div>
@@ -1022,13 +1063,13 @@ nav::after {
   </div>
 </div>
 <div style="padding:0 16px 100px;max-width:640px;margin:0 auto">
-  <div style="background:#132030;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
     <div style="font-family:'Scheherazade New','Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">اَللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا</div>
     <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the morning and by You we reach the evening, by You we live and by You we die, and to You is the resurrection."</p>
     <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Morning Opening Supplication</span>
   </div>
   <div id="morning-adhkar-cards" style="display:flex;flex-direction:column;gap:10px"></div>
-  <div style="background:#132030;border-radius:var(--radius);padding:20px;margin:16px 0">
+  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Best Time</div>
     <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px">Recite Between Fajr and Sunrise</div>
     <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">The morning adhkār should ideally be recited between Fajr and sunrise. If unable to recite them in this time, you may still recite them afterwards.</p>
@@ -1058,13 +1099,13 @@ nav::after {
   </div>
 </div>
 <div style="padding:0 16px 100px;max-width:640px;margin:0 auto">
-  <div style="background:#132030;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
     <div style="font-family:'Scheherazade New','Amiri',serif;font-size:22px;color:var(--gold);margin-bottom:10px;line-height:1.8">اَللّٰهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا</div>
     <p style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;font-style:italic">"O Allah, by You we reach the evening and by You we reach the morning, by You we live and by You we die, and to You is the resurrection."</p>
     <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-top:8px;display:block">Evening Opening Supplication</span>
   </div>
   <div id="evening-adhkar-cards" style="display:flex;flex-direction:column;gap:10px"></div>
-  <div style="background:#132030;border-radius:var(--radius);padding:20px;margin:16px 0">
+  <div style="background:#201d16;border-radius:var(--radius);padding:20px;margin:16px 0">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">✦ Best Time</div>
     <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px">Recite Between ʿAsr and Maghrib</div>
     <p style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7">The evening adhkār should ideally be recited between ʿAsr and Maghrib. If unable to recite them in this time, you may still recite them afterwards.</p>
@@ -1266,11 +1307,11 @@ function renderServices(results) {
       '</div>' +
       '<div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:7px">' +
         '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 7px;border-radius:5px">' + s.type + '</span>' +
-        (s.days || s.time ? '<span style="font-size:10px;color:var(--muted);text-align:right">' + (s.days||'') + (s.time?(s.days?' ':'')+fmtServiceTime(s.time):'') + '</span>' : '') +
+        (s.days || s.time ? '<span style="font-size:13px;font-weight:500;line-height:1.1;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right">' + (s.days||'') + (s.time?(s.days?' ':'')+fmtServiceTime(s.time):'') + '</span>' : '') +
       '</div>' +
       '<div class="service-body" style="padding-right:64px">' +
         '<div class="service-name">' + s.name + '</div>' +
-        '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + m.name + '</div>' +
+        '<div class="service-provider">' + m.name + '</div>' +
       '</div>' +
     '</div>';
   }).join('') + '</div>';
@@ -1585,21 +1626,21 @@ function cardHTML(m, i) {
       '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 20V9"/><path d="M18 20V9"/><path d="M8 9c1.1-2.6 2.9-4.1 4-4.8 1.1.7 2.9 2.2 4 4.8"/><path d="M8 9h8"/><path d="M10 20v-5a2 2 0 0 1 4 0v5"/><path d="M19 20V7"/><path d="M17.5 7h3"/><path d="M19 4.5V3"/></svg>' +
     '</div>' +
     '<div style="flex:1;min-width:0;padding-right:70px">' +
-      '<div style="font-size:14px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + m.name + '</div>' +
+      '<div class="mosque-card-name" style="margin-bottom:5px">' + m.name + '</div>' +
       (function() {
         var isFri = isJumuahTime();
         var nextDisplay = next;
         // On Friday, skip Zuhr - replace with Jummah if Zuhr would be next
         if (isFri && next && next.name === 'Zuhr') nextDisplay = null;
         return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
-          (nextDisplay ? '<span style="font-size:11px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + fmt12NoAmPm(nextDisplay.time) + '</span>' : '') +
-          '<span style="font-size:11px;color:var(--muted)">Jummah ' + jummahCardTime + '</span>' +
+          (nextDisplay ? '<span style="font-size:13px;font-weight:500;color:var(--gold)">' + nextDisplay.name + ' ' + fmt12NoAmPm(nextDisplay.time) + '</span>' : '') +
+          '<span style="font-size:13px;color:var(--muted)">Jummah ' + jummahCardTime + '</span>' +
           (m.sisters ? '<span style="display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:600;color:#9b6b8a;background:rgba(155,107,138,0.1);border:1px solid rgba(155,107,138,0.25);padding:2px 5px;border-radius:4px"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"#9b6b8a\"><path d=\"M12 2C9.5 2 7.5 3.5 7 5.7 5.8 6.1 5 7.2 5 8.5c0 1.1.5 2 1.2 2.7C6.5 13.1 9 15 12 15s5.5-1.9 5.8-3.8C18.5 10.5 19 9.6 19 8.5c0-1.3-.8-2.4-2-2.8C16.5 3.5 14.5 2 12 2z\"/></svg>Sisters</span>' : '') +
         '</div>';
       })() +
     '</div>' +
     '<div style="position:absolute;top:12px;right:12px">' +
-    '<span class="area-badge">' + (m.area||'') + '</span>' +
+    '<span class="pill-tag pill-tag--compact">' + (m.area||'') + '</span>' +
     '</div>' +
 
   '</div>';
@@ -1614,7 +1655,7 @@ function listCardHTML(m, i) {
     '<div class="mosque-list-body">' +
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
         '<div class="mosque-list-name" style="margin:0;flex:1">' + m.name + '</div>' +
-        '<span class="area-badge">' + m.area + '</span>' +
+        '<span class="pill-tag pill-tag--compact">' + m.area + '</span>' +
       '</div>' +
       '<div class="mosque-card-row"><svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px;color:var(--gold)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>' + m.address + '</div>' +
       '<div class="mosque-card-row" style="margin-top:3px"><svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px;color:var(--gold)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm.5 15h-1v-5h1v5zm0-8h-1V7h1v2z"/></svg>Jummah: ' + jummahCardTime + '</div>' +
@@ -1706,10 +1747,10 @@ function buildDuaStrip(mosque) {
   var nextLabel = isEntering ? 'Leaving  ' : 'Entering  ';
   return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
     '<div>' +
-      '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">' + label + '</div>' +
+      '<div class="mosque-card-name" style="margin-bottom:2px">' + label + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
     '</div>' +
-    '<span style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0">' + nextLabel + '</span>' +
+    '<span class="pill-tag pill-tag--compact">' + nextLabel + '</span>' +
   '</div>';
 }
 
@@ -1820,28 +1861,28 @@ function renderHomePrayerCard(mosque) {
         buildDuaStrip(m) +
         '<div onclick="event.stopPropagation();showPage(\'jumuah\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Friday Prayer</div>' +
+            '<div class="mosque-card-name" style="margin-bottom:2px">Friday Prayer</div>' +
             '<div style="font-size:12px;color:var(--muted)">Sunnahs & practices for Jumu\'ah</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
         '<div onclick="event.stopPropagation();showPage(\'surahkahf\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Surah Al-Kahf</div>' +
+            '<div class="mosque-card-name" style="margin-bottom:2px">Surah Al-Kahf</div>' +
             '<div style="font-size:12px;color:var(--muted)">Light between two Fridays</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
         '<div onclick="event.stopPropagation();showPage(\'morning-adhkar\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Morning Adhkar</div>' +
+            '<div class="mosque-card-name" style="margin-bottom:2px">Morning Adhkar</div>' +
             '<div style="font-size:12px;color:var(--muted)">Adhkar Al-Sabah — after Fajr</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
         '</div>' +
         '<div onclick="event.stopPropagation();showPage(\'evening-adhkar\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border)">' +
           '<div>' +
-            '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Evening Adhkar</div>' +
+            '<div class="mosque-card-name" style="margin-bottom:2px">Evening Adhkar</div>' +
             '<div style="font-size:11px;color:var(--muted)">Adhkar Al-Masa\' — after Asr</div>' +
           '</div>' +
           '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>' +
@@ -2036,7 +2077,7 @@ function renderHomeServices(nearestMosques) {
         '</div>' +
         '<div class="service-body" style="padding-right:64px">' +
           '<div class="service-name">' + s.name + '</div>' +
-          '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + m.name + '</div>' +
+          '<div class="service-provider">' + m.name + '</div>' +
         '</div>' +
       '</div>';
     }).join('') + '</div>';
@@ -2786,11 +2827,11 @@ function renderCourses(courses) {
       '</div>' +
       '<div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:7px">' +
         '<span style="font-size:10px;font-weight:600;color:' + col.color + ';background:' + col.bg + ';padding:2px 7px;border-radius:5px">' + qText(c.type||'') + '</span>' +
-        (c.level ? '<span style="font-size:10px;color:var(--muted);text-align:right">' + qText(c.level) + '</span>' : '') +
+        (c.level ? '<span style="font-size:13px;font-weight:500;line-height:1.1;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right">' + qText(c.level) + '</span>' : '') +
       '</div>' +
       '<div class="service-body" style="padding-right:80px">' +
         '<div class="service-name">' + qText(c.name) + '</div>' +
-        '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + qText(c.provider) + (c.price ? '   ' + qText(c.price) : '') + '</div>' +
+        '<div class="service-provider">' + qText(c.provider) + (c.price ? '   ' + qText(c.price) : '') + '</div>' +
       '</div>' +
     '</div>';
   }).join('') + '</div>';

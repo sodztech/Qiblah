@@ -264,6 +264,8 @@
   body.prayer-tablet .p-begins,
   body.prayer-tablet .p-jamaah { font-size: clamp(1rem, 1.9vh, 1.6rem); }
   #tablet-prayer-card {
+    width: min(1040px, 92vw);
+    margin: 0 auto;
     background: var(--card);
     color: var(--text);
     border: none;
@@ -876,8 +878,14 @@
   body.tablet-view-home #tablet-home-page {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: clamp(12px, 1.5vw, 18px);
     min-height: 0;
+  }
+  body.tablet-view-home #slide-wrap {
+    flex: 1 1 auto;
+    align-items: center;
   }
   body.tablet-view-schedule #tablet-schedule-page,
   body.tablet-view-adhkar #tablet-adhkar-page,
@@ -896,6 +904,8 @@
     display: none !important;
   }
   .tablet-home-widgets {
+    width: min(1040px, 92vw);
+    margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.75fr);
     gap: clamp(12px, 1.6vw, 18px);
@@ -1111,18 +1121,18 @@
   .tablet-adhkar-options {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(12px, 1.4vw, 18px);
-    margin-top: clamp(12px, 1.6vw, 20px);
+    gap: clamp(10px, 1.2vw, 16px);
+    margin-top: clamp(10px, 1.4vw, 18px);
   }
   .tablet-adhkar-option {
-    min-height: clamp(132px, 15vw, 170px);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px;
-    background: rgba(255,255,255,0.045);
+    min-height: clamp(116px, 13vw, 150px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
     color: var(--text);
     font: inherit;
     text-align: left;
-    padding: clamp(18px, 2.2vw, 26px);
+    padding: clamp(16px, 1.9vw, 22px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1132,21 +1142,21 @@
   .tablet-adhkar-option:hover,
   .tablet-adhkar-option:focus-visible,
   .tablet-adhkar-option.active {
-    border-color: rgba(var(--gold-rgb),0.42);
-    background: rgba(var(--gold-rgb),0.1);
+    border-color: rgba(var(--gold-rgb),0.38);
+    background: rgba(var(--gold-rgb),0.08);
     outline: none;
   }
   .tablet-adhkar-option:active {
     transform: translateY(1px);
   }
   .tablet-adhkar-icon {
-    width: clamp(46px, 5vw, 58px);
-    height: clamp(46px, 5vw, 58px);
-    border-radius: 16px;
+    width: clamp(40px, 4.4vw, 52px);
+    height: clamp(40px, 4.4vw, 52px);
+    border-radius: 12px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(var(--gold-rgb),0.13);
+    background: rgba(var(--gold-rgb),0.12);
     color: var(--gold-bright);
   }
   .tablet-adhkar-icon svg {
@@ -1155,9 +1165,9 @@
   }
   .tablet-adhkar-name {
     display: block;
-    margin-top: 12px;
+    margin-top: 10px;
     color: rgba(255,255,255,0.92);
-    font-size: clamp(1.2rem, 1.8vw, 1.7rem);
+    font-size: clamp(1.05rem, 1.55vw, 1.45rem);
     font-weight: 600;
     line-height: 1.2;
   }
@@ -1165,30 +1175,31 @@
     display: block;
     margin-top: 6px;
     color: var(--muted);
-    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
-    line-height: 1.4;
+    font-size: clamp(0.84rem, 1.02vw, 0.98rem);
+    line-height: 1.45;
   }
   .tablet-adhkar-status {
-    margin-top: clamp(11px, 1.4vw, 16px);
+    margin-top: clamp(10px, 1.2vw, 14px);
     padding: 10px 13px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.045);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
     color: var(--text2);
-    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    font-size: clamp(0.84rem, 1.02vw, 0.98rem);
+    line-height: 1.45;
   }
   .tablet-adhkar-controls {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 11px;
+    gap: 10px;
+    margin-top: 10px;
   }
   .tablet-adhkar-control {
-    min-width: 96px;
-    min-height: 40px;
-    border: 1px solid rgba(var(--gold-rgb),0.32);
-    border-radius: 12px;
-    background: rgba(var(--gold-rgb),0.14);
+    min-width: 92px;
+    min-height: 42px;
+    border: 1px solid rgba(var(--gold-rgb),0.3);
+    border-radius: 10px;
+    background: rgba(var(--gold-rgb),0.12);
     color: var(--gold-bright);
     font: inherit;
     font-weight: 560;
@@ -1196,7 +1207,7 @@
   }
   .tablet-adhkar-control.secondary {
     border-color: rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.045);
+    background: rgba(255,255,255,0.04);
     color: var(--text2);
   }
   #tablet-settings-page {
@@ -2299,6 +2310,213 @@
     .mb-countdown { font-size: 1rem !important; font-weight: 500; color: var(--gold); line-height: 1; font-variant-numeric: tabular-nums; }
   }
 
+  /* Unified tablet header rhythm */
+  .tablet-card-title,
+  .tablet-page-title,
+  .tablet-schedule-title {
+    font-size: clamp(1.35rem, 2.45vw, 2.25rem) !important;
+    font-weight: 440 !important;
+    color: rgba(255,255,255,0.9) !important;
+    line-height: 1.05 !important;
+  }
+  .tablet-card-area,
+  .tablet-page-copy,
+  .tablet-schedule-summary,
+  .tablet-settings-hint,
+  .tablet-adhkar-meta {
+    font-size: clamp(0.9rem, 1.15vw, 1.08rem) !important;
+    color: rgba(255,255,255,0.58) !important;
+    line-height: 1.45 !important;
+  }
+  /* Cream / gold tablet palette experiment */
+  body.prayer-tablet {
+    position: relative;
+    --bg: #f6efe5;
+    --bg2: #f2e7d7;
+    --card: #fbf8f2;
+    --card2: #f5efe4;
+    --text: #1c1813;
+    --text2: rgba(28,24,19,0.72);
+    --text3: rgba(28,24,19,0.52);
+    --muted: rgba(28,24,19,0.56);
+    --border: rgba(133,96,45,0.16);
+    --border2: rgba(133,96,45,0.1);
+    --gold: #a8854f;
+    --gold-rgb: 168,133,79;
+    --gold2: #8f6f3f;
+    --gold-bright: #c7a36d;
+    --active-bg: rgba(168,133,79,0.08);
+    background: linear-gradient(180deg, #f8f2e9 0%, #efe1cc 100%);
+  }
+  body.prayer-tablet::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("file:///Users/sodrulislam/Downloads/Untitled%20design.svg");
+    background-repeat: no-repeat;
+    background-position: center 22%;
+    background-size: min(1240px, 94vw) auto;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+    filter: sepia(0.18) saturate(0.6) contrast(0.92);
+  }
+  body.prayer-tablet #app {
+    position: relative;
+    z-index: 1;
+  }
+  body.prayer-tablet #loading,
+  body.prayer-tablet #error {
+    background: #f6efe5;
+  }
+  body.prayer-tablet #tablet-dim-overlay {
+    background: rgba(255,255,255,0.7);
+  }
+  body.prayer-tablet #tablet-prayer-card {
+    background: linear-gradient(180deg, #1b1713 0%, #15120f 100%);
+    box-shadow: 0 18px 40px rgba(55,40,19,0.18), inset 0 0 0 1px rgba(168,133,79,0.18);
+    color: #f6f0e7;
+  }
+  body.prayer-tablet .tablet-card-head,
+  body.prayer-tablet .tablet-card-footer {
+    background: transparent;
+  }
+  body.prayer-tablet .tablet-card-head {
+    border-bottom-color: rgba(168,133,79,0.18);
+  }
+  body.prayer-tablet .tablet-card-head::after {
+    background: var(--gold-bright);
+  }
+  body.prayer-tablet .tablet-card-title,
+  body.prayer-tablet .tablet-card-next-label,
+  body.prayer-tablet .tablet-prayer-name,
+  body.prayer-tablet .tablet-card-footer-label,
+  body.prayer-tablet .tablet-card-footer-value {
+    color: #f6f0e7;
+  }
+  body.prayer-tablet .tablet-card-area,
+  body.prayer-tablet .tablet-prayer-begins,
+  body.prayer-tablet .tablet-card-footer-label,
+  body.prayer-tablet .tablet-card-footer-value {
+    color: rgba(246,240,231,0.7);
+  }
+  body.prayer-tablet .tablet-prayer-tile {
+    border-right-color: rgba(168,133,79,0.12);
+  }
+  body.prayer-tablet .tablet-prayer-tile.active {
+    background: rgba(168,133,79,0.12);
+  }
+  body.prayer-tablet .tablet-prayer-time,
+  body.prayer-tablet .tablet-card-next-time {
+    color: var(--gold-bright);
+  }
+  body.prayer-tablet .tablet-home-card,
+  body.prayer-tablet .tablet-page-card,
+  body.prayer-tablet .tablet-audio-player,
+  body.prayer-tablet .tablet-quran-translation,
+  body.prayer-tablet #tablet-schedule-page,
+  body.prayer-tablet #tablet-settings-page,
+  body.prayer-tablet .tablet-settings-panel {
+    background: rgba(255,252,247,0.92);
+    color: var(--text);
+    box-shadow: 0 16px 36px rgba(76,54,28,0.08), inset 0 0 0 1px rgba(168,133,79,0.16);
+    border-color: rgba(168,133,79,0.16);
+  }
+  body.prayer-tablet .tablet-home-kicker,
+  body.prayer-tablet .tablet-page-kicker,
+  body.prayer-tablet .tablet-audio-kicker,
+  body.prayer-tablet .tablet-schedule-kicker,
+  body.prayer-tablet .tablet-settings-section,
+  body.prayer-tablet .tablet-settings-heading {
+    color: var(--gold);
+  }
+  body.prayer-tablet .tablet-page-title,
+  body.prayer-tablet .tablet-home-title,
+  body.prayer-tablet .tablet-home-player-title,
+  body.prayer-tablet .tablet-home-row-title,
+  body.prayer-tablet .tablet-schedule-title,
+  body.prayer-tablet .tablet-settings-label,
+  body.prayer-tablet .tablet-quran-translation-title,
+  body.prayer-tablet .tablet-home-arabic {
+    color: var(--text) !important;
+  }
+  body.prayer-tablet .tablet-page-copy,
+  body.prayer-tablet .tablet-home-text,
+  body.prayer-tablet .tablet-home-player-meta,
+  body.prayer-tablet .tablet-home-row-meta,
+  body.prayer-tablet .tablet-schedule-summary,
+  body.prayer-tablet .tablet-settings-hint,
+  body.prayer-tablet .tablet-adhkar-meta,
+  body.prayer-tablet .tablet-quran-translation-source,
+  body.prayer-tablet .tablet-quran-empty,
+  body.prayer-tablet .tablet-quran-verse-text,
+  body.prayer-tablet .tablet-settings-value {
+    color: rgba(28,24,19,0.66) !important;
+  }
+  body.prayer-tablet .tablet-quran-verse-key {
+    color: var(--gold) !important;
+  }
+  body.prayer-tablet .tablet-home-player-btn,
+  body.prayer-tablet .tablet-home-dot,
+  body.prayer-tablet .tablet-adhkar-icon,
+  body.prayer-tablet .tablet-action-btn,
+  body.prayer-tablet .tablet-switch,
+  body.prayer-tablet .tablet-settings-select,
+  body.prayer-tablet .tablet-settings-input,
+  body.prayer-tablet .tablet-schedule-field input,
+  body.prayer-tablet .tablet-schedule-field select,
+  body.prayer-tablet .tablet-audio-selects select,
+  body.prayer-tablet .tablet-audio-volume,
+  body.prayer-tablet .tablet-audio-bar,
+  body.prayer-tablet .tablet-settings-range,
+  body.prayer-tablet .tablet-quran-verse-btn,
+  body.prayer-tablet .tablet-schedule-save,
+  body.prayer-tablet .tablet-adhkar-control {
+    background: rgba(255,255,255,0.75);
+    color: var(--text);
+    border-color: rgba(168,133,79,0.22);
+  }
+  body.prayer-tablet .tablet-action-dock {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  body.prayer-tablet .tablet-action-btn {
+    background: rgba(255,255,255,0.72);
+    border-color: rgba(168,133,79,0.18);
+    color: rgba(28,24,19,0.68);
+  }
+  body.prayer-tablet .tablet-action-btn.active {
+    background: rgba(168,133,79,0.2);
+    color: #211a12;
+    border-color: rgba(168,133,79,0.34);
+    box-shadow: inset 0 0 0 1px rgba(168,133,79,0.08);
+  }
+  body.prayer-tablet .tablet-action-label {
+    color: currentColor;
+  }
+  body.prayer-tablet .tablet-home-volume::-webkit-slider-runnable-track,
+  body.prayer-tablet .tablet-audio-bar::-webkit-slider-runnable-track,
+  body.prayer-tablet .tablet-settings-range::-webkit-slider-runnable-track,
+  body.prayer-tablet .tablet-volume-bar::-webkit-slider-runnable-track,
+  body.prayer-tablet .tablet-settings-range::-moz-range-track,
+  body.prayer-tablet .tablet-audio-bar::-moz-range-track,
+  body.prayer-tablet .tablet-home-volume::-moz-range-track,
+  body.prayer-tablet .tablet-volume-bar::-moz-range-track {
+    background: rgba(28,24,19,0.12);
+  }
+  body.prayer-tablet .tablet-home-volume::-webkit-slider-thumb,
+  body.prayer-tablet .tablet-audio-bar::-webkit-slider-thumb,
+  body.prayer-tablet .tablet-settings-range::-webkit-slider-thumb,
+  body.prayer-tablet .tablet-volume-bar::-webkit-slider-thumb,
+  body.prayer-tablet .tablet-home-volume::-moz-range-thumb,
+  body.prayer-tablet .tablet-audio-bar::-moz-range-thumb,
+  body.prayer-tablet .tablet-settings-range::-moz-range-thumb,
+  body.prayer-tablet .tablet-volume-bar::-moz-range-thumb {
+    background: var(--gold);
+  }
   .f-jummah-item { display: block; transition: opacity 0.4s ease; }
   .f-jummah-item.hidden { display: none; }
 </style>
