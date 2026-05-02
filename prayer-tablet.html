@@ -631,13 +631,11 @@
     width: min(1040px, 92vw);
     max-height: min(42vh, 390px);
     margin: clamp(14px, 1.8vw, 22px) auto 0;
-    padding: clamp(18px, 2.4vw, 30px);
-    border-radius: 18px;
-    background: rgba(16,26,40,0.96);
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
     color: var(--text);
-    box-shadow:
-      inset 0 0 0 1px rgba(var(--gold-rgb),0.2),
-      0 14px 30px rgba(7,12,18,0.16);
+    box-shadow: none;
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
@@ -667,13 +665,14 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin-top: clamp(14px, 1.8vw, 22px);
+    margin-top: clamp(10px, 1.2vw, 16px);
     padding: clamp(20px, 2.7vw, 34px);
-    border-radius: 16px;
-    background: rgba(255,255,255,0.035);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
     min-height: 0;
     flex: 1;
+    overflow: hidden;
   }
   .tablet-quran-verse {
     display: grid;
@@ -691,10 +690,10 @@
   }
   .tablet-quran-verse-text {
     color: rgba(255,255,255,0.86);
-    font-size: clamp(1.08rem, 1.45vw, 1.32rem);
+    font-size: clamp(1.35rem, 2vw, 2rem);
     font-weight: 400;
-    line-height: 1.62;
-    max-width: 52rem;
+    line-height: 1.72;
+    max-width: 62rem;
     margin: 0 auto;
   }
   .tablet-quran-empty {
@@ -854,7 +853,7 @@
       padding: 14px 16px;
     }
     .tablet-quran-verse-text {
-      font-size: clamp(0.86rem, 1.18vw, 1rem);
+      font-size: clamp(1.2rem, 1.8vw, 1.75rem);
     }
     .tablet-quran-verse-btn {
       min-width: 76px;
@@ -1186,13 +1185,61 @@
   }
   .tablet-adhkar-status {
     margin-top: clamp(10px, 1.2vw, 14px);
-    padding: 10px 13px;
+    padding: 12px 14px;
     border-radius: 10px;
     background: rgba(255,255,255,0.04);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
     color: var(--text2);
     font-size: clamp(0.84rem, 1.02vw, 0.98rem);
     line-height: 1.45;
+  }
+  .tablet-adhkar-status-text {
+    color: inherit;
+  }
+  .tablet-adhkar-progress-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    font-size: inherit;
+    line-height: 1.2;
+  }
+  .tablet-adhkar-progress-label {
+    min-width: 0;
+    font-weight: 560;
+    color: rgba(255,255,255,0.86);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tablet-adhkar-progress-time {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    color: inherit;
+  }
+  .tablet-adhkar-progress-track {
+    position: relative;
+    margin-top: 10px;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.08);
+  }
+  .tablet-adhkar-progress-fill {
+    min-width: 10px;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(var(--gold-rgb),0.62), rgba(var(--gold-rgb),0.96));
+    transition: width 0.25s ease;
+  }
+  .tablet-adhkar-status.is-live .tablet-adhkar-progress-fill {
+    width: 34% !important;
+    background: linear-gradient(90deg, rgba(var(--gold-rgb),0.45), rgba(var(--gold-rgb),0.94));
+    animation: tabletAdhkarLivePulse 1.8s ease-in-out infinite;
+  }
+  @keyframes tabletAdhkarLivePulse {
+    0%, 100% { transform: translateX(-6%); opacity: 0.72; }
+    50% { transform: translateX(10%); opacity: 1; }
   }
   .tablet-adhkar-controls {
     display: flex;
@@ -2372,6 +2419,11 @@
     position: relative;
     z-index: 1;
   }
+  body.prayer-tablet #slide-wrap {
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+  }
   body.prayer-tablet #loading,
   body.prayer-tablet #error {
     background: #f6efe5;
@@ -2396,18 +2448,18 @@
   body.prayer-tablet .tablet-card-head::after {
     background: var(--gold-bright);
   }
-  body.prayer-tablet .tablet-card-title,
-  body.prayer-tablet .tablet-card-next-label,
-  body.prayer-tablet .tablet-prayer-name,
-  body.prayer-tablet .tablet-card-footer-label,
-  body.prayer-tablet .tablet-card-footer-value {
-    color: var(--text);
+  body.prayer-tablet #tablet-prayer-card .tablet-card-title,
+  body.prayer-tablet #tablet-prayer-card .tablet-card-next-label,
+  body.prayer-tablet #tablet-prayer-card .tablet-prayer-name,
+  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-label,
+  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-value {
+    color: var(--text) !important;
   }
-  body.prayer-tablet .tablet-card-area,
-  body.prayer-tablet .tablet-prayer-begins,
-  body.prayer-tablet .tablet-card-footer-label,
-  body.prayer-tablet .tablet-card-footer-value {
-    color: rgba(28,24,19,0.66);
+  body.prayer-tablet #tablet-prayer-card .tablet-card-area,
+  body.prayer-tablet #tablet-prayer-card .tablet-prayer-begins,
+  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-label,
+  body.prayer-tablet #tablet-prayer-card .tablet-card-footer-value {
+    color: rgba(28,24,19,0.66) !important;
   }
   body.prayer-tablet .tablet-prayer-tile {
     border-right-color: rgba(168,133,79,0.14);
@@ -2417,12 +2469,18 @@
   }
   body.prayer-tablet .tablet-prayer-time,
   body.prayer-tablet .tablet-card-next-time {
-    color: var(--gold-bright);
+    color: #b88d44;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.22);
+  }
+  body.prayer-tablet .tablet-card-next-time {
+    font-weight: 700;
+  }
+  body.prayer-tablet .tablet-prayer-time {
+    font-weight: 700;
   }
   body.prayer-tablet .tablet-home-card,
   body.prayer-tablet .tablet-page-card,
   body.prayer-tablet .tablet-audio-player,
-  body.prayer-tablet .tablet-quran-translation,
   body.prayer-tablet #tablet-schedule-page {
     background: rgba(255,252,247,0.94);
     color: var(--text);
@@ -2430,6 +2488,11 @@
     box-shadow:
       0 12px 28px rgba(76,54,28,0.08),
       inset 0 0 0 1px rgba(255,255,255,0.5);
+  }
+  body.prayer-tablet .tablet-quran-translation {
+    background: transparent;
+    box-shadow: none;
+    border-color: transparent;
   }
   body.prayer-tablet #tablet-settings-page {
     background: transparent;
@@ -2486,6 +2549,129 @@
   }
   body.prayer-tablet .tablet-quran-verses {
     margin-top: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) #slide-wrap {
+    justify-content: center;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-player {
+    position: fixed;
+    top: clamp(132px, 15vh, 168px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 16;
+    width: min(900px, 80vw);
+    grid-template-columns: 46px minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 10px 14px;
+    margin: 0;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: rgba(255,252,247,0.97);
+    box-shadow:
+      0 12px 24px rgba(76,54,28,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.72);
+    backdrop-filter: blur(16px);
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-play {
+    width: 44px;
+    height: 44px;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-play svg {
+    width: 20px;
+    height: 20px;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-copy {
+    grid-column: 2 / 4;
+    grid-row: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    column-gap: 18px;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-kicker {
+    display: none;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-title {
+    display: none;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-subtitle {
+    display: none;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-selects {
+    margin-top: 0;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+    align-items: center;
+    justify-self: stretch;
+    width: 100%;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-selects select {
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.82);
+    padding: 0 34px 0 14px;
+    font-size: 0.9rem;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) #quran-surah-select {
+    width: min(260px, 100%);
+    justify-self: center;
+    flex: 0 0 auto;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) #quran-reciter-select {
+    width: min(260px, 100%);
+    justify-self: end;
+    flex: 0 0 auto;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-volume {
+    display: none;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-meta {
+    grid-column: 2 / 4;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 0;
+    margin-top: 0;
+    padding-left: 0;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-time {
+    display: none;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-audio-bar {
+    height: 18px;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) #tablet-quran-translation {
+    width: min(1180px, 90vw);
+    max-height: none;
+    min-height: calc(100dvh - 270px);
+    margin: 0 auto;
+    padding-top: clamp(110px, 13vh, 142px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-quran-verses {
+    flex: 0 1 auto;
+    width: min(100%, 1040px);
+    padding: clamp(28px, 4vh, 48px) clamp(24px, 5vw, 54px);
+    justify-content: center;
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-quran-verse {
+    width: min(100%, 980px);
+  }
+  body.prayer-tablet.tablet-view-quran:not(.tablet-quran-audio-only) .tablet-quran-verse-text {
+    font-size: clamp(1.7rem, 2.7vw, 2.85rem);
+    line-height: 1.7;
+    max-width: 50rem;
   }
   body.prayer-tablet .tablet-settings-heading {
     display: none;
@@ -2494,7 +2680,6 @@
   body.prayer-tablet .tablet-home-dot,
   body.prayer-tablet .tablet-adhkar-icon,
   body.prayer-tablet .tablet-action-btn,
-  body.prayer-tablet .tablet-switch,
   body.prayer-tablet .tablet-settings-select,
   body.prayer-tablet .tablet-settings-input,
   body.prayer-tablet .tablet-schedule-field input,
@@ -2510,25 +2695,40 @@
     color: var(--text);
     border-color: rgba(168,133,79,0.22);
   }
+  body.prayer-tablet .tablet-switch {
+    background: rgba(255,255,255,0.75);
+    border: 1px solid rgba(168,133,79,0.16);
+  }
+  body.prayer-tablet .tablet-switch::after {
+    background: rgba(255,255,255,0.96);
+  }
+  body.prayer-tablet .tablet-switch.is-on {
+    background: color-mix(in srgb, var(--gold) 78%, white 22%);
+    border-color: color-mix(in srgb, var(--gold) 74%, white 26%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
+  }
   body.prayer-tablet .tablet-adhkar-option {
-    background: rgba(255,255,255,0.82);
-    border-color: rgba(168,133,79,0.16);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+    background: rgba(246,238,225,0.94);
+    border-color: rgba(168,133,79,0.18);
+    box-shadow: inset 0 0 0 1px rgba(255,250,242,0.72);
   }
   body.prayer-tablet .tablet-adhkar-option:hover,
   body.prayer-tablet .tablet-adhkar-option:focus-visible,
   body.prayer-tablet .tablet-adhkar-option.active {
-    background: rgba(255,255,255,0.94);
-    border-color: rgba(168,133,79,0.46);
-    box-shadow: inset 0 0 0 1px rgba(168,133,79,0.08);
+    background: rgba(238,227,206,0.96);
+    border-color: rgba(168,133,79,0.38);
+    box-shadow: inset 0 0 0 1px rgba(168,133,79,0.12);
   }
   body.prayer-tablet .tablet-adhkar-meta {
     color: rgba(28,24,19,0.58) !important;
   }
   body.prayer-tablet .tablet-adhkar-status {
-    background: rgba(255,255,255,0.82);
+    background: rgba(247,240,228,0.94);
     border: 1px solid rgba(168,133,79,0.2);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+  }
+  body.prayer-tablet .tablet-adhkar-progress-label {
+    color: rgba(28,24,19,0.82);
   }
   body.prayer-tablet .tablet-action-dock {
     background: transparent;
@@ -3115,6 +3315,7 @@ let tabletAdhkarActive = '';
 let tabletAdhkarStartedAt = 0;
 let tabletAdhkarPausedAt = 0;
 let tabletAdhkarPausedTotal = 0;
+let tabletAdhkarStatusText = 'Select Morning or Evening to start.';
 let tabletHomeAudioTimer = null;
 let tabletCurrentSlug = '';
 let tabletUsingLocalTimes = false;
@@ -3468,9 +3669,34 @@ function renderCurrentQuranVerse() {
       <div class="tablet-quran-verse-text">${escTicker(text)}</div>
     </div>
   `;
+  requestAnimationFrame(fitCurrentQuranVerseText);
   if (countEl) countEl.textContent = `Verse ${index + 1} / ${rows.length}`;
   if (prevBtn) prevBtn.disabled = index <= 0;
   if (nextBtn) nextBtn.disabled = index >= rows.length - 1;
+}
+
+function fitCurrentQuranVerseText() {
+  const versesEl = document.getElementById('quran-translation-verses');
+  if (!versesEl) return;
+  const textEl = versesEl.querySelector('.tablet-quran-verse-text');
+  if (!textEl) return;
+  textEl.style.fontSize = '';
+  textEl.style.lineHeight = '';
+  const styles = getComputedStyle(textEl);
+  let fontSize = parseFloat(styles.fontSize);
+  let lineHeight = parseFloat(styles.lineHeight);
+  const minFontSize = 26;
+  const minLineHeight = 1.35;
+  const maxHeight = Math.max(0, versesEl.clientHeight - 8);
+  const fits = () => textEl.scrollHeight <= maxHeight && textEl.scrollWidth <= textEl.clientWidth + 1;
+  let guard = 0;
+  while (maxHeight && !fits() && fontSize > minFontSize && guard < 20) {
+    fontSize -= 2;
+    const nextLineHeight = Math.max(minLineHeight, (lineHeight / parseFloat(styles.fontSize)) - 0.03);
+    textEl.style.fontSize = `${fontSize}px`;
+    textEl.style.lineHeight = String(nextLineHeight);
+    guard += 1;
+  }
 }
 
 function renderQuranTranslation(rows, source = 'Quran.com') {
@@ -3570,11 +3796,13 @@ function updateHomeAudioControl() {
       if (timeEl) timeEl.textContent = `${quranFmtTime(adhkarAudio.currentTime)} / ${quranFmtTime(adhkarAudio.duration)}`;
       if (volumeEl) volumeEl.value = String(Math.round((adhkarAudio.volume || 0) * 100));
       setHomeAudioIcon(!adhkarAudio.paused);
+      renderTabletAdhkarStatus();
       return;
     }
     if (metaEl) metaEl.textContent = adhkarPaused ? 'Adhkar paused' : 'Adhkar playing';
     if (timeEl) timeEl.textContent = `${quranFmtTime(getAdhkarElapsedSeconds())} / Live`;
     setHomeAudioIcon(!adhkarPaused);
+    renderTabletAdhkarStatus();
     return;
   }
 
@@ -3586,6 +3814,7 @@ function updateHomeAudioControl() {
     if (timeEl) timeEl.textContent = `${quranFmtTime(quranAudio.currentTime)} / ${quranFmtTime(quranAudio.duration)}`;
     if (volumeEl) volumeEl.value = String(Math.round((quranAudio.volume || 0) * 100));
     setHomeAudioIcon(!quranAudio.paused);
+    renderTabletAdhkarStatus();
     return;
   }
 
@@ -3593,6 +3822,7 @@ function updateHomeAudioControl() {
   if (metaEl) metaEl.textContent = 'Open Qur\'an or Adhkar to start.';
   if (timeEl) timeEl.textContent = '00:00 / 00:00';
   setHomeAudioIcon(false);
+  renderTabletAdhkarStatus();
 }
 
 async function toggleHomeAudioControl() {
@@ -3664,6 +3894,17 @@ function setQuranStatus(text) {
   updateHomeAudioControl();
 }
 
+function quranSeekChapterProgress() {
+  const audio = document.getElementById('quran-audio');
+  const rows = quranState.audioRows || [];
+  if (!quranState.usingVerseAudio || !audio || !rows.length) {
+    return audio && audio.duration ? (audio.currentTime / audio.duration) : 0;
+  }
+  const verseIndex = Math.max(0, Math.min(rows.length - 1, Number(quranState.translationVerseIndex) || 0));
+  const verseProgress = audio.duration ? Math.max(0, Math.min(0.999, audio.currentTime / audio.duration)) : 0;
+  return Math.max(0, Math.min(0.9999, (verseIndex + verseProgress) / rows.length));
+}
+
 function updateQuranTime() {
   const audio = document.getElementById('quran-audio');
   const timeEl = document.getElementById('quran-audio-time');
@@ -3674,7 +3915,7 @@ function updateQuranTime() {
     : '';
   timeEl.textContent = `${versePrefix}${quranFmtTime(audio.currentTime)} / ${quranFmtTime(audio.duration)}`;
   if (!quranState.seeking) {
-    const value = audio.duration ? (audio.currentTime / audio.duration) * 1000 : 0;
+    const value = quranSeekChapterProgress() * 1000;
     seekEl.value = String(Math.max(0, Math.min(1000, value)));
   }
   syncQuranVerseToAudio();
@@ -3728,18 +3969,31 @@ function quranAudioFileUrl(file) {
   return `https://verses.quran.com/${raw.replace(/^\/+/, '')}`;
 }
 
-async function loadCurrentQuranVerseAudio(autoplay = false) {
+async function loadCurrentQuranVerseAudio(autoplay = false, startProgress = 0) {
   const audio = document.getElementById('quran-audio');
   const rows = quranState.audioRows || [];
   if (!audio || !quranState.usingVerseAudio || !rows.length) return false;
   const index = Math.max(0, Math.min(rows.length - 1, Number(quranState.translationVerseIndex) || 0));
   quranState.translationVerseIndex = index;
+  const verseProgress = Math.max(0, Math.min(0.999, Number(startProgress) || 0));
   const url = quranAudioFileUrl(rows[index]);
   if (!url) return false;
+  const applyStartTime = () => {
+    if (!audio.duration) return;
+    audio.currentTime = verseProgress * audio.duration;
+  };
   if (quranState.currentUrl !== url) {
     quranState.currentUrl = url;
     audio.src = url;
     audio.load();
+    if (verseProgress > 0) {
+      if (audio.readyState >= 1) applyStartTime();
+      else audio.addEventListener('loadedmetadata', applyStartTime, { once: true });
+    }
+  } else if (verseProgress > 0) {
+    if (audio.duration) applyStartTime();
+  } else if (audio.currentTime > 0.2) {
+    audio.currentTime = 0;
   }
   updateQuranTime();
   renderCurrentQuranVerse();
@@ -3840,6 +4094,24 @@ async function playQuranAudio() {
   }
 }
 
+async function seekQuranAudioProgress(value) {
+  const audio = document.getElementById('quran-audio');
+  if (!audio) return;
+  const progress = Math.max(0, Math.min(1, (Number(value) || 0) / 1000));
+  if (quranState.usingVerseAudio && quranState.audioRows.length) {
+    const rows = quranState.audioRows;
+    const scaled = progress * rows.length;
+    const nextIndex = Math.min(rows.length - 1, Math.floor(Math.min(rows.length - 1e-6, scaled)));
+    const verseProgress = Math.max(0, Math.min(0.999, scaled - nextIndex));
+    const wasPlaying = !audio.paused && !audio.ended;
+    quranState.translationVerseIndex = nextIndex;
+    await loadCurrentQuranVerseAudio(wasPlaying, verseProgress);
+    return;
+  }
+  if (!audio.duration) return;
+  audio.currentTime = progress * audio.duration;
+}
+
 async function initQuranPlayer() {
   const audio = document.getElementById('quran-audio');
   const playBtn = document.getElementById('quran-play-btn');
@@ -3921,7 +4193,53 @@ async function initQuranPlayer() {
 
 function setTabletAdhkarStatus(text) {
   const status = document.getElementById('tablet-adhkar-status');
-  if (status) status.textContent = text;
+  tabletAdhkarStatusText = String(text || '').trim() || 'Select Morning or Evening to start.';
+  if (status) renderTabletAdhkarStatus();
+}
+
+function renderTabletAdhkarStatus() {
+  const status = document.getElementById('tablet-adhkar-status');
+  if (!status) return;
+  const adhkarAudio = document.getElementById('tablet-adhkar-audio');
+  const hasSpeech = Boolean(tabletAdhkarActive && tabletAdhkarUtterance);
+  const hasAudio = Boolean(
+    tabletAdhkarActive &&
+    adhkarAudio &&
+    adhkarAudio.src &&
+    !Number.isNaN(adhkarAudio.currentTime)
+  );
+  const isProgressMode = hasSpeech || hasAudio;
+  status.classList.remove('is-live');
+  if (!isProgressMode) {
+    status.innerHTML = `<div class="tablet-adhkar-status-text">${escTicker(tabletAdhkarStatusText)}</div>`;
+    return;
+  }
+
+  let elapsed = 0;
+  let total = 0;
+  let live = false;
+  if (hasAudio && adhkarAudio) {
+    elapsed = Number(adhkarAudio.currentTime) || 0;
+    total = Number(adhkarAudio.duration) || 0;
+    live = !Number.isFinite(total) || total <= 0;
+  } else {
+    elapsed = getAdhkarElapsedSeconds();
+    live = true;
+  }
+
+  const width = live
+    ? 34
+    : Math.max(0, Math.min(100, total ? (elapsed / total) * 100 : 0));
+  if (live) status.classList.add('is-live');
+  status.innerHTML = `
+    <div class="tablet-adhkar-progress-head">
+      <div class="tablet-adhkar-progress-label">${escTicker(tabletAdhkarStatusText)}</div>
+      <div class="tablet-adhkar-progress-time">${escTicker(quranFmtTime(elapsed))} / ${escTicker(live ? 'Live' : quranFmtTime(total))}</div>
+    </div>
+    <div class="tablet-adhkar-progress-track" aria-hidden="true">
+      <div class="tablet-adhkar-progress-fill" style="width:${width}%"></div>
+    </div>
+  `;
 }
 
 function setTabletAdhkarActive(kind) {
@@ -5384,6 +5702,10 @@ async function init() {
     }
   }
 }
+
+window.addEventListener('resize', () => {
+  requestAnimationFrame(fitCurrentQuranVerseText);
+});
 
 init();
 </script>
