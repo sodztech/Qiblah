@@ -229,6 +229,69 @@
     border-color: rgba(var(--gold-rgb),0.6);
     box-shadow: 0 0 0 3px rgba(var(--gold-rgb),0.1);
   }
+  .tablet-screensaver {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+    background:
+      radial-gradient(circle at 50% 32%, rgba(201,168,122,0.18), transparent 34%),
+      linear-gradient(180deg, rgba(11,15,24,0.985), rgba(18,23,35,0.995));
+    color: #f5efe5;
+  }
+  body.tablet-screensaver-active .tablet-screensaver {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .tablet-screensaver-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: min(82vw, 980px);
+    text-align: center;
+    padding: 48px 32px;
+  }
+  .tablet-screensaver-kicker {
+    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(222,191,141,0.88);
+  }
+  .tablet-screensaver-clock {
+    font-size: clamp(5rem, 12vw, 10rem);
+    font-weight: 650;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: #fffaf2;
+    text-shadow: 0 10px 34px rgba(0,0,0,0.28);
+  }
+  .tablet-screensaver-ampm {
+    font-size: 0.24em;
+    font-weight: 450;
+    margin-left: 10px;
+    color: rgba(255,249,238,0.72);
+  }
+  .tablet-screensaver-date,
+  .tablet-screensaver-hijri {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.45;
+    color: rgba(241,232,217,0.78);
+  }
+  .tablet-screensaver-hint {
+    margin-top: 10px;
+    font-size: clamp(0.9rem, 1.15vw, 1.05rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(214,182,135,0.7);
+  }
   .tablet-reminder {
     display: none;
     border-top: 1px solid var(--border2);
@@ -319,7 +382,7 @@
   }
   .tablet-card-next-time {
     margin-top: 12px;
-    font-size: clamp(1.9rem, 3.8vw, 3.7rem);
+    font-size: clamp(1.7rem, 3.25vw, 3.15rem);
     font-weight: 600;
     color: var(--gold);
     font-variant-numeric: tabular-nums;
@@ -2469,8 +2532,14 @@
   }
   body.prayer-tablet .tablet-prayer-time,
   body.prayer-tablet .tablet-card-next-time {
-    color: #b88d44;
     text-shadow: 0 1px 0 rgba(255,255,255,0.22);
+  }
+  body.prayer-tablet .tablet-prayer-time {
+    color: #2b2218;
+    font-size: clamp(1.9rem, 3.8vw, 3.7rem);
+  }
+  body.prayer-tablet .tablet-card-next-time {
+    color: #b88d44;
   }
   body.prayer-tablet .tablet-card-next-time {
     font-weight: 700;
@@ -2836,6 +2905,18 @@
       </div>
     </div>
   </section>
+
+  <div class="tablet-screensaver" id="tablet-screensaver" aria-hidden="true">
+    <div class="tablet-screensaver-inner">
+      <div class="tablet-screensaver-kicker">Night Mode</div>
+      <div class="tablet-screensaver-clock">
+        <span id="tablet-screensaver-time">12:00</span><span class="tablet-screensaver-ampm" id="tablet-screensaver-ampm">AM</span>
+      </div>
+      <div class="tablet-screensaver-date" id="tablet-screensaver-date">—</div>
+      <div class="tablet-screensaver-hijri" id="tablet-screensaver-hijri">—</div>
+      <div class="tablet-screensaver-hint">Tap to wake</div>
+    </div>
+  </div>
 
   <div id="slide-wrap">
 
@@ -3279,6 +3360,7 @@ const DEFAULT_TICKERS = [
   'Astaghfirullah \u00d73'
 ];
 const DISPLAY_REFRESH_MS = 5 * 60 * 1000;
+const TABLET_SCREENSAVER_IDLE_MS = 60 * 1000;
 const DAILY_REMINDERS = [
   'Pray at the beginning of its time when you are able.',
   'Keep your tongue moist with the remembrance of Allah.',
@@ -3317,6 +3399,18 @@ let tabletAdhkarPausedAt = 0;
 let tabletAdhkarPausedTotal = 0;
 let tabletAdhkarStatusText = 'Select Morning or Evening to start.';
 let tabletHomeAudioTimer = null;
+let tabletScreensaverNightMode = false;
+let tabletScreensaverVisible = false;
+let tabletScreensaverSleepTimer = null;
+let tabletScreensaverControlsBound = false;
+
+function currentSearchParams() {
+  return new URLSearchParams(location.search);
+}
+
+function screensaverTestModeEnabled() {
+  return currentSearchParams().get('screensaverTest') === '1';
+}
 let tabletCurrentSlug = '';
 let tabletUsingLocalTimes = false;
 let localPrayerRefreshTimer = null;
@@ -3683,18 +3777,26 @@ function fitCurrentQuranVerseText() {
   textEl.style.fontSize = '';
   textEl.style.lineHeight = '';
   const styles = getComputedStyle(textEl);
-  let fontSize = parseFloat(styles.fontSize);
-  let lineHeight = parseFloat(styles.lineHeight);
-  const minFontSize = 26;
-  const minLineHeight = 1.35;
-  const maxHeight = Math.max(0, versesEl.clientHeight - 8);
+  const baseFontSize = parseFloat(styles.fontSize);
+  let fontSize = baseFontSize;
+  let lineHeightRatio = parseFloat(styles.lineHeight) / baseFontSize;
+  const textLength = (textEl.textContent || '').trim().length;
+  const minFontSize = 24;
+  const minLineHeight = 1.42;
+  const maxHeight = Math.max(0, versesEl.clientHeight - 24);
+  if (textLength > 180) fontSize -= 4;
+  if (textLength > 260) fontSize -= 4;
+  if (textLength > 340) fontSize -= 3;
+  if (textLength > 420) fontSize -= 3;
+  lineHeightRatio = Math.max(minLineHeight, lineHeightRatio + (textLength > 260 ? 0.08 : 0.04));
+  textEl.style.fontSize = `${Math.max(minFontSize, fontSize)}px`;
+  textEl.style.lineHeight = String(lineHeightRatio);
   const fits = () => textEl.scrollHeight <= maxHeight && textEl.scrollWidth <= textEl.clientWidth + 1;
   let guard = 0;
   while (maxHeight && !fits() && fontSize > minFontSize && guard < 20) {
     fontSize -= 2;
-    const nextLineHeight = Math.max(minLineHeight, (lineHeight / parseFloat(styles.fontSize)) - 0.03);
     textEl.style.fontSize = `${fontSize}px`;
-    textEl.style.lineHeight = String(nextLineHeight);
+    textEl.style.lineHeight = String(Math.max(minLineHeight, lineHeightRatio));
     guard += 1;
   }
 }
@@ -4157,9 +4259,8 @@ async function initQuranPlayer() {
   });
   seekEl.addEventListener('pointerdown', () => { quranState.seeking = true; });
   seekEl.addEventListener('pointerup', () => { quranState.seeking = false; updateQuranTime(); syncQuranVerseToAudio(); });
-  seekEl.addEventListener('input', () => {
-    if (!audio.duration) return;
-    audio.currentTime = (Number(seekEl.value) / 1000) * audio.duration;
+  seekEl.addEventListener('input', async () => {
+    await seekQuranAudioProgress(seekEl.value);
     updateQuranTime();
   });
   prevVerseBtn?.addEventListener('click', () => moveQuranVerse(-1));
@@ -4893,12 +4994,97 @@ function setDailyReminder() {
   el.textContent = DAILY_REMINDERS[index];
 }
 
+function clearTabletScreensaverSleepTimer() {
+  if (tabletScreensaverSleepTimer) {
+    clearTimeout(tabletScreensaverSleepTimer);
+    tabletScreensaverSleepTimer = null;
+  }
+}
+
+function showTabletScreensaver() {
+  const overlay = document.getElementById('tablet-screensaver');
+  if (!overlay) return;
+  tabletScreensaverVisible = true;
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('tablet-screensaver-active');
+  clearTabletScreensaverSleepTimer();
+}
+
+function hideTabletScreensaver() {
+  const overlay = document.getElementById('tablet-screensaver');
+  if (!overlay) return;
+  tabletScreensaverVisible = false;
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('tablet-screensaver-active');
+}
+
+function scheduleTabletScreensaverSleep() {
+  clearTabletScreensaverSleepTimer();
+  if (!tabletScreensaverNightMode || tabletScreensaverVisible) return;
+  tabletScreensaverSleepTimer = setTimeout(() => {
+    if (tabletScreensaverNightMode) showTabletScreensaver();
+  }, TABLET_SCREENSAVER_IDLE_MS);
+}
+
+function tabletNightPrayerMins(tod) {
+  if (!tod) return { fajr: null, isha: null };
+  return {
+    fajr: toMins(tod.fajr_begins || tod.fajr_jamaah),
+    isha: toMins(tod.isha_begins || tod.isha_jamaah)
+  };
+}
+
+function inTabletNightWindow(tod, now = new Date()) {
+  const mins = tabletNightPrayerMins(tod);
+  if (mins.fajr === null || mins.isha === null) return false;
+  const nowM = now.getHours() * 60 + now.getMinutes();
+  return nowM < mins.fajr || nowM >= mins.isha;
+}
+
+function updateTabletScreensaverMode() {
+  const shouldBeNight = screensaverTestModeEnabled() || inTabletNightWindow(liveTod);
+  if (shouldBeNight) {
+    if (!tabletScreensaverNightMode) {
+      tabletScreensaverNightMode = true;
+      showTabletScreensaver();
+    }
+    return;
+  }
+  tabletScreensaverNightMode = false;
+  hideTabletScreensaver();
+  clearTabletScreensaverSleepTimer();
+}
+
+function noteTabletScreensaverActivity() {
+  if (!tabletScreensaverNightMode) return;
+  if (tabletScreensaverVisible) hideTabletScreensaver();
+  scheduleTabletScreensaverSleep();
+}
+
+function initTabletScreensaverControls() {
+  if (tabletScreensaverControlsBound) return;
+  tabletScreensaverControlsBound = true;
+  const overlay = document.getElementById('tablet-screensaver');
+  overlay?.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    noteTabletScreensaverActivity();
+  });
+  ['pointerdown', 'keydown', 'mousemove', 'touchstart'].forEach(type => {
+    document.addEventListener(type, () => {
+      if (!tabletScreensaverNightMode || tabletScreensaverVisible) return;
+      scheduleTabletScreensaverSleep();
+    }, { passive: true });
+  });
+}
+
 // ── RENDER ROWS ───────────────────────────────────────────────────────────────
 function renderRows(tod, tom) {
   tod = applyAsrOpinion(tod);
   tom = applyAsrOpinion(tom);
   liveTod = tod;
   liveTom = tom;
+  updateTabletScreensaverMode();
   const cont = document.getElementById('rows');
   cont.innerHTML = '';
   PNAMES.forEach(p => {
@@ -4954,10 +5140,18 @@ function startClock() {
     const tabletAmpm = document.getElementById('tablet-ampm');
     const tabletDate = document.getElementById('tablet-date');
     const tabletHijri = document.getElementById('tablet-hijri');
+    const tabletScreensaverTime = document.getElementById('tablet-screensaver-time');
+    const tabletScreensaverAmpm = document.getElementById('tablet-screensaver-ampm');
+    const tabletScreensaverDate = document.getElementById('tablet-screensaver-date');
+    const tabletScreensaverHijri = document.getElementById('tablet-screensaver-hijri');
     if (tabletTime) tabletTime.textContent = `${h12}:${mm}`;
     if (tabletAmpm) tabletAmpm.textContent = ap;
     if (tabletDate) tabletDate.textContent = ukDate(now);
     if (tabletHijri) tabletHijri.textContent = hijriDate(now);
+    if (tabletScreensaverTime) tabletScreensaverTime.textContent = `${h12}:${mm}`;
+    if (tabletScreensaverAmpm) tabletScreensaverAmpm.textContent = ap;
+    if (tabletScreensaverDate) tabletScreensaverDate.textContent = ukDate(now);
+    if (tabletScreensaverHijri) tabletScreensaverHijri.textContent = hijriDate(now);
     const miHijri = document.getElementById('mi-hijri');
     if (miHijri) miHijri.textContent = hijriDate(now);
     if (gregEl) gregEl.textContent = ukDate(now);
@@ -5027,6 +5221,7 @@ function startActiveTracking(tod, tom) {
     document.querySelectorAll('.tablet-prayer-tile').forEach(tile => {
       tile.classList.toggle('active', tile.dataset.cardPrayer === nextP);
     });
+    updateTabletScreensaverMode();
   }
   tickBanner(); setInterval(tickBanner, 1000);
 
@@ -5651,6 +5846,7 @@ async function init() {
     initHomeAudioControl();
     initTabletSettingsLogic();
     initAthanPlayer();
+    initTabletScreensaverControls();
     setDailyReminder();
     startClock();
     startActiveTracking(tod, tom);
