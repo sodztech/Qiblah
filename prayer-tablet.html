@@ -4565,6 +4565,7 @@ function playTabletAdhkarAudio(kind) {
   setTabletAdhkarStatus(`Playing ${item.title}.`);
   updateHomeAudioControl();
   utterance.onstart = () => {
+    if (tabletAdhkarUtterance !== utterance) return;
     tabletAdhkarUtterance = utterance;
     if (!tabletAdhkarStartedAt) tabletAdhkarStartedAt = Date.now();
     setTabletAdhkarActive(kind);
@@ -4572,6 +4573,7 @@ function playTabletAdhkarAudio(kind) {
     updateHomeAudioControl();
   };
   utterance.onend = () => {
+    if (tabletAdhkarUtterance !== utterance || tabletAdhkarActive !== kind) return;
     tabletAdhkarUtterance = null;
     tabletAdhkarStartedAt = 0;
     tabletAdhkarPausedAt = 0;
@@ -4581,6 +4583,7 @@ function playTabletAdhkarAudio(kind) {
     updateHomeAudioControl();
   };
   utterance.onerror = () => {
+    if (tabletAdhkarUtterance !== utterance || tabletAdhkarActive !== kind) return;
     tabletAdhkarUtterance = null;
     tabletAdhkarStartedAt = 0;
     tabletAdhkarPausedAt = 0;
