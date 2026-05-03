@@ -2839,6 +2839,36 @@
   body.prayer-tablet .tablet-volume-bar::-moz-range-thumb {
     background: var(--gold);
   }
+  @media (display-mode: standalone) {
+    body.prayer-tablet #app {
+      height: 100svh;
+      height: 100dvh;
+      padding:
+        calc(clamp(8px, 1vw, 16px) + env(safe-area-inset-top))
+        calc(clamp(8px, 1vw, 16px) + env(safe-area-inset-right))
+        calc(126px + env(safe-area-inset-bottom))
+        calc(clamp(8px, 1vw, 16px) + env(safe-area-inset-left));
+    }
+    body.prayer-tablet #slide-wrap {
+      min-height: 0;
+      padding-bottom: 8px;
+    }
+    body.prayer-tablet .tablet-action-dock {
+      bottom: calc(env(safe-area-inset-bottom) + 18px);
+    }
+  }
+  @media (display-mode: standalone) and (min-width: 768px) {
+    body.prayer-tablet #app {
+      padding:
+        calc(clamp(14px, 2vw, 24px) + env(safe-area-inset-top))
+        calc(clamp(18px, 2.6vw, 32px) + env(safe-area-inset-right))
+        calc(138px + env(safe-area-inset-bottom))
+        calc(clamp(18px, 2.6vw, 32px) + env(safe-area-inset-left));
+    }
+    body.prayer-tablet .tablet-action-dock {
+      bottom: calc(env(safe-area-inset-bottom) + 24px);
+    }
+  }
   .f-jummah-item { display: block; transition: opacity 0.4s ease; }
   .f-jummah-item.hidden { display: none; }
 </style>
