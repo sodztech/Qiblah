@@ -4522,11 +4522,10 @@ function playTabletAdhkarAudio(kind) {
       adhkarAudio.src = item.src;
       adhkarAudio.load();
     }
-    adhkarAudio.volume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) / 100 : 0.8;
-    adhkarAudio.muted = adhkarAudio.volume === 0;
+    applyTabletMediaVolume(adhkarAudio, Number.isFinite(savedVolume) ? savedVolume : 80);
     setTabletAdhkarStatus(`Playing ${item.title}.`);
     updateHomeAudioControl();
-    adhkarAudio.play().catch(() => {
+    unlockTabletAudio(adhkarAudio).then(() => adhkarAudio.play()).catch(() => {
       setTabletAdhkarStatus('Adhkar audio could not play on this device.');
       updateHomeAudioControl();
     });
@@ -4591,7 +4590,11 @@ function initTabletAdhkarAudio() {
     const adhkarAudio = document.getElementById('tablet-adhkar-audio');
     if (item.src && adhkarAudio) {
       if (adhkarAudio.paused) {
-        adhkarAudio.play().catch(() => setTabletAdhkarStatus('Adhkar audio could not play on this device.'));
+        const savedVolume = localStorage.getItem('qiblahTabletAdhkarVolume') || localStorage.getItem('quranTabletVolume') || 80;
+        applyTabletMediaVolume(adhkarAudio, savedVolume);
+        unlockTabletAudio(adhkarAudio)
+          .then(() => adhkarAudio.play())
+          .catch(() => setTabletAdhkarStatus('Adhkar audio could not play on this device.'));
         event.currentTarget.textContent = 'Pause';
       } else {
         adhkarAudio.pause();
@@ -4685,10 +4688,10 @@ function initTabletSettingsLogic() {
     const athanAudio = document.getElementById('athan-audio');
     if (adhanVolumeEl) adhanVolumeEl.value = String(level);
     if (adhanVolumeLabel) adhanVolumeLabel.textContent = `${level}%`;
-    if (athanAudio) {
-      athanAudio.volume = level / 100;
-      athanAudio.muted = level === 0 || (adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on'));
-    }
+    applyTabletMediaVolume(athanAudio, level, {
+      forceMuted: level === 0 || (adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on'))
+    });
+    unlockTabletAudio(athanAudio);
     localStorage.setItem('qiblahTabletAdhanVolume', String(level));
   }
   const savedAdhanVolume = localStorage.getItem('qiblahTabletAdhanVolume') || 80;
@@ -5022,8 +5025,11 @@ async function playAthanForPrayer(prayer) {
 
   athanAudio.src = getSelectedAthan().url;
   athanAudio.currentTime = 0;
-  athanAudio.muted = false;
+  applyTabletMediaVolume(athanAudio, localStorage.getItem('qiblahTabletAdhanVolume') || 80, {
+    forceMuted: false
+  });
   try {
+    await unlockTabletAudio(athanAudio);
     await athanAudio.play();
   } catch (err) {
     console.warn('Athan playback blocked by browser autoplay policy', err);
@@ -5037,7 +5043,8 @@ function initAthanPlayer() {
   athanAudio.addEventListener('ended', () => {
     const quranAudio = document.getElementById('quran-audio');
     if (athanResumeQuran && quranAudio && quranAudio.src) {
-      quranAudio.play().catch(() => {});
+      applyTabletMediaVolume(quranAudio, localStorage.getItem('quranTabletVolume') || 80);
+      unlockTabletAudio(quranAudio).then(() => quranAudio.play()).catch(() => {});
     }
     athanResumeQuran = false;
   });
