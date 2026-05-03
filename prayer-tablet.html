@@ -3075,9 +3075,9 @@
         <input class="tablet-audio-bar" id="quran-audio-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek Qur'an audio">
         <div class="tablet-audio-time" id="quran-audio-time">00:00 / 00:00</div>
       </div>
-      <audio id="quran-audio" preload="auto" playsinline></audio>
-      <audio id="athan-audio" preload="auto" playsinline src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
-      <audio id="tablet-adhkar-audio" preload="metadata" playsinline></audio>
+      <audio id="quran-audio" preload="auto" playsinline crossorigin="anonymous"></audio>
+      <audio id="athan-audio" preload="auto" playsinline crossorigin="anonymous" src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
+      <audio id="tablet-adhkar-audio" preload="metadata" playsinline crossorigin="anonymous"></audio>
     </section>
 
     <section id="tablet-quran-translation" class="tablet-quran-translation" aria-label="English Quran translation">
@@ -3414,6 +3414,62 @@ function setViewportVars() {
   document.documentElement.style.setProperty('--vh', `${height}px`);
 }
 setViewportVars();
+let tabletAudioContext = null;
+const tabletAudioNodes = new WeakMap();
+function clampTabletVolume(value, fallback = 80) {
+  const parsed = Number(value);
+  return Math.max(0, Math.min(100, Number.isFinite(parsed) ? parsed : fallback));
+}
+function getTabletAudioContext() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  if (!tabletAudioContext) tabletAudioContext = new AudioContextClass();
+  return tabletAudioContext;
+}
+function getTabletAudioNode(audio) {
+  if (!audio) return null;
+  if (tabletAudioNodes.has(audio)) return tabletAudioNodes.get(audio);
+  const ctx = getTabletAudioContext();
+  if (!ctx) {
+    tabletAudioNodes.set(audio, null);
+    return null;
+  }
+  try {
+    const source = ctx.createMediaElementSource(audio);
+    const gain = ctx.createGain();
+    source.connect(gain);
+    gain.connect(ctx.destination);
+    const node = { ctx, gain };
+    tabletAudioNodes.set(audio, node);
+    return node;
+  } catch (err) {
+    console.warn('Tablet audio gain unavailable', err);
+    tabletAudioNodes.set(audio, null);
+    return null;
+  }
+}
+async function unlockTabletAudio(audio) {
+  const node = getTabletAudioNode(audio);
+  if (node && node.ctx && node.ctx.state === 'suspended') {
+    try { await node.ctx.resume(); } catch (err) { console.warn('Tablet audio unlock failed', err); }
+  }
+}
+function applyTabletMediaVolume(audio, value, options = {}) {
+  if (!audio) return;
+  const level = clampTabletVolume(value);
+  const muted = Boolean(options.forceMuted) || level === 0;
+  const gainValue = muted ? 0 : level / 100;
+  try { audio.volume = gainValue; } catch (err) {}
+  audio.muted = muted;
+  const node = getTabletAudioNode(audio);
+  if (node && node.gain) {
+    try {
+      node.gain.gain.setTargetAtTime(gainValue, node.ctx.currentTime, 0.015);
+    } catch (err) {
+      node.gain.gain.value = gainValue;
+    }
+  }
+}
 function fitStandalonePwaScale() {
   if (!document.body.classList.contains('prayer-tablet')) return;
   const root = document.documentElement;
@@ -4011,6 +4067,9 @@ async function toggleHomeAudioControl() {
     const item = TABLET_ADHKAR_AUDIO[tabletAdhkarActive] || {};
     if (item.src && adhkarAudio) {
       if (adhkarAudio.paused) {
+        const savedVolume = localStorage.getItem('qiblahTabletAdhkarVolume') || localStorage.getItem('quranTabletVolume') || 80;
+        applyTabletMediaVolume(adhkarAudio, savedVolume);
+        await unlockTabletAudio(adhkarAudio);
         await adhkarAudio.play().catch(() => setTabletAdhkarStatus('Adhkar audio could not play on this device.'));
       } else {
         adhkarAudio.pause();
@@ -4048,15 +4107,11 @@ function initHomeAudioControl() {
       const value = Math.max(0, Math.min(100, Number(volumeEl.value) || 0));
       localStorage.setItem('quranTabletVolume', String(value));
       localStorage.setItem('qiblahTabletAdhkarVolume', String(value));
-      if (quranAudio) {
-        quranAudio.volume = value / 100;
-        quranAudio.muted = value === 0;
-      }
+      applyTabletMediaVolume(quranAudio, value);
+      unlockTabletAudio(quranAudio);
       const adhkarAudio = document.getElementById('tablet-adhkar-audio');
-      if (adhkarAudio) {
-        adhkarAudio.volume = value / 100;
-        adhkarAudio.muted = value === 0;
-      }
+      applyTabletMediaVolume(adhkarAudio, value);
+      unlockTabletAudio(adhkarAudio);
       const quranVolume = document.getElementById('quran-audio-volume');
       if (quranVolume) quranVolume.value = String(value);
       updateHomeAudioControl();
@@ -4178,7 +4233,8 @@ async function loadCurrentQuranVerseAudio(autoplay = false, startProgress = 0) {
   renderCurrentQuranVerse();
   if (!autoplay) return true;
   try {
-    audio.muted = false;
+    applyTabletMediaVolume(audio, localStorage.getItem('quranTabletVolume') || 80);
+    await unlockTabletAudio(audio);
     await audio.play();
     setQuranPlayIcon(true);
     return true;
@@ -4259,7 +4315,8 @@ async function playQuranAudio() {
   }
   if (!audio.src) return false;
   try {
-    audio.muted = false;
+    applyTabletMediaVolume(audio, localStorage.getItem('quranTabletVolume') || 80);
+    await unlockTabletAudio(audio);
     await audio.play();
     setQuranPlayIcon(true);
     renderCurrentQuranVerse();
@@ -4312,10 +4369,10 @@ async function initQuranPlayer() {
   const savedVolume = Number(localStorage.getItem('quranTabletVolume'));
   const startingVolume = Number.isFinite(savedVolume) ? Math.max(0, Math.min(100, savedVolume)) : 80;
   volumeEl.value = String(startingVolume);
-  audio.volume = startingVolume / 100;
+  applyTabletMediaVolume(audio, startingVolume);
   const savedAdhanVolume = Number(localStorage.getItem('qiblahTabletAdhanVolume'));
   const startingAdhanVolume = Number.isFinite(savedAdhanVolume) ? Math.max(0, Math.min(100, savedAdhanVolume)) : 80;
-  if (athanAudio) athanAudio.volume = startingAdhanVolume / 100;
+  applyTabletMediaVolume(athanAudio, startingAdhanVolume);
   audio.addEventListener('loadedmetadata', updateQuranTime);
   audio.addEventListener('timeupdate', updateQuranTime);
   audio.addEventListener('play', () => setQuranPlayIcon(true));
@@ -4345,8 +4402,8 @@ async function initQuranPlayer() {
   modeSelect?.addEventListener('change', () => setQuranPlayerMode(modeSelect.value));
   volumeEl.addEventListener('input', () => {
     const value = Math.max(0, Math.min(100, Number(volumeEl.value) || 0));
-    audio.volume = value / 100;
-    audio.muted = value === 0;
+    applyTabletMediaVolume(audio, value);
+    unlockTabletAudio(audio);
     localStorage.setItem('quranTabletVolume', String(value));
     const homeVolume = document.getElementById('tablet-home-audio-volume');
     if (homeVolume) homeVolume.value = String(value);

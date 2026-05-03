@@ -238,14 +238,15 @@
   }
   .tabs {
     background: var(--card2) !important;
+    box-shadow: none !important;
   }
   .tab { color: var(--muted) !important; }
   .tab.active {
     background: var(--card) !important;
     color: var(--text) !important;
   }
-  .sub-tab { background: var(--card2) !important; color: var(--muted) !important; border-color: rgba(0,0,0,0.06) !important; }
-  .sub-tab.active { background: rgba(166,134,74,0.15) !important; color: #a6864a !important; border-color: rgba(166,134,74,0.3) !important; }
+  .sub-tab { background: var(--card2) !important; color: var(--muted) !important; border-color: rgba(0,0,0,0.06) !important; box-shadow: none !important; }
+  .sub-tab.active { background: rgba(166,134,74,0.15) !important; color: #a6864a !important; border-color: rgba(166,134,74,0.3) !important; box-shadow: none !important; }
   select, #city-select, #area-select, #jummah-area-select {
     background: var(--card) !important;
     background-color: var(--card) !important;
@@ -260,7 +261,7 @@
   #home-prayer-card > div, .jummah-pill, .area-badge, .tag,
   .area-btn, .search-wrap input, .view-toggle, .locate-btn {
     border: none !important;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(166,134,74,0.2) !important;
+    box-shadow: none !important;
   }
   .area-btn.active { border-color: rgba(166,134,74,0.35) !important; }
   #home-ad-banner { border: 1px solid rgba(166,134,74,0.12) !important; border-left: 3px solid var(--gold) !important; }
@@ -392,14 +393,14 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .search-wrap input { width: 100%; background: var(--card); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
 .search-wrap input:focus { border-color: rgba(166,134,74,0.4); }
 .search-wrap input::placeholder { color: var(--muted); }
-.view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: none; }
 .view-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; background: none; color: var(--muted); }
 .view-btn.active { background: rgba(166,134,74,0.12); color: #a6864a; }
 .view-btn svg { width: 18px; height: 18px; }
 .locate-btn { display: flex; align-items: center; gap: 8px; background: rgba(166,134,74,0.08); border: 1px solid rgba(166,134,74,0.22); color: #a6864a; font-size: 13px; font-weight: 500; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-family: inherit; white-space: nowrap; }
 .locate-btn svg { width: 15px; height: 15px; }
 .area-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-bottom: 4px; }
-.area-btn { font-size: 12px; font-family: inherit; padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.08); background: var(--card); color: var(--muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.area-btn { font-size: 12px; font-family: inherit; padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.08); background: var(--card); color: var(--muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; box-shadow: none; }
 .area-btn.active { background: rgba(166,134,74,0.12); color: #a6864a; border-color: rgba(166,134,74,0.25); }
 .mosques-results { padding: 20px 32px 48px; }
 .mosque-list-card { background: var(--card); border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius); overflow: hidden; display: grid; grid-template-columns: 160px 1fr; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; }
@@ -536,6 +537,27 @@ nav::after {
 
 /* Mosques header */
 .mosques-header h1 { font-family: 'Outfit', sans-serif; letter-spacing: 0.3px; font-weight: 400; }
+
+/* Flatten card elevation */
+.mosque-card,
+.service-card,
+.sponsored-card,
+.detail-card,
+.pt-section,
+.mosque-list-card,
+.profile-detail-item,
+.register-panel,
+.mobile-nav,
+#sk-audio-player,
+.address-suggestions,
+#address-suggestions {
+  box-shadow: none !important;
+}
+.mosque-card:hover,
+.service-card:hover {
+  box-shadow: none !important;
+  transform: none !important;
+}
 
 /* Search input */
 .search-wrap input { transition: border-color 0.2s, box-shadow 0.2s; }
