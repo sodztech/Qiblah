@@ -3416,6 +3416,7 @@ function setViewportVars() {
 setViewportVars();
 let tabletAudioContext = null;
 const tabletAudioNodes = new WeakMap();
+const tabletAudioVolumeState = new WeakMap();
 function clampTabletVolume(value, fallback = 80) {
   const parsed = Number(value);
   return Math.max(0, Math.min(100, Number.isFinite(parsed) ? parsed : fallback));
@@ -3450,6 +3451,14 @@ function getTabletAudioNode(audio) {
 }
 async function unlockTabletAudio(audio) {
   const node = getTabletAudioNode(audio);
+  const state = tabletAudioVolumeState.get(audio);
+  if (node && node.gain && state) {
+    try {
+      node.gain.gain.setTargetAtTime(state.gainValue, node.ctx.currentTime, 0.015);
+    } catch (err) {
+      node.gain.gain.value = state.gainValue;
+    }
+  }
   if (node && node.ctx && node.ctx.state === 'suspended') {
     try { await node.ctx.resume(); } catch (err) { console.warn('Tablet audio unlock failed', err); }
   }
@@ -3461,7 +3470,8 @@ function applyTabletMediaVolume(audio, value, options = {}) {
   const gainValue = muted ? 0 : level / 100;
   try { audio.volume = gainValue; } catch (err) {}
   audio.muted = muted;
-  const node = getTabletAudioNode(audio);
+  tabletAudioVolumeState.set(audio, { gainValue });
+  const node = tabletAudioNodes.get(audio);
   if (node && node.gain) {
     try {
       node.gain.gain.setTargetAtTime(gainValue, node.ctx.currentTime, 0.015);
@@ -4683,7 +4693,7 @@ function initTabletSettingsLogic() {
     adhanSelectEl.addEventListener('change', () => applySelectedAthan(adhanSelectEl.value));
     applySelectedAthan(getSelectedAthan().id);
   }
-  function applyAdhanVolume(value) {
+  function applyAdhanVolume(value, unlock = false) {
     const level = Math.max(0, Math.min(100, Number(value) || 0));
     const athanAudio = document.getElementById('athan-audio');
     if (adhanVolumeEl) adhanVolumeEl.value = String(level);
@@ -4691,17 +4701,17 @@ function initTabletSettingsLogic() {
     applyTabletMediaVolume(athanAudio, level, {
       forceMuted: level === 0 || (adhanEnabledEl && !adhanEnabledEl.classList.contains('is-on'))
     });
-    unlockTabletAudio(athanAudio);
+    if (unlock) unlockTabletAudio(athanAudio);
     localStorage.setItem('qiblahTabletAdhanVolume', String(level));
   }
   const savedAdhanVolume = localStorage.getItem('qiblahTabletAdhanVolume') || 80;
   const savedAdhanEnabled = localStorage.getItem('qiblahTabletAdhanEnabled');
   if (adhanEnabledEl && savedAdhanEnabled === '0') adhanEnabledEl.classList.remove('is-on');
   applyAdhanVolume(savedAdhanVolume);
-  adhanVolumeEl?.addEventListener('input', () => applyAdhanVolume(adhanVolumeEl.value));
+  adhanVolumeEl?.addEventListener('input', () => applyAdhanVolume(adhanVolumeEl.value, true));
   adhanEnabledEl?.addEventListener('click', () => {
     localStorage.setItem('qiblahTabletAdhanEnabled', adhanEnabledEl.classList.contains('is-on') ? '1' : '0');
-    applyAdhanVolume(adhanVolumeEl ? adhanVolumeEl.value : savedAdhanVolume);
+    applyAdhanVolume(adhanVolumeEl ? adhanVolumeEl.value : savedAdhanVolume, true);
   });
 }
 
