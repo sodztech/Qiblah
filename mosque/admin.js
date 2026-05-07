@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -192,6 +192,12 @@ function loadFromSupabase() {
     currentData.displayTheme = announcementRows.find(isDisplayThemeRow) || null;
     currentData.displayBlackout = announcementRows.find(isDisplayBlackoutRow) || null;
     currentData.asrOpinion = announcementRows.find(isAsrOpinionRow) || null;
+    currentData.profileLogo = announcementRows.find(isProfileLogoRow) || null;
+    if (currentData.profileLogo) {
+      currentMosque.logo = parseProfileLogo(currentData.profileLogo);
+      renderProfileLogo(currentMosque.logo || '');
+      renderEmbed();
+    }
     currentData.announcements = announcementRows.filter(function(row) { return !isSystemDisplayRow(row); });
     currentData.times = {};
     (results[2] || []).forEach(function(row) { currentData.times[row.date] = row; });
@@ -575,9 +581,21 @@ function handleProfileLogoUpload(event) {
     });
 }
 function saveProfileLogo(logo) {
-  return sbFetch('mosques?id=eq.' + currentMosque.id, { method: 'PATCH', body: JSON.stringify({ logo: logo }) })
+  var payload = {
+    title: 'Profile Logo',
+    tag: 'ProfileLogo',
+    category: 'ProfileLogo',
+    description: JSON.stringify({ logo: logo || '' }),
+    active: true,
+    sort_order: 0
+  };
+  var request = currentData.profileLogo && currentData.profileLogo.id
+    ? sbFetch('announcements?id=eq.' + currentData.profileLogo.id, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
+  return request
     .then(function(rows) {
-      Object.assign(currentMosque, rows && rows[0] ? rows[0] : { logo: logo });
+      currentData.profileLogo = rows && rows[0] ? rows[0] : Object.assign({}, currentData.profileLogo || {}, payload);
+      currentMosque.logo = logo || '';
       pendingProfileLogo = undefined;
       renderProfileLogo(currentMosque.logo || '');
       renderEmbed();
@@ -865,8 +883,21 @@ function isAsrOpinionRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'asropinion';
 }
+function isProfileLogoRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'profilelogo';
+}
 function isSystemDisplayRow(row) {
-  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row);
+  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row);
+}
+function parseProfileLogo(row) {
+  if (!row || !row.description) return '';
+  try {
+    var parsed = JSON.parse(row.description);
+    return parsed && parsed.logo ? String(parsed.logo) : '';
+  } catch (e) {
+    return String(row.description || '');
+  }
 }
 function parseAsrOpinion(row) {
   if (!row || !row.description) return 'first';
