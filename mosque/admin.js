@@ -564,7 +564,8 @@ function handleProfileLogoUpload(event) {
     .then(function(dataUrl) {
       pendingProfileLogo = dataUrl;
       renderProfileLogo(dataUrl);
-      showSaveStatus('Logo ready. Save profile to publish.', true);
+      showSaveStatus('Publishing logo...', false);
+      return saveProfileLogo(dataUrl);
     })
     .catch(function(err) {
       showSaveStatus(err.message || 'Logo upload failed', false);
@@ -573,10 +574,24 @@ function handleProfileLogoUpload(event) {
       if (event && event.target) event.target.value = '';
     });
 }
+function saveProfileLogo(logo) {
+  return sbFetch('mosques?id=eq.' + currentMosque.id, { method: 'PATCH', body: JSON.stringify({ logo: logo }) })
+    .then(function(rows) {
+      Object.assign(currentMosque, rows && rows[0] ? rows[0] : { logo: logo });
+      pendingProfileLogo = undefined;
+      renderProfileLogo(currentMosque.logo || '');
+      renderEmbed();
+      clearPublicAppCache();
+      showSaveStatus(logo ? 'Logo published' : 'Logo removed', true);
+    });
+}
 function removeProfileLogo() {
   pendingProfileLogo = '';
   renderProfileLogo('');
-  showSaveStatus('Logo removed. Save profile to publish.', true);
+  showSaveStatus('Removing logo...', false);
+  saveProfileLogo('').catch(function(err) {
+    showSaveStatus('Logo remove failed: ' + err.message.slice(0, 80), false);
+  });
 }
 function saveProfile() {
   function optionalText(id) {
