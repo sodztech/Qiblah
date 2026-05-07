@@ -1645,9 +1645,12 @@ function cardHTML(m, i) {
     next = { name: 'Fajr', time: fmt12(m._tomorrowFajr.jamaah || m._tomorrowFajr) };
   }
   var jummahCardTime = (m.jummah || '').replace(/\s*(AM|PM)\b/gi, '').trim();
+  var logoHtml = m.logo
+    ? '<img src="' + qText(m.logo) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;border-radius:8px">'
+    : '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)"><path d="M21 12.8a9.5 9.5 0 01-9.8 9.2A9.5 9.5 0 119.7 3.1 7.6 7.6 0 0021 12.8z"/></svg>';
   return '<div class="mosque-card" onclick="track(\'mosque_click\',{mosque_name:MOSQUES[' + i + '].name}); openDetail(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;position:relative">'  +
-    '<div style="width:38px;height:38px;border-radius:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
-      '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)"><path d="M21 12.8a9.5 9.5 0 01-9.8 9.2A9.5 9.5 0 119.7 3.1 7.6 7.6 0 0021 12.8z"/></svg>' +
+    '<div style="width:38px;height:38px;border-radius:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;overflow:hidden">' +
+      logoHtml +
     '</div>' +
       '<div style="flex:1;min-width:0;padding-right:70px">' +
       '<div class="mosque-card-name" style="margin-bottom:5px">' + m.name + '</div>' +
@@ -3243,6 +3246,7 @@ function applyData(results) {
           email:    m.email   || '',
           about:    m.about   || '',
           facilities: normaliseFacilities(m.facilities),
+          logo:     m.logo    || '',
           url:      m.url     || '',
           lat: m.lat || null,
           lon: m.lon || null,
@@ -3332,7 +3336,7 @@ function loadMosquesFromSupabase() {
     // Render cached data instantly, then replace it with fresh admin data.
     var p6 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
     var p8 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
-    var sp1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&is_hidden=eq.false&order=name');
+    var sp1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities,logo&is_hidden=eq.false&order=name');
     var sp3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
     var sp4 = sbGet('courses?select=*&order=name&active=eq.true');
     var sp5 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
@@ -3365,7 +3369,7 @@ function loadMosquesFromSupabase() {
   }
 
   // ── No cache — full fetch ────────────────────────────────────────────────────
-  var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&is_hidden=eq.false&order=name');
+  var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities,logo&is_hidden=eq.false&order=name');
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
   var p4 = sbGet('courses?select=*&order=name&active=eq.true');
   var p5 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
@@ -3876,7 +3880,7 @@ window.addEventListener('focus', function() {
 
 function refreshHomeData(done) {
   var today = todayISO(), tomorrow = tomorrowISO();
-  var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities&is_hidden=eq.false&order=name');
+  var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities,logo&is_hidden=eq.false&order=name');
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
   var p4 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p5 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
@@ -3911,7 +3915,7 @@ function refreshHomeData(done) {
     });
     tomorrowRows.forEach(function(r) { if (r.fajr_jamaah) tomorrowFajrByMosque[r.mosque_id] = { jamaah: r.fajr_jamaah, begins: r.fajr_begins || r.fajr_jamaah }; });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
-      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:m.name||'', address:m.address||'', area:m.area||'', borough:m.borough||'', jummah:m.jummah||'1:30 PM', phone:m.phone||'', website:m.website||'', email:m.email||'', about:m.about||'', facilities:normaliseFacilities(m.facilities), logo:m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
