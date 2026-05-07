@@ -1498,7 +1498,7 @@ function renderJummah(mosques) {
       return '<div class="mosque-card" onclick="openDetail(' + e.idx + ')" style="cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px 16px;position:relative;margin-bottom:8px">' +
         '<div style="flex:1;min-width:0">' +
           '<div style="font-size:14px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + e.mosque.name + '</div>' +
-          '<span style="font-size:11px;color:var(--gold)">Jummah: ' + combinedJummahTimes(e.mosque) + '</span>' +
+          '<span style="font-size:11px;color:var(--gold)">Jummah: ' + primaryJummahTime(e.mosque) + '</span>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1644,7 +1644,7 @@ function cardHTML(m, i) {
   if (!next && m._tomorrowFajr) {
     next = { name: 'Fajr', time: fmt12(m._tomorrowFajr.jamaah || m._tomorrowFajr) };
   }
-  var jummahCardTime = combinedJummahTimes(m).replace(/\s*(AM|PM)\b/gi, '').trim();
+  var jummahCardTime = primaryJummahTime(m).replace(/\s*(AM|PM)\b/gi, '').trim();
   var logoHtml = m.logo
     ? '<img src="' + qText(m.logo) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;border-radius:8px">'
     : '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold)"><path d="M21 12.8a9.5 9.5 0 01-9.8 9.2A9.5 9.5 0 119.7 3.1 7.6 7.6 0 0021 12.8z"/></svg>';
@@ -1676,7 +1676,7 @@ function cardHTML(m, i) {
 function listCardHTML(m, i) {
   var img = IMGS[i % IMGS.length];
   var tags = (m.tags || []).slice(0, 3).map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('');
-  var jummahCardTime = combinedJummahTimes(m).replace(/\s*(AM|PM)\b/gi, '').trim();
+  var jummahCardTime = primaryJummahTime(m).replace(/\s*(AM|PM)\b/gi, '').trim();
   return '<div class="mosque-list-card" onclick="openDetail(' + i + ')" style="cursor:pointer">' +
     '<div class="mosque-list-img"><img src="' + img + '" alt="' + m.name + '" loading="lazy" onerror="this.style.display=\'none\'"></div>' +
     '<div class="mosque-list-body">' +
@@ -2388,6 +2388,9 @@ function parsePrayerTimeOverride(a) {
 function combinedJummahTimes(m) {
   return [m && m.jummah, m && m.jummah2, m && m.jummah3].filter(Boolean).join(', ');
 }
+function primaryJummahTime(m) {
+  return (m && m.jummah) || combinedJummahTimes(m).split(',')[0].trim();
+}
 
 function parseAsrOpinion(a) {
   if (!a || !a.description) return 'first';
@@ -2484,8 +2487,8 @@ function openDetail(idx) {
           about:    liveField('about'),
           logo:     m.logo || liveField('logo'),
           jummah:   m.jummah || liveField('jummah'),
-          jummah2:  m.jummah2 || liveField('jummah2'),
-          jummah3:  m.jummah3 || liveField('jummah3'),
+          jummah2:  Object.prototype.hasOwnProperty.call(m, 'jummah2') ? (m.jummah2 || '') : liveField('jummah2'),
+          jummah3:  Object.prototype.hasOwnProperty.call(m, 'jummah3') ? (m.jummah3 || '') : liveField('jummah3'),
           services: [],
           announcements: m.announcements || [],
           _id:      dbM.id
@@ -3347,9 +3350,9 @@ function applyData(results) {
           address:  profile.address || m.address || '',
           area:     m.area    || '',
           borough:  m.borough || '',
-          jummah:   (jummahByMosque[m.id] && jummahByMosque[m.id].jummah) || m.jummah || '1:30 PM',
-          jummah2:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah2) || m.jummah2 || '',
-          jummah3:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah3) || m.jummah3 || '',
+          jummah:   jummahByMosque[m.id] ? (jummahByMosque[m.id].jummah || '1:30 PM') : (m.jummah || '1:30 PM'),
+          jummah2:  jummahByMosque[m.id] ? (jummahByMosque[m.id].jummah2 || '') : (m.jummah2 || ''),
+          jummah3:  jummahByMosque[m.id] ? (jummahByMosque[m.id].jummah3 || '') : (m.jummah3 || ''),
           phone:    profile.phone || m.phone || '',
           website:  profile.website || m.website || '',
           email:    profile.email || m.email || '',
@@ -4054,7 +4057,7 @@ function refreshHomeData(done) {
     });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
-      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profile.phone||m.phone||'', website:profile.website||m.website||'', email:profile.email||m.email||'', about:profile.about||m.about||'', facilities:profile.facilities?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah||'1:30 PM'):(m.jummah||'1:30 PM'), jummah2:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah2||''):(m.jummah2||''), jummah3:jummahByMosque[m.id]?(jummahByMosque[m.id].jummah3||''):(m.jummah3||''), phone:profile.phone||m.phone||'', website:profile.website||m.website||'', email:profile.email||m.email||'', about:profile.about||m.about||'', facilities:profile.facilities?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
