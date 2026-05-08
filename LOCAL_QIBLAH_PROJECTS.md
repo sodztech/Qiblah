@@ -6,11 +6,13 @@ Organizer folder: `/Users/sodrulislam/Downloads/Qiblah Projects`
 
 The organizer uses links, so the original project folders stay in their current locations.
 
+Active app links live in `/Users/sodrulislam/Downloads/Qiblah Projects/Active`.
+
 ## Project Folders
 
 | Folder | Size | Modified | Notes |
 | --- | ---: | --- | --- |
-| `/Users/sodrulislam/Downloads/Qiblah-main-3` | 49M | May 8 11:50 | Active/current workspace; git repo; has extra `pitch/index.html`; `index.html` has local modifications. |
+| `/Users/sodrulislam/Downloads/Qiblah Website` | 49M | May 8 11:50 | Active/current workspace; git repo; has extra `pitch/index.html`; `index.html` has local modifications. |
 | `/Users/sodrulislam/Downloads/Qiblah (1)` | 2.9M | Apr 26 13:30 | Downloaded copy with `site/` folder. |
 | `/Users/sodrulislam/Downloads/Qiblah (2)` | 2.9M | Apr 26 13:30 | Downloaded copy with `site/` folder. |
 | `/Users/sodrulislam/Downloads/Qiblah` | 2.4M | Apr 24 23:15 | Downloaded copy with `site/` folder. |
@@ -23,18 +25,18 @@ The organizer uses links, so the original project folders stay in their current 
 
 Total found across Qiblah folders: 55.
 
-### `/Users/sodrulislam/Downloads/Qiblah-main-3`
+### `/Users/sodrulislam/Downloads/Qiblah Website`
 
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/admin/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/evening-adhkar/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/institute/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/jumuah/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/morning-adhkar/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/mosque/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/pitch/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/register/index.html`
-- `/Users/sodrulislam/Downloads/Qiblah-main-3/surah-kahf/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/admin/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/evening-adhkar/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/institute/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/jumuah/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/morning-adhkar/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/mosque/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/pitch/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/register/index.html`
+- `/Users/sodrulislam/Downloads/Qiblah Website/surah-kahf/index.html`
 
 ### `/Users/sodrulislam/Downloads/Qiblah-main-2`
 
