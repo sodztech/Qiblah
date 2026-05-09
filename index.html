@@ -1026,7 +1026,7 @@ html.qiblah-dark-mode .reg-field label {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2C9.01 2 7 4.01 7 6.5S9.01 11 11.5 11 16 8.99 16 6.5 13.99 2 11.5 2zm0 7C10.12 9 9 7.88 9 6.5S10.12 4 11.5 4 14 5.12 14 6.5 12.88 9 11.5 9zM18 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm-6.1 4c.22-.72 3.31-2 6.1-2 2.8 0 5.9 1.29 6.1 2H11.9zM4 14c-.55 0-1 .45-1 1v1H1v2h6v-2H5v-1c0-.55-.45-1-1-1z"/></svg>Services
     </button>
     <button class="nav-link" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>Prayer Rooms
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>Spaces
     </button>
   </div>
 </nav>
@@ -1168,12 +1168,16 @@ html.qiblah-dark-mode .reg-field label {
 <!-- PRAYER ROOMS -->
 <div class="page" id="page-prayer-rooms">
   <div class="mosques-header">
-    <h1>Prayer Rooms</h1>
+    <h1>Prayer Spaces</h1>
     <div class="search-bar-row">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" id="prayer-room-search" placeholder="Search prayer rooms..." oninput="filterPrayerRooms()">
+        <input type="text" id="prayer-room-search" placeholder="Search prayer spaces..." oninput="filterPrayerRooms()">
       </div>
+      <button class="locate-btn" onclick="locatePrayerRooms()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+        Near me
+      </button>
     </div>
     <div style="display:flex;gap:10px;margin-top:10px">
       <select id="prayer-room-city-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
@@ -1184,6 +1188,7 @@ html.qiblah-dark-mode .reg-field label {
         <option value="">All Areas</option>
       </select>
     </div>
+    <p id="prayer-room-location-label" style="display:none;margin-top:8px;font-size:12px;color:var(--muted)"></p>
   </div>
   <div class="mosques-results" id="prayer-room-results"><div id="banner-prayer-rooms" class="banner-slot"></div><div id="prayer-room-list"></div></div>
 </div>
@@ -1485,7 +1490,7 @@ html.qiblah-dark-mode .reg-field label {
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2C9.01 2 7 4.01 7 6.5S9.01 11 11.5 11 16 8.99 16 6.5 13.99 2 11.5 2zm0 7C10.12 9 9 7.88 9 6.5S10.12 4 11.5 4 14 5.12 14 6.5 12.88 9 11.5 9zM18 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Services
     </button>
     <button class="mobile-nav-btn" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>Prayer Rooms
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>Spaces
     </button>
   </div>
 </div>
@@ -3297,6 +3302,113 @@ var PRAYER_ROOM_SEED = [
 ].map(function(r) {
   return { name:r[0], venue:r[1], address:r[2], area:r[3], type:r[4], hours:'', notes:'', facilities:['Prayer space'], url:'' };
 });
+PRAYER_ROOM_SEED = [
+  ["Selfridges Multi-Faith Prayer Room", "4th floor, beside Customer Services / customer service counter", "Selfridges, 400 Oxford Street, London W1A 1AB", "Oxford Street / West End", "Shopping Centre"],
+  ["Royal Festival Hall Multi-Faith Prayer Room", "Level 1, Blue Side; ask staff for the door code", "Royal Festival Hall, Southbank Centre, Belvedere Road, London SE1 8XX", "Southbank / Waterloo", "Cultural Venue"],
+  ["Canary Wharf Prayer Room", "2 Churchill Place / Barclays Tower building", "2 Churchill Place, London E14 5RB", "Canary Wharf", "Workplace"],
+  ["Westfield London Multi-Faith Prayer Room", "Level -3, Lift Lobby 1, near The Village", "Westfield London, Ariel Way, London W12 7GF", "White City / Shepherd's Bush", "Shopping Centre"],
+  ["Westfield Stratford City Multi-Faith Room", "Balcony at the back of the first-floor World Food Court", "Westfield Stratford City, Montfichet Road, London E20 1EJ", "Stratford", "Shopping Centre"],
+  ["Westfield Stratford City Rest & Faith Space", "Second floor near Nando's", "Westfield Stratford City, Montfichet Road, London E20 1EJ", "Stratford", "Shopping Centre"],
+  ["Piccadilly Community Centre / Piccadilly Prayer Space", "Basement of the Trocadero building", "19 Rupert Street, London W1D 7PA", "Piccadilly / Soho", "Community Space"],
+  ["Battersea Power Station Quiet / Prayer Room", "Ground floor, north side, corridor beside Waterstones in Turbine Hall B", "Battersea Power Station, Circus Road West, London SW11 8DD", "Battersea", "Shopping Centre"],
+  ["Gallions Reach Shopping Park Multi-Faith Room", "Next to the management suite; access via Management Office", "Gallions Reach Shopping Park, Armada Way, London E6 7ER", "Beckton", "Retail Park"],
+  ["Brent Cross Shopping Centre Prayer / Quiet Room", "Opposite Shopmobility near the multi-storey car park; key from Shopmobility", "Brent Cross Shopping Centre, London NW4 3FP", "Brent Cross", "Shopping Centre"],
+  ["Southside Wandsworth Multi-Faith Prayer Room", "First floor, next to Physio Edge", "Southside Shopping Centre, Wandsworth High Street, London SW18 4TF", "Wandsworth", "Shopping Centre"],
+  ["Centrale Croydon Multi-Faith Room", "Lower Mall in Centrale; separate male/female prayer rooms and ablution", "Centrale, North End, Croydon CR0 1TY", "Croydon", "Shopping Centre"],
+  ["O2 Centre Finchley Road Multi-Faith Prayer Room", "Inside the centre; ask Guest Services for exact room", "O2 Centre, 255 Finchley Road, London NW3 6LU", "Finchley Road", "Shopping Centre"],
+  ["ExCeL London Multi-Faith Prayer Room", "Grey door next to S9 entrance on the boulevard", "ExCeL London, One Western Gateway, Royal Victoria Dock, London E16 1XL", "Royal Docks / Custom House", "Cultural Venue"],
+  ["London Stadium Multi-Faith Rooms", "Two rooms at blocks 103 and 104; mainly event/matchday access", "London Stadium, Queen Elizabeth Olympic Park, London E20 2ST", "Stratford / Olympic Park", "Entertainment Venue"],
+  ["UK Parliament Multi-Faith Prayer Room", "Off Westminster Hall; access requires Parliamentary pass-holder support", "Houses of Parliament, Westminster, London SW1A 0AA", "Westminster", "Government"],
+  ["Tate Modern Multi-Faith and Contemplation Room", "Natalie Bell Building, Level 4, off room 2 of Materials and Objects displays", "Tate Modern, Bankside, London SE1 9TG", "Bankside / Southwark", "Cultural Venue"],
+  ["Tate Britain Multi-Faith and Contemplation Room", "Main floor, in the JMW Turner galleries", "Tate Britain, Millbank, London SW1P 4RG", "Pimlico / Millbank", "Cultural Venue"],
+  ["Natural History Museum Contemplation Room", "Ground floor, North Wing; via Central Cafe, under the turtle, second door on the left", "Natural History Museum, Cromwell Road, London SW7 5BD", "South Kensington", "Cultural Venue"],
+  ["Imperial War Museum London Quiet Room", "Level 1 quiet room for reflection, prayer and sensory needs", "IWM London, Lambeth Road, London SE1 6HZ", "Lambeth", "Cultural Venue"],
+  ["University College Hospital Prayer Rooms", "Ground floor near the cafe; chapel, Muslim prayer room, Jewish Sabbath room and quiet room", "235 Euston Road, London NW1 2BU", "Euston", "Hospital"],
+  ["UCLH Grafton Way Building Prayer Room", "Ground floor prayer room and Oasis Room; wudu rooms adjacent; open 24/7", "1 Grafton Way, London WC1E 6AS", "Fitzrovia / Bloomsbury", "Hospital"],
+  ["University College Hospital at Westmoreland Street Multi-Faith Room", "Opposite main reception; open 24/7", "16-18 Westmoreland Street, London W1G 8PH", "Marylebone", "Hospital"],
+  ["National Hospital for Neurology and Neurosurgery Chapel / Quiet Space", "Ground floor of Albany Wing", "Queen Square, London WC1N 3BG", "Bloomsbury", "Hospital"],
+  ["Guy's Hospital Multi-Faith Prayer Room", "Ground floor, Tower Wing; ask ward staff for access", "Great Maze Pond, London SE1 9RT", "London Bridge", "Hospital"],
+  ["St Thomas' Hospital / Evelina Multi-Faith Prayer Room", "Ground floor, South Wing, near Central Hall; washing facilities next door", "Westminster Bridge Road, London SE1 7EH", "Westminster / Waterloo", "Hospital"],
+  ["Newham Hospital Multi-Faith Prayer Room", "First floor, Zone 12, immediately above West Entrance; ablution facilities", "Glen Road, London E13 8SL", "Plaistow / Newham", "Hospital"],
+  ["Royal London Hospital Muslim Prayer Rooms", "Second floor, Lift 5; separate prayer and ablution areas for men and women", "Whitechapel Road, London E1 1FR", "Whitechapel", "Hospital"],
+  ["Mile End Hospital Multi-Faith Prayer Room", "Ground floor near the restaurant; PIN from reception or ward staff", "Bancroft Road, London E1 4DG", "Mile End", "Hospital"],
+  ["St Bartholomew's Hospital Muslim Prayer Room", "First floor of the Catering Block; ablution facilities", "West Smithfield, London EC1A 7BE", "Smithfield / City", "Hospital"],
+  ["Whipps Cross Hospital Muslim Prayer Room", "The Retreat, first floor; stairs near Junction 5, second door", "Whipps Cross Road, Leytonstone, London E11 1NR", "Leytonstone", "Hospital"],
+  ["Royal Free Hospital Muslim Prayer Room", "Lower ground floor, alongside chapel and Shabbat room", "Pond Street, London NW3 2QG", "Hampstead", "Hospital"],
+  ["North Middlesex University Hospital Multi-Faith Centre", "Level -1 of Pymmes Building; key-card access may be required", "Sterling Way, London N18 1QX", "Edmonton", "Hospital"],
+  ["King's College Hospital Muslim Prayer Room", "Lower ground floor, Hambleden Wing; ablution facilities", "Denmark Hill, London SE5 9RS", "Denmark Hill", "Hospital"],
+  ["King's College Hospital Chapel / Sanctuary", "St Luke's Chapel, first floor, Cheyne Wing; Sanctuary next to chapel", "Denmark Hill, London SE5 9RS", "Denmark Hill", "Hospital"],
+  ["St Mary's Hospital Muslim Prayer Room", "First floor, Clarence Building; adjacent multi-faith room used by women; ablution facilities", "Praed Street, London W2 1NY", "Paddington", "Hospital"],
+  ["Charing Cross Hospital Muslim Prayer Room", "Ground floor, East Wing", "Fulham Palace Road, London W6 8RF", "Hammersmith", "Hospital"],
+  ["Charing Cross Hospital Multi-Faith Room", "Ground floor, South Wing, next to the chapel", "Fulham Palace Road, London W6 8RF", "Hammersmith", "Hospital"],
+  ["Hammersmith Hospital Muslim Prayer Room", "First floor of separate prayer block / accessed via Zone B", "Du Cane Road, London W12 0HS", "White City / East Acton", "Hospital"],
+  ["Chelsea and Westminster Hospital Muslim / Jewish Prayer Space", "The Tent, 4th floor, between lift banks C and D", "369 Fulham Road, London SW10 9NH", "Chelsea", "Hospital"],
+  ["Chelsea and Westminster Hospital Chapel", "First floor, Lift Bank C", "369 Fulham Road, London SW10 9NH", "Chelsea", "Hospital"],
+  ["West Middlesex University Hospital Multi-Faith Centre", "Ground floor / main atrium area near Pharmacy / Outpatients 3", "Twickenham Road, Isleworth TW7 6AF", "Isleworth", "Hospital"],
+  ["Royal Brompton Hospital Multi-Faith Prayer Room", "Sydney Wing, Level 2, opposite Cashiers Office", "Sydney Street, London SW3 6NP", "Chelsea", "Hospital"],
+  ["Harefield Hospital Multi-Faith Prayer Room", "Onsite multi-faith prayer room; ask chaplaincy or ward staff for exact access", "Hill End Road, Harefield UB9 6JH", "Harefield", "Hospital"],
+  ["St George's Hospital Prayer Rooms", "Ground floor, Grosvenor Wing, opposite Macmillan Information Centre and Monckton Well lecture theatre", "Blackshaw Road, London SW17 0QT", "Tooting", "Hospital"],
+  ["University Hospital Lewisham Prayer Room", "Ground floor, Waterloo Block", "Lewisham High Street, London SE13 6LH", "Lewisham", "Hospital"],
+  ["Queen Elizabeth Hospital Prayer Room", "Ground floor, left of main entrance", "Stadium Road, London SE18 4QH", "Woolwich", "Hospital"],
+  ["Queen's Hospital Romford Prayer Room", "First floor, Neutral Zone, top of escalator on the left; ablution in room", "Rom Valley Way, Romford RM7 0AG", "Romford", "Hospital"],
+  ["King George Hospital Prayer Room", "Block 5, near main atrium, opposite Radiology / X-ray", "Barley Lane, Goodmayes IG3 8YB", "Goodmayes", "Hospital"],
+  ["Kingston Hospital Multi-Faith Prayer Rooms", "Level 4, Esher Wing; adjacent male/female rooms with ablution nearby", "Galsworthy Road, Kingston upon Thames KT2 7QB", "Kingston", "Hospital"],
+  ["Ealing Hospital Multi-Faith Room", "Level 4, Blue Wing; chapel and multi-faith room", "Ealing Hospital, Uxbridge Road, Southall UB1 3HW", "Southall / Ealing", "Hospital"],
+  ["Great Ormond Street Hospital Muslim Prayer Room", "Level 3, Southwood Building; Quiet Reflection Room next door", "Great Ormond Street, London WC1N 3JH", "Bloomsbury", "Hospital"],
+  ["Royal Marsden Chelsea Muslim Prayer Room", "Level 0, Wallace Wing, left side of corridor; open 24 hours", "Fulham Road, London SW3 6JJ", "Chelsea", "Hospital"],
+  ["Homerton University Hospital Sanctuary", "Ground floor, Green Zone corridor", "Homerton Row, London E9 6SR", "Hackney / Homerton", "Hospital"],
+  ["Whittington Hospital Multi-Faith Prayer Room", "Level 3, Kenwood Wing; ablution facilities", "Magdala Avenue, London N19 5NF", "Archway", "Hospital"],
+  ["Moorfields Eye Hospital Multi-Faith Prayer Room", "Multi-faith prayer/worship room; listed as first floor by stairs", "City Road, London EC1V 2PD", "Old Street", "Hospital"],
+  ["Royal National Orthopaedic Hospital Multi-Faith Room", "Stanmore site multi-faith room; ask staff for exact access", "Brockley Hill, Stanmore HA7 4LP", "Stanmore", "Hospital"],
+  ["UCL Student Centre Prayer Room", "Floor B2; prayer room, meditation room, ablution facilities and showers", "UCL Student Centre, 27-28 Gordon Square, London WC1H 0AW", "Bloomsbury / UCL", "University"],
+  ["UCL East One Pool Street Quiet Contemplation Room", "First floor of One Pool Street", "One Pool Street, London E20", "Stratford / UCL East", "University"],
+  ["UCL East Marshgate Quiet Contemplation Room", "Core A, first floor of Marshgate", "Marshgate, UCL East, London E20", "Stratford / UCL East", "University"],
+  ["UCL Institute of Education Prayer Room", "Room 794; small multi-faith prayer room with divider", "20 Bedford Way, London WC1H 0AL", "Bloomsbury", "University"],
+  ["UCL School of Pharmacy Quiet Room", "Basement floor, Room B34; ID access", "29-39 Brunswick Square, London WC1N 1AX", "Bloomsbury", "University"],
+  ["LSE Faith Centre Prayer Rooms", "2nd floor, Saw Swee Hock Student Centre; male and female Muslim prayer rooms", "1 Sheffield Street, London WC2A 2AP", "Holborn / Aldwych", "University"],
+  ["King's College London Guy's Campus Muslim Prayer Room", "Basement of Hodgkin Building; staff/student access", "Guy's Campus, London SE1 1UL", "London Bridge", "University"],
+  ["King's College London Strand Muslim Prayer Rooms", "First basement, King's Building: KIN LG 141 sisters and KIN LG 146 brothers", "Strand, London WC2R 2LS", "Strand / Covent Garden", "University"],
+  ["King's College London Waterloo Muslim Prayer Room", "First floor, Franklin-Wilkins Building, opposite Chaplaincy Prayer & Quiet Room", "150 Stamford Street, London SE1 9NH", "Waterloo", "University"],
+  ["King's College London Denmark Hill Prayer Rooms", "Room W1.07, Main Building, IoPPN; women's room also listed at Weston Education Centre", "16 De Crespigny Park, London SE5 8AB", "Denmark Hill", "University"],
+  ["King's College London St Thomas' Campus Prayer Space", "Room 205, 2nd floor, St Thomas' House", "St Thomas' Campus, London SE1 7EH", "Westminster / Waterloo", "University"],
+  ["Queen Mary University Mile End Multi-Faith Centre", "Students' Union Hub; multi-faith centre and prayer facilities", "Mile End Road, London E1 4NS", "Mile End", "University"],
+  ["Queen Mary University Whitechapel Prayer Rooms", "Garrod / BLSA Building, third floor, rooms GA-311 / GA-312, with ablution", "Garrod Building, Whitechapel, London E1 2AD", "Whitechapel", "University"],
+  ["Queen Mary University Lincoln's Inn Fields Multi-Faith Room", "Lower ground floor, Lincoln's Inn Fields site", "Lincoln's Inn Fields, London WC2A 3LJ", "Holborn", "University"],
+  ["Imperial College London Muslim Prayer Rooms", "14 and 15 Princes Gardens, South Kensington campus", "South Kensington Campus, London SW7 2AZ", "South Kensington", "University"],
+  ["Imperial College Sherfield Contemplation Rooms", "Level 4, Sherfield Building", "Sherfield Building, South Kensington Campus, London SW7 2AZ", "South Kensington", "University"],
+  ["City St George's Faith Centre", "Four rooms including male/female Muslim prayer rooms with ablution, quiet reflection and bookable multi-faith room", "Northampton Square, London EC1V 0HB", "Clerkenwell / Angel", "University"],
+  ["City St George's Tooting Campus Multi-Faith Room", "Multifaith and Quiet Contemplation Room; staff/student access", "St George's, University of London, Tooting SW17", "Tooting", "University"],
+  ["Birkbeck Multi-Faith Room", "Main building, Malet Street; student/staff access with Birkbeck ID", "Malet Street, London WC1E 7HX", "Bloomsbury", "University"],
+  ["SOAS Male Prayer Room", "Main Building, CL10", "SOAS, Thornhaugh Street, London WC1H 0XG", "Bloomsbury", "University"],
+  ["SOAS Female Prayer Rooms", "Main Building PL65 and SOAS Gallery B105", "SOAS, Thornhaugh Street, London WC1H 0XG", "Bloomsbury", "University"],
+  ["SOAS Multi-Faith Room", "Brunei Gallery, Room B206, second floor", "Brunei Gallery, SOAS, London WC1H 0XG", "Bloomsbury", "University"],
+  ["London Metropolitan University Prayer Room", "Room TM1-84, Tower Building, Holloway Road campus", "166-220 Holloway Road, London N7 8DB", "Holloway", "University"],
+  ["Goldsmiths Multi-Faith Prayer Room", "Richard Hoggart Building, Room 2.106; additional women's room listed as RHB 2.107", "Goldsmiths, New Cross, London SE14 6NW", "New Cross", "University"],
+  ["University of Westminster Marylebone Muslim Prayer Rooms", "Floor B2, Luxborough Building", "Marylebone Road, London NW1 5LS", "Marylebone", "University"],
+  ["University of Greenwich Dreadnought Prayer Room", "Room 018, Dreadnought Building", "Dreadnought Building, Greenwich, London SE10", "Greenwich", "University"],
+  ["University of Greenwich Avery Hill Prayer Space", "Seymour Court, Avery Hill campus", "Avery Hill Campus, London SE9", "Avery Hill", "University"],
+  ["University of East London Stratford Prayer Rooms", "University House UH.1.06 multi-faith space and Muslim prayer rooms with wudu", "Water Lane, London E15 4LZ", "Stratford", "University"],
+  ["University of East London Docklands Prayer Room", "Multi-faith prayer room at Docklands campus; ask campus staff for exact room", "University Way, London E16 2RD", "Docklands", "University"],
+  ["Brunel University Multifaith Prayer Space", "Hamilton Building HMLT004; entrance opposite John Crank Garden; separate male/female rooms", "Kingston Lane, Uxbridge UB8 3PH", "Uxbridge", "University"],
+  ["Brunel University Muslim Prayer Rooms", "Isambard Amenity Building; dedicated Muslim prayer facilities", "Kingston Lane, Uxbridge UB8 3PH", "Uxbridge", "University"],
+  ["Kingston University Roehampton Vale Quiet Room", "HW-104, first floor, Hawker Wing", "Roehampton Vale Campus, London SW15", "Roehampton Vale", "University"],
+  ["Kingston University Knights Park Quiet Room", "Ground floor, Link Building", "Knights Park, Kingston upon Thames KT1", "Kingston", "University"],
+  ["Kingston University Kingston Hill Prayer Rooms", "Adjacent male and female prayer rooms near washing facilities in Kenry House", "Kingston Hill Campus, Kingston upon Thames KT2", "Kingston Hill", "University"],
+  ["London South Bank University Prayer Room", "The Hub, Room LH017", "103 Borough Road, London SE1 0AA", "Southwark", "University"],
+  ["London South Bank University Muslim Prayer Rooms", "BR-G29 brothers and BR-G30 sisters", "103 Borough Road, London SE1 0AA", "Southwark", "University"],
+  ["London South Bank University Croydon Prayer Room", "Croydon campus prayer room CEH106", "LSBU Croydon Campus, Croydon", "Croydon", "University"],
+  ["Middlesex University Muslim Prayer Room", "Muslim Prayer Room in Portakabin 8; female Muslim prayer room also listed", "Middlesex University, The Burroughs, London NW4 4BT", "Hendon", "University"],
+  ["University of Roehampton Prayer Rooms", "Digby Stuart College, Fincham Building ground floor: Sisters FI006, Brothers FI007", "Roehampton Lane, London SW15 5SL", "Roehampton", "University"],
+  ["Heathrow Terminal 2 Prayer Rooms", "After security near Gate A21; additional T2B room near Gates B34/B35", "Heathrow Airport Terminal 2", "Heathrow", "Airport"],
+  ["Heathrow Terminal 3 Prayer Rooms", "Arrivals Hall, Level 1; after security near Gate 24a", "Heathrow Airport Terminal 3", "Heathrow", "Airport"],
+  ["Heathrow Terminal 4 Prayer Rooms", "Before security on Mezzanine Level; after security near Gate 4", "Heathrow Airport Terminal 4", "Heathrow", "Airport"],
+  ["Heathrow Terminal 5 Prayer Rooms", "Before security: Level 3, Check-in Zone A; after security: near Gate A8, T5B Gate B34 and T5C Gate C52", "Heathrow Airport Terminal 5", "Heathrow", "Airport"],
+  ["Gatwick Airport North Terminal Prayer Room", "After security, close to the lounges; temporary multi-faith room", "Gatwick Airport North Terminal", "Gatwick / London airport", "Airport"],
+  ["Stansted Airport Prayer Rooms", "Opposite Check-in Zone A and after security near Escape Lounge", "London Stansted Airport, Bassingbourn Road, Stansted CM24 1QW", "Stansted / London airport", "Airport"],
+  ["London Luton Airport Prayer Rooms", "One before security beyond check-in and one after security in Departures", "London Luton Airport", "Luton / London airport", "Airport"]
+].map(function(r) {
+  return { name:r[0], venue:r[1], address:r[2], area:r[3], type:r[4], hours:'', notes:'', facilities:['Prayer space'], url:'' };
+});
 var BANNERS = [
   {
     position: 'home',
@@ -3308,6 +3420,32 @@ var BANNERS = [
 
 var activeCourseType = 'All';
 var activePrayerRoomArea = 'All';
+var prayerRoomNearMeActive = false;
+
+var PRAYER_ROOM_AREA_CENTROIDS = {
+  'Archway':[51.565,-0.135], 'Avery Hill':[51.456,0.072], 'Bankside':[51.507,-0.099],
+  'Battersea':[51.482,-0.144], 'Beckton':[51.515,0.061], 'Bloomsbury':[51.523,-0.124],
+  'Brent Cross':[51.576,-0.223], 'Canary Wharf':[51.505,-0.020], 'Chelsea':[51.487,-0.169],
+  'Clerkenwell':[51.523,-0.104], 'Croydon':[51.376,-0.098], 'Denmark Hill':[51.468,-0.090],
+  'Docklands':[51.503,-0.009], 'Edmonton':[51.615,-0.073], 'Euston':[51.528,-0.134],
+  'Finchley Road':[51.546,-0.180], 'Fitzrovia':[51.521,-0.137], 'Gatwick':[51.153,-0.182],
+  'Goodmayes':[51.564,0.110], 'Greenwich':[51.482,0.005], 'Hackney':[51.545,-0.055],
+  'Hammersmith':[51.492,-0.223], 'Hampstead':[51.556,-0.178], 'Harefield':[51.602,-0.486],
+  'Heathrow':[51.470,-0.454], 'Hendon':[51.589,-0.229], 'Holborn':[51.518,-0.119],
+  'Holloway':[51.552,-0.111], 'Isleworth':[51.475,-0.336], 'Kingston':[51.412,-0.301],
+  'Kingston Hill':[51.427,-0.281], 'Lambeth':[51.497,-0.112], 'Lewisham':[51.462,-0.010],
+  'Leytonstone':[51.568,0.008], 'London Bridge':[51.505,-0.087], 'Luton':[51.878,-0.376],
+  'Marylebone':[51.522,-0.154], 'Mile End':[51.525,-0.034], 'New Cross':[51.476,-0.036],
+  'Old Street':[51.526,-0.087], 'Oxford Street':[51.514,-0.152], 'Paddington':[51.516,-0.176],
+  'Piccadilly':[51.510,-0.133], 'Pimlico':[51.489,-0.133], 'Plaistow':[51.530,0.019],
+  'Roehampton':[51.456,-0.244], 'Roehampton Vale':[51.434,-0.248], 'Romford':[51.576,0.183],
+  'Royal Docks':[51.508,0.029], 'Smithfield':[51.519,-0.101], 'South Kensington':[51.494,-0.174],
+  'Southall':[51.511,-0.376], 'Southbank':[51.506,-0.116], 'Southwark':[51.503,-0.094],
+  'Stanmore':[51.617,-0.312], 'Stansted':[51.886,0.238], 'Strand':[51.512,-0.118],
+  'Stratford':[51.542,0.003], 'Tooting':[51.428,-0.168], 'Uxbridge':[51.533,-0.472],
+  'Wandsworth':[51.456,-0.192], 'Waterloo':[51.503,-0.113], 'Westminster':[51.499,-0.124],
+  'White City':[51.512,-0.224], 'Whitechapel':[51.518,-0.061], 'Woolwich':[51.489,0.070]
+};
 
 function prayerRoomAreaLabel(area) {
   var s = String(area || '').trim();
@@ -3315,22 +3453,38 @@ function prayerRoomAreaLabel(area) {
   return s.split('/')[0].trim();
 }
 
+function prayerRoomCoords(r) {
+  if (!r) return null;
+  var lat = Number(r.lat), lon = Number(r.lon);
+  if (!isNaN(lat) && !isNaN(lon)) return [lat, lon];
+  var area = prayerRoomAreaLabel(r.area);
+  return PRAYER_ROOM_AREA_CENTROIDS[area] || null;
+}
+
+function prayerRoomDistanceKm(r) {
+  var coords = prayerRoomCoords(r);
+  if (userLat === null || userLng === null || !coords) return null;
+  return haversine(userLat, userLng, coords[0], coords[1]);
+}
+
+function prayerRoomDistLabel(r) {
+  var km = prayerRoomDistanceKm(r);
+  if (km === null) return '';
+  var miles = km * 0.621371;
+  return miles < 0.1 ? 'nearby' : (miles < 10 ? miles.toFixed(1) + ' mi' : Math.round(miles) + ' mi');
+}
+
+function sortPrayerRoomsByDistance(rooms) {
+  return rooms.slice().sort(function(a, b) {
+    var da = prayerRoomDistanceKm(a), db = prayerRoomDistanceKm(b);
+    if (da === null) da = 999999;
+    if (db === null) db = 999999;
+    return da - db;
+  });
+}
+
 function prayerRoomTypeColor(type) {
-  var map = {
-    'Shopping Centre': { bg:'rgba(155,127,78,0.13)', color:'var(--gold)' },
-    'Service Station': { bg:'rgba(20,184,166,0.13)', color:'#0f766e' },
-    'Airport': { bg:'rgba(14,165,233,0.13)', color:'#0284c7' },
-    'University': { bg:'rgba(99,102,241,0.13)', color:'#4f46e5' },
-    'Workplace': { bg:'rgba(132,204,22,0.13)', color:'#65a30d' },
-    'Community Space': { bg:'rgba(236,72,153,0.11)', color:'#be185d' },
-    'Transport Hub': { bg:'rgba(234,88,12,0.11)', color:'#c2410c' },
-    'Hospital': { bg:'rgba(22,163,74,0.12)', color:'#15803d' },
-    'Cultural Venue': { bg:'rgba(168,85,247,0.12)', color:'#7e22ce' },
-    'Retail Park': { bg:'rgba(245,158,11,0.13)', color:'#b45309' },
-    'Entertainment Venue': { bg:'rgba(244,63,94,0.12)', color:'#be123c' },
-    'Other': { bg:'rgba(120,113,108,0.13)', color:'#57534e' }
-  };
-  return map[type] || map.Other;
+  return { bg:'rgba(155,127,78,0.13)', color:'var(--gold)' };
 }
 
 function isPrayerRoomAnnouncement(a) {
@@ -3345,11 +3499,13 @@ function parsePrayerRoomDetails(a) {
   var facilities = details.facilities || details.features || [];
   if (typeof facilities === 'string') facilities = facilities.split(',').map(function(x){ return x.trim(); }).filter(Boolean);
   return {
-    name: details.name || a.title || 'Prayer Room',
+    name: details.name || a.title || 'Prayer Space',
     venue: details.venue || details.place || '',
     type: details.type || details.kind || announcementFilterType(a, 'Other'),
     area: details.area || details.location_area || '',
     address: details.address || details.location || '',
+    lat: details.lat || details.latitude || null,
+    lon: details.lon || details.lng || details.longitude || null,
     hours: details.hours || details.opening_hours || details.time || a.time || '',
     notes: details.notes || details.description || (!details.name ? announcementText(a) : ''),
     facilities: facilities || [],
@@ -3398,17 +3554,73 @@ function filterPrayerRooms() {
     var haystack = [r.name, r.venue, r.type, r.area, r.address, r.hours, r.notes, (r.facilities || []).join(' ')].join(' ').toLowerCase();
     return cityMatch && areaMatch && (!q || haystack.indexOf(q) > -1);
   });
+  if (userLat !== null && userLng !== null) {
+    filtered = sortPrayerRoomsByDistance(filtered);
+    if (prayerRoomNearMeActive) filtered = filtered.slice(0, 20);
+  }
+  var lbl = document.getElementById('prayer-room-location-label');
+  if (lbl) {
+    lbl.style.display = prayerRoomNearMeActive ? 'block' : 'none';
+    lbl.textContent = prayerRoomNearMeActive ? (filtered.length + ' prayer spaces nearest to you') : '';
+  }
   renderPrayerRooms(filtered);
+}
+
+function locatePrayerRooms() {
+  if (!navigator.geolocation) { alert('Geolocation not supported by your browser.'); return; }
+  var btns = document.querySelectorAll('.locate-btn');
+  btns.forEach(function(btn) {
+    if (btn.getAttribute('onclick') === 'locatePrayerRooms()') btn.textContent = 'Locating...';
+  });
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    userLat = pos.coords.latitude;
+    userLng = pos.coords.longitude;
+    prayerRoomNearMeActive = true;
+    var cityEl = document.getElementById('prayer-room-city-select');
+    var areaEl = document.getElementById('prayer-room-area-select');
+    if (cityEl) cityEl.value = '';
+    if (areaEl) areaEl.value = '';
+    btns.forEach(function(btn) {
+      if (btn.getAttribute('onclick') === 'locatePrayerRooms()') {
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Near me';
+      }
+    });
+    filterPrayerRooms();
+  }, function() {
+    btns.forEach(function(btn) {
+      if (btn.getAttribute('onclick') === 'locatePrayerRooms()') btn.textContent = 'Near me';
+    });
+    alert('Could not get your location. Please allow location access and try again.');
+  });
 }
 
 function prayerRoomDirectionsUrl(r) {
   var query = [r.address, r.name, r.area].filter(Boolean).join(', ');
-  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query || 'prayer room');
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query || 'prayer space');
+}
+
+function prayerRoomReportUrl(r) {
+  var subject = 'Prayer Space report: ' + (r && r.name ? r.name : 'Unknown space');
+  var body = [
+    'Please review this Prayer Space listing:',
+    '',
+    'Name: ' + (r && r.name || ''),
+    'Address: ' + (r && r.address || ''),
+    'Area: ' + (r && r.area || ''),
+    '',
+    'Issue:',
+    '[ ] Closed',
+    '[ ] No longer available',
+    '[ ] Details are incorrect',
+    '',
+    'Notes:'
+  ].join('\n');
+  return 'mailto:hello@qiblah.app?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 }
 
 function prayerRoomSummary(r) {
   if (r.notes) return r.notes;
-  var place = r.venue || r.address || 'This prayer room';
+  var place = r.venue || r.address || 'This prayer space';
   var area = r.area ? ' in ' + r.area : '';
   var type = r.type ? ' within a ' + String(r.type).toLowerCase() : '';
   return place + area + type + '.';
@@ -3428,7 +3640,7 @@ function prayerRoomCardName(r) {
     .replace(/\s+Shopping\s+Park$/i, '')
     .replace(/\s+Terminal\s+(\d+)$/i, ' T$1')
     .trim();
-  return cleaned || name || 'Prayer Room';
+  return cleaned || name || 'Prayer Space';
 }
 
 function prayerRoomIconPath() {
@@ -3440,6 +3652,7 @@ function openPrayerRoomDetail(idx) {
   if (!r) return;
   var col = prayerRoomTypeColor(r.type);
   var directionsUrl = prayerRoomDirectionsUrl(r);
+  var reportUrl = prayerRoomReportUrl(r);
   var summary = prayerRoomSummary(r);
   var facilities = (r.facilities && r.facilities.length ? r.facilities : ['Prayer space']).map(function(f) {
     return '<div class="facility-item">' +
@@ -3488,12 +3701,8 @@ function openPrayerRoomDetail(idx) {
     '</div>' +
     '<div class="detail-body">' +
       '<div class="detail-card">' +
-        '<h3>About</h3>' +
+        '<h3>Information</h3>' +
         '<p style="font-size:13px;color:var(--muted);line-height:1.6">' + qText(summary) + '</p>' +
-      '</div>' +
-      '<div class="detail-card">' +
-        '<h3>Location Details</h3>' +
-        '<div class="profile-detail-list">' + infoRows + '</div>' +
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
@@ -3501,9 +3710,15 @@ function openPrayerRoomDetail(idx) {
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Directions</h3>' +
-        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Use the address below to navigate to this prayer room. Check with venue staff if access has changed.</p>' +
+        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Use the address below to navigate to this prayer space. Check with venue staff if access has changed.</p>' +
         (r.address ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div><span style="color:var(--muted);font-size:14px">' + qText(r.address) + '</span></div>' : '') +
-        '<a href="' + qText(directionsUrl) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#a6864a;font-size:13px;font-weight:700;text-decoration:none;margin-top:4px">Open directions</a>' +
+      '</div>' +
+      '<div class="detail-card">' +
+        '<h3>Report Listing</h3>' +
+        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">If this prayer space is closed, unavailable, or listed incorrectly, let us know so we can update it.</p>' +
+        '<a href="' + qText(reportUrl) + '" style="display:inline-flex;align-items:center;gap:6px;color:#a6864a;font-size:13px;font-weight:700;text-decoration:none">' +
+          '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M11 7h2v7h-2V7zm0 9h2v2h-2v-2zM1 21h22L12 2 1 21z"/></svg>Report unavailable' +
+        '</a>' +
       '</div>' +
     '</div>';
   var dc = document.getElementById('detail-content');
@@ -3519,12 +3734,13 @@ function renderPrayerRooms(rooms) {
   var el = document.getElementById('prayer-room-list') || document.getElementById('prayer-room-results');
   if (!el) return;
   if (!rooms.length) {
-    el.innerHTML = '<div class="loading-state">No prayer rooms listed yet</div>';
+    el.innerHTML = '<div class="loading-state">No prayer spaces listed yet</div>';
     return;
   }
   el.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">' + rooms.map(function(r) {
     var col = prayerRoomTypeColor(r.type);
     var locationNote = r.venue || r.notes || r.type || '';
+    var dist = userLat !== null && userLng !== null ? prayerRoomDistLabel(r) : '';
     var idx = PRAYER_ROOMS.indexOf(r);
     return '<div class="mosque-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;position:relative">' +
       '<div style="width:38px;height:38px;border-radius:10px;background:' + col.bg + ';border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;overflow:hidden">' +
@@ -3532,7 +3748,10 @@ function renderPrayerRooms(rooms) {
       '</div>' +
       '<div style="flex:1;min-width:0;padding-right:132px">' +
         '<div class="mosque-card-name" style="margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(prayerRoomCardName(r)) + '</div>' +
-        (locationNote ? '<div style="font-size:13px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(locationNote) + '</div>' : '') +
+        '<div style="font-size:13px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' +
+          (dist ? '<span style="color:var(--gold);font-weight:500;margin-right:6px">' + qText(dist) + '</span>' : '') +
+          (locationNote ? qText(locationNote) : qText(r.address || '')) +
+        '</div>' +
       '</div>' +
       '<div style="position:absolute;top:12px;right:12px">' +
         '<span class="pill-tag pill-tag--compact" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
