@@ -5,7 +5,7 @@ var PNAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
 var PLABELS = { fajr: 'Fajr', zuhr: 'Zuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 var currentMosque = null;
 var currentAdminId = null;
-var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, prayerTimeOverrides: {}, times: {} };
+var currentData = { services: [], announcements: [], tickers: [], displayTheme: null, displayBlackout: null, asrOpinion: null, profileLogo: null, profileData: null, jummahTimes: null, publicRefresh: null, prayerTimeOverrides: {}, times: {} };
 var csvRows = [];
 var editingAnnouncementId = null;
 var editingAnnouncementIndex = -1;
@@ -84,6 +84,32 @@ function clearPublicAppCache() {
     localStorage.removeItem('qiblah_prayers_v2');
     localStorage.removeItem('qiblah_prayers_v1');
   } catch (e) {}
+  publishPublicRefresh();
+}
+function publishPublicRefresh() {
+  if (!currentMosque || !currentMosque.id) return Promise.resolve(null);
+  var payload = {
+    title: 'Public Refresh',
+    tag: 'PublicRefresh',
+    category: 'PublicRefresh',
+    description: JSON.stringify({
+      mosque_id: currentMosque.id,
+      slug: currentMosque.slug || '',
+      updated_at: new Date().toISOString()
+    }),
+    active: false,
+    sort_order: 0
+  };
+  var request = currentData.publicRefresh && currentData.publicRefresh.id
+    ? sbFetch('announcements?id=eq.' + currentData.publicRefresh.id, { method: 'PATCH', body: JSON.stringify(payload) })
+    : sbFetch('announcements', { method: 'POST', body: JSON.stringify(Object.assign({ mosque_id: currentMosque.id }, payload)) });
+  return request.then(function(rows) {
+    currentData.publicRefresh = rows && rows[0] ? rows[0] : Object.assign({}, currentData.publicRefresh || {}, payload);
+    return currentData.publicRefresh;
+  }).catch(function(err) {
+    console.warn('Public refresh signal failed:', err);
+    return null;
+  });
 }
 function normaliseTime(s) {
   if (!s) return '';
@@ -207,6 +233,7 @@ function loadFromSupabase() {
     currentData.profileLogo = announcementRows.find(isProfileLogoRow) || null;
     currentData.profileData = announcementRows.find(isProfileDataRow) || null;
     currentData.jummahTimes = announcementRows.find(isJummahTimesRow) || null;
+    currentData.publicRefresh = announcementRows.find(isPublicRefreshRow) || null;
     currentData.prayerTimeOverrides = {};
     announcementRows.filter(isPrayerTimeRow).forEach(function(row) {
       var parsed = parsePrayerTimeOverride(row);
@@ -1027,8 +1054,12 @@ function isPrayerTimeRow(row) {
   var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
   return tag === 'prayertime';
 }
+function isPublicRefreshRow(row) {
+  var tag = String((row && (row.tag || row.category)) || '').toLowerCase();
+  return tag === 'publicrefresh';
+}
 function isSystemDisplayRow(row) {
-  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isProfileDataRow(row) || isJummahTimesRow(row) || isPrayerTimeRow(row);
+  return isTickerRow(row) || isDisplayThemeRow(row) || isDisplayBlackoutRow(row) || isAsrOpinionRow(row) || isProfileLogoRow(row) || isProfileDataRow(row) || isJummahTimesRow(row) || isPrayerTimeRow(row) || isPublicRefreshRow(row);
 }
 function parseProfileData(row) {
   if (!row || !row.description) return {};
@@ -1348,6 +1379,7 @@ function saveTickers() {
     currentData.profileLogo = allRows.find(isProfileLogoRow) || null;
     currentData.profileData = allRows.find(isProfileDataRow) || null;
     currentData.jummahTimes = allRows.find(isJummahTimesRow) || null;
+    currentData.publicRefresh = allRows.find(isPublicRefreshRow) || null;
     currentData.prayerTimeOverrides = {};
     allRows.filter(isPrayerTimeRow).forEach(function(row) {
       var parsed = parsePrayerTimeOverride(row);
