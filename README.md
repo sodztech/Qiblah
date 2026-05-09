@@ -21,6 +21,29 @@ Live site: https://qiblah.co.uk
 | `/evening-adhkar/` | Evening adhkar page |
 | `/surah-kahf/` | Surah Kahf page |
 
+## Repository Structure
+
+This repository is the Qiblah website only. The deployable files live at the repository root so GitHub, Vercel and local file previews all load the same paths.
+
+| Path | What it is |
+|------|------------|
+| `index.html` | Main public website/app |
+| `display.html` | TV display screen |
+| `prayer-tablet.html` | Prayer tablet screen |
+| `embed.html` | Embeddable prayer widget |
+| `mosque/` | Mosque admin dashboard |
+| `admin/` | Super admin dashboard |
+| `register/` | Mosque registration page |
+| `institute/`, `jumuah/`, `morning-adhkar/`, `evening-adhkar/`, `surah-kahf/` | Public sub-pages |
+| `assets/`, `icons/`, `pitch/` | Shared media and presentation assets |
+| `CNAME`, `vercel.json`, `manifest.json`, `sw.js` | Hosting, routing and PWA support |
+
+The mobile/tablet app projects are not part of this website repo. They live locally in:
+
+```text
+/Users/sodrulislam/Documents/Qiblah Apps
+```
+
 ## Current Features
 
 - Public mosque profiles with prayer times, Jummah times, facilities, services, classes and events.
