@@ -2741,6 +2741,11 @@ function publicJummahLabel(m) {
   return publicJummahTimes(m).join(', ');
 }
 
+function profileValue(profile, fallback, key) {
+  if (profile && Object.prototype.hasOwnProperty.call(profile, key)) return profile[key] || '';
+  return fallback && fallback[key] ? fallback[key] : '';
+}
+
 function parseAsrOpinion(a) {
   if (!a || !a.description) return 'first';
   try {
@@ -2830,10 +2835,10 @@ function openDetail(idx) {
 
         // Merge live profile data into m, including live services
         var liveM = Object.assign({}, m, {
-          phone:    liveField('phone'),
-          website:  liveField('website'),
-          email:    liveField('email'),
-          about:    liveField('about'),
+          phone:    Object.prototype.hasOwnProperty.call(m, 'phone') ? (m.phone || '') : liveField('phone'),
+          website:  Object.prototype.hasOwnProperty.call(m, 'website') ? (m.website || '') : liveField('website'),
+          email:    Object.prototype.hasOwnProperty.call(m, 'email') ? (m.email || '') : liveField('email'),
+          about:    Object.prototype.hasOwnProperty.call(m, 'about') ? (m.about || '') : liveField('about'),
           logo:     m.logo || liveField('logo'),
           jummah:   m.jummah || liveField('jummah'),
           jummah2:  Object.prototype.hasOwnProperty.call(m, 'jummah2') ? (m.jummah2 || '') : liveField('jummah2'),
@@ -3824,11 +3829,11 @@ function applyData(results) {
           jummah:   (jummahByMosque[m.id] && jummahByMosque[m.id].jummah) || m.jummah || '1:30 PM',
           jummah2:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah2) || m.jummah2 || '',
           jummah3:  (jummahByMosque[m.id] && jummahByMosque[m.id].jummah3) || m.jummah3 || '',
-          phone:    profile.phone || m.phone || '',
-          website:  profile.website || m.website || '',
-          email:    profile.email || m.email || '',
-          about:    profile.about || m.about || '',
-          facilities: profile.facilities ? normaliseFacilities(profile.facilities) : normaliseFacilities(m.facilities),
+          phone:    profileValue(profile, m, 'phone'),
+          website:  profileValue(profile, m, 'website'),
+          email:    profileValue(profile, m, 'email'),
+          about:    profileValue(profile, m, 'about'),
+          facilities: Object.prototype.hasOwnProperty.call(profile, 'facilities') ? normaliseFacilities(profile.facilities) : normaliseFacilities(m.facilities),
           logo:     logoByMosque[m.id] || m.logo || '',
           url:      m.url     || '',
           lat: m.lat || null,
@@ -4475,7 +4480,7 @@ function refreshHomeData(done) {
     });
     MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
-      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profile.phone||m.phone||'', website:profile.website||m.website||'', email:profile.email||m.email||'', about:profile.about||m.about||'', facilities:profile.facilities?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
+      return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
 
     // Re-sort by distance if we have user location — same logic as locateMe
