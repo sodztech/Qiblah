@@ -1025,8 +1025,8 @@ html.qiblah-dark-mode .reg-field label {
     <button class="nav-link" data-page="services" onclick="showPage('services')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2C9.01 2 7 4.01 7 6.5S9.01 11 11.5 11 16 8.99 16 6.5 13.99 2 11.5 2zm0 7C10.12 9 9 7.88 9 6.5S10.12 4 11.5 4 14 5.12 14 6.5 12.88 9 11.5 9zM18 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm-6.1 4c.22-.72 3.31-2 6.1-2 2.8 0 5.9 1.29 6.1 2H11.9zM4 14c-.55 0-1 .45-1 1v1H1v2h6v-2H5v-1c0-.55-.45-1-1-1z"/></svg>Services
     </button>
-    <button class="nav-link" data-page="online" onclick="showPage('online')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.69 2 6 4.69 6 8c0 4.5 6 11 6 11s6-6.5 6-11c0-3.31-2.69-6-6-6zm0 8.5A2.5 2.5 0 1 1 12 5a2.5 2.5 0 0 1 0 5.5zM4 22v-2h16v2H4z"/></svg>Prayer Rooms
+    <button class="nav-link" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>Prayer Rooms
     </button>
   </div>
 </nav>
@@ -1166,19 +1166,27 @@ html.qiblah-dark-mode .reg-field label {
 </div>
 
 <!-- PRAYER ROOMS -->
-<div class="page" id="page-online">
+<div class="page" id="page-prayer-rooms">
   <div class="mosques-header">
     <h1>Prayer Rooms</h1>
     <div class="mosques-count">Non-mosque spaces for salah, including malls, service stations and shared facilities.</div>
     <div class="search-bar-row">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" id="online-search" placeholder="Search prayer rooms..." oninput="filterCourses()">
+        <input type="text" id="prayer-room-search" placeholder="Search prayer rooms..." oninput="filterPrayerRooms()">
       </div>
     </div>
-    <div id="course-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;margin-bottom:4px"></div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <select id="prayer-room-city-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+        <option value="">All Cities</option>
+        <option value="London">London</option>
+      </select>
+      <select id="prayer-room-area-select" onchange="filterPrayerRooms()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+        <option value="">All Areas</option>
+      </select>
+    </div>
   </div>
-  <div class="mosques-results" id="online-results"><div id="banner-online" class="banner-slot"></div><div id="online-list"></div></div>
+  <div class="mosques-results" id="prayer-room-results"><div id="banner-prayer-rooms" class="banner-slot"></div><div id="prayer-room-list"></div></div>
 </div>
 
 
@@ -1477,8 +1485,8 @@ html.qiblah-dark-mode .reg-field label {
     <button class="mobile-nav-btn" data-page="services" onclick="showPage('services')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 2C9.01 2 7 4.01 7 6.5S9.01 11 11.5 11 16 8.99 16 6.5 13.99 2 11.5 2zm0 7C10.12 9 9 7.88 9 6.5S10.12 4 11.5 4 14 5.12 14 6.5 12.88 9 11.5 9zM18 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Services
     </button>
-    <button class="mobile-nav-btn" data-page="online" onclick="showPage('online')">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.69 2 6 4.69 6 8c0 4.5 6 11 6 11s6-6.5 6-11c0-3.31-2.69-6-6-6zm0 8.5A2.5 2.5 0 1 1 12 5a2.5 2.5 0 0 1 0 5.5zM4 22v-2h16v2H4z"/></svg>Prayer Rooms
+    <button class="mobile-nav-btn" data-page="prayer-rooms" onclick="showPage('prayer-rooms')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>Prayer Rooms
     </button>
   </div>
 </div>
@@ -1704,6 +1712,7 @@ var nearestMosques20 = null;
 var userLat = null, userLng = null;
 
 function showPage(id) {
+  if (id === 'online') id = 'prayer-rooms';
   var pageEl = document.getElementById('page-' + id);
   if (!pageEl) return;
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
@@ -1711,7 +1720,7 @@ function showPage(id) {
   document.querySelectorAll('[data-page]').forEach(function(b){ b.classList.toggle('active', b.dataset.page === id); });
   if (id === 'mosques') { filterMosques(); }
   if (id === 'services') { filterServices(); }
-  if (id === 'online') { filterCourses(); }
+  if (id === 'prayer-rooms') { filterPrayerRooms(); }
   if (id === 'jumuah') { renderJumuahPage(); }
   if (id === 'morning-adhkar' && !_morningAdhkarRendered) { _morningAdhkarRendered = true; adhkarRender(MORNING_ADHKAR, 'morning-adhkar-cards', {}); }
   if (id === 'evening-adhkar' && !_eveningAdhkarRendered) { _eveningAdhkarRendered = true; adhkarRender(EVENING_ADHKAR, 'evening-adhkar-cards', {}); }
@@ -1725,7 +1734,8 @@ function pageFromRoute() {
   var routes = {
     home: 'home',
     services: 'services',
-    online: 'online',
+    online: 'prayer-rooms',
+    'prayer-rooms': 'prayer-rooms',
     register: 'register',
     jumuah: 'jumuah',
     surahkahf: 'surahkahf',
@@ -1737,7 +1747,7 @@ function pageFromRoute() {
 
 function updateRouteForPage(id) {
   if (!history || !history.pushState || location.protocol === 'file:') return;
-  var routes = { home:'/', services:'/services/', online:'/online/', register:'/register/' };
+  var routes = { home:'/', services:'/services/', 'prayer-rooms':'/prayer-rooms/', register:'/register/' };
   var target = routes[id];
   if (!target || location.pathname === target) return;
   history.pushState({ page:id }, '', target);
@@ -3250,6 +3260,44 @@ function resetSliderAuto() {
 }
 
 var COURSES = [];
+var PRAYER_ROOMS = [];
+var PRAYER_ROOM_SEED = [
+  ["Selfridges Multi-Faith Prayer Room", "4th Floor near customer services and toilets", "400 Oxford St, London W1A 1AB", "Oxford Circus / West End", "Shopping Centre"],
+  ["Royal Festival Hall Multi-Faith Prayer Room", "Level 2, Green Side", "Southbank Centre, Belvedere Rd, London SE1 8XX", "Southbank / Waterloo", "Cultural Venue"],
+  ["Canary Wharf Prayer Room", "Inside 2 Churchill Place", "2 Churchill Pl, London E14 5RB", "Canary Wharf", "Workplace"],
+  ["Westfield London Multi-Faith Prayer Room", "Level -3, Lift Lobby 1, The Village", "Ariel Way, London W12 7GF", "White City / Shepherd's Bush", "Shopping Centre"],
+  ["Westfield Stratford Multi-Faith Room", "First-floor balcony behind World Food Court", "157 Montfichet Rd, London E20 1EJ", "Stratford", "Shopping Centre"],
+  ["The Space@E20 Multi-Faith Room", "Second floor near Nando's", "Montfichet Rd, London E15 1AZ", "Stratford", "Community Space"],
+  ["Westfield Stratford Friday Prayer Space", "Friday-only Jumu'ah setup inside Stratford City", "Montfichet Rd, London E15 1AZ", "Stratford", "Shopping Centre"],
+  ["Piccadilly Prayer Space Community Centre", "Basement level", "19 Rupert St, London W1D 7PA", "Soho / Piccadilly", "Community Space"],
+  ["King's Cross St Pancras Prayer Space", "Near Eurostar concourse", "Euston Rd, London N1C 4QP", "King's Cross / St Pancras", "Transport Hub"],
+  ["Liverpool Street Station Prayer Room", "Inside station complex", "Liverpool St, London EC2M 7PY", "City of London", "Transport Hub"],
+  ["Victoria Station Prayer Room", "Access via station staff/info desk", "Victoria St, London SW1E 5ND", "Victoria / Westminster", "Transport Hub"],
+  ["British Museum Multi-Faith Space", "Visitor quiet/reflection area", "Great Russell St, London WC1B 3DG", "Bloomsbury", "Cultural Venue"],
+  ["British Library Quiet Room", "Quiet contemplation room", "96 Euston Rd, London NW1 2DB", "King's Cross / Euston", "Cultural Venue"],
+  ["Guy's Hospital Multi-Faith Room", "Near hospital complex", "Great Maze Pond, London SE1 9RT", "London Bridge", "Hospital"],
+  ["St Thomas' Hospital Multi-Faith Room", "Ground Floor, South Wing near Central Hall", "Westminster Bridge Rd, London SE1 7EH", "Westminster / Waterloo", "Hospital"],
+  ["University College Hospital Prayer Room", "Ground floor near cafe", "235 Euston Rd, London NW1 2BU", "Euston", "Hospital"],
+  ["UCL Quiet Contemplation Room", "Various rooms across campus", "Gower St, London WC1E 6BT", "Bloomsbury / UCL", "University"],
+  ["Institute of Education Prayer Room", "Room 794", "20 Bedford Way, London WC1H 0AL", "Bloomsbury", "University"],
+  ["School of Pharmacy Quiet Room", "Basement Room B34", "29-39 Brunswick Sq, London WC1N 1AX", "Bloomsbury", "University"],
+  ["City University Multi-Faith Prayer Room", "Northampton Square campus", "Northampton Sq, London EC1V 0HB", "Clerkenwell / Angel", "University"],
+  ["LSE Faith Centre Prayer Rooms", "Saw Swee Hock Student Centre", "1 Sheffield St, London WC2A 2AP", "Holborn / Aldwych", "University"],
+  ["Imperial College Muslim Prayer Rooms", "South Kensington campus", "Exhibition Rd, London SW7 2AZ", "South Kensington", "University"],
+  ["Queen Mary University Multi-Faith Centre", "Mile End campus", "Mile End Rd, London E1 4NS", "Mile End", "University"],
+  ["Gallions Reach Shopping Park Prayer Room", "Inside retail park complex", "Armada Way, London E6 7ER", "Beckton", "Retail Park"],
+  ["Barking Shopping Centre Prayer Room", "Inside Vicarage Field Shopping Centre", "Ripple Rd, Barking IG11 7PG", "Barking", "Shopping Centre"],
+  ["Excel London Prayer Room", "Multi-faith rooms in ICC/ExCeL complex", "1 Western Gateway, London E16 1XL", "Royal Docks / Custom House", "Cultural Venue"],
+  ["O2 Arena Prayer Room", "Visitor services / arena complex", "Peninsula Sq, London SE10 0DX", "North Greenwich", "Entertainment Venue"],
+  ["Bluewater Prayer Room", "Guest services area", "Bluewater Pkwy, Dartford DA9 9ST", "Bluewater", "Shopping Centre"],
+  ["Brent Cross Shopping Centre Prayer Room", "Inside shopping centre services area", "Prince Charles Dr, London NW4 3FP", "Brent Cross", "Shopping Centre"],
+  ["Heathrow Terminal 2 Prayer Room", "Near Gate A21 and Gates B34/B35", "Heathrow Terminal 2", "Heathrow", "Airport"],
+  ["Heathrow Terminal 3 Prayer Room", "Arrivals Level 1 and near Gate 24", "Heathrow Terminal 3", "Heathrow", "Airport"],
+  ["Heathrow Terminal 4 Prayer Room", "Mezzanine level and near Gate 4", "Heathrow Terminal 4", "Heathrow", "Airport"],
+  ["Heathrow Terminal 5 Prayer Room", "Check-in Zone A, Gate A8, Gate B34 and Gate C52", "Heathrow Terminal 5", "Heathrow", "Airport"]
+].map(function(r) {
+  return { name:r[0], venue:r[1], address:r[2], area:r[3], type:r[4], hours:'', notes:'', facilities:['Prayer space'], url:'' };
+});
 var BANNERS = [
   {
     position: 'home',
@@ -3260,6 +3308,239 @@ var BANNERS = [
 ];
 
 var activeCourseType = 'All';
+var activePrayerRoomArea = 'All';
+
+function prayerRoomAreaLabel(area) {
+  var s = String(area || '').trim();
+  if (!s) return '';
+  return s.split('/')[0].trim();
+}
+
+function prayerRoomTypeColor(type) {
+  var map = {
+    'Shopping Centre': { bg:'rgba(155,127,78,0.13)', color:'var(--gold)' },
+    'Service Station': { bg:'rgba(20,184,166,0.13)', color:'#0f766e' },
+    'Airport': { bg:'rgba(14,165,233,0.13)', color:'#0284c7' },
+    'University': { bg:'rgba(99,102,241,0.13)', color:'#4f46e5' },
+    'Workplace': { bg:'rgba(132,204,22,0.13)', color:'#65a30d' },
+    'Community Space': { bg:'rgba(236,72,153,0.11)', color:'#be185d' },
+    'Transport Hub': { bg:'rgba(234,88,12,0.11)', color:'#c2410c' },
+    'Hospital': { bg:'rgba(22,163,74,0.12)', color:'#15803d' },
+    'Cultural Venue': { bg:'rgba(168,85,247,0.12)', color:'#7e22ce' },
+    'Retail Park': { bg:'rgba(245,158,11,0.13)', color:'#b45309' },
+    'Entertainment Venue': { bg:'rgba(244,63,94,0.12)', color:'#be123c' },
+    'Other': { bg:'rgba(120,113,108,0.13)', color:'#57534e' }
+  };
+  return map[type] || map.Other;
+}
+
+function isPrayerRoomAnnouncement(a) {
+  var tag = String(a && (a.tag || a.category) || '').toLowerCase().replace(/[\s_-]+/g, '');
+  return tag === 'prayerroom' || tag === 'prayerrooms';
+}
+
+function parsePrayerRoomDetails(a) {
+  var details = {};
+  try { details = a && a.description ? JSON.parse(a.description) : {}; } catch(e) {}
+  if (!details || typeof details !== 'object' || Array.isArray(details)) details = {};
+  var facilities = details.facilities || details.features || [];
+  if (typeof facilities === 'string') facilities = facilities.split(',').map(function(x){ return x.trim(); }).filter(Boolean);
+  return {
+    name: details.name || a.title || 'Prayer Room',
+    venue: details.venue || details.place || '',
+    type: details.type || details.kind || announcementFilterType(a, 'Other'),
+    area: details.area || details.location_area || '',
+    address: details.address || details.location || '',
+    hours: details.hours || details.opening_hours || details.time || a.time || '',
+    notes: details.notes || details.description || (!details.name ? announcementText(a) : ''),
+    facilities: facilities || [],
+    url: details.url || details.website || details.link || details.map_url || ''
+  };
+}
+
+function setPrayerRoomsFromAnnouncements(rows) {
+  var liveRooms = (rows || []).filter(function(a) {
+    return isPrayerRoomAnnouncement(a) && a.active !== false && a.is_active !== false && !isAnnouncementExpired(a);
+  }).map(parsePrayerRoomDetails);
+  var byName = {};
+  PRAYER_ROOM_SEED.concat(liveRooms).forEach(function(room) {
+    byName[String(room.name || '').toLowerCase()] = room;
+  });
+  PRAYER_ROOMS = Object.keys(byName).map(function(k) { return byName[k]; });
+}
+
+function initPrayerRoomFilters() {
+  var el = document.getElementById('prayer-room-area-select');
+  if (!el) return;
+  var prev = el.value;
+  var areas = Array.from(new Set(PRAYER_ROOMS.map(function(r){ return prayerRoomAreaLabel(r.area) || 'Other'; }))).sort();
+  el.innerHTML = '<option value="">All Areas</option>' + areas.map(function(t) {
+    return '<option value="' + qText(t) + '">' + qText(t) + '</option>';
+  }).join('');
+  if (prev) el.value = prev;
+}
+
+function setPrayerRoomArea(area) {
+  activePrayerRoomArea = area;
+  var el = document.getElementById('prayer-room-area-select');
+  if (el) el.value = area === 'All' ? '' : area;
+  filterPrayerRooms();
+}
+
+function filterPrayerRooms() {
+  var input = document.getElementById('prayer-room-search');
+  var q = input ? input.value.toLowerCase() : '';
+  var city = document.getElementById('prayer-room-city-select') ? document.getElementById('prayer-room-city-select').value : '';
+  var area = document.getElementById('prayer-room-area-select') ? document.getElementById('prayer-room-area-select').value : '';
+  activePrayerRoomArea = area || 'All';
+  var filtered = PRAYER_ROOMS.filter(function(r) {
+    var cityMatch = !city || city === 'London';
+    var areaMatch = !area || prayerRoomAreaLabel(r.area) === area;
+    var haystack = [r.name, r.venue, r.type, r.area, r.address, r.hours, r.notes, (r.facilities || []).join(' ')].join(' ').toLowerCase();
+    return cityMatch && areaMatch && (!q || haystack.indexOf(q) > -1);
+  });
+  renderPrayerRooms(filtered);
+}
+
+function prayerRoomDirectionsUrl(r) {
+  var query = [r.address, r.name, r.area].filter(Boolean).join(', ');
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query || 'prayer room');
+}
+
+function prayerRoomSummary(r) {
+  if (r.notes) return r.notes;
+  var place = r.venue || r.address || 'This prayer room';
+  var area = r.area ? ' in ' + r.area : '';
+  var type = r.type ? ' within a ' + String(r.type).toLowerCase() : '';
+  return place + area + type + '.';
+}
+
+function prayerRoomCardName(r) {
+  var name = String(r && r.name || '').trim();
+  var cleaned = name
+    .replace(/\s+Multi-Faith\s+(Prayer\s+Room|Room|Space|Centre)$/i, '')
+    .replace(/\s+Muslim\s+Prayer\s+Rooms?$/i, '')
+    .replace(/\s+Prayer\s+(Room|Rooms|Space|Spaces)$/i, '')
+    .replace(/\s+Quiet\s+(Room|Contemplation\s+Room)$/i, '')
+    .replace(/\s+Faith\s+Centre\s+Prayer\s+Rooms?$/i, '')
+    .replace(/\s+Friday\s+Prayer\s+Space$/i, '')
+    .replace(/\s+Community\s+Centre$/i, '')
+    .replace(/\s+Shopping\s+Centre$/i, '')
+    .replace(/\s+Shopping\s+Park$/i, '')
+    .replace(/\s+Terminal\s+(\d+)$/i, ' T$1')
+    .trim();
+  return cleaned || name || 'Prayer Room';
+}
+
+function prayerRoomIconPath() {
+  return 'M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z';
+}
+
+function openPrayerRoomDetail(idx) {
+  var r = PRAYER_ROOMS[idx] || null;
+  if (!r) return;
+  var col = prayerRoomTypeColor(r.type);
+  var directionsUrl = prayerRoomDirectionsUrl(r);
+  var summary = prayerRoomSummary(r);
+  var facilities = (r.facilities && r.facilities.length ? r.facilities : ['Prayer space']).map(function(f) {
+    return '<div class="facility-item">' +
+      '<div class="fac-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>' +
+      qText(f) +
+    '</div>';
+  }).join('');
+  var infoRows = [
+    { label:'Area', value:prayerRoomAreaLabel(r.area), icon:'<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>' },
+    { label:'Exact location', value:r.venue, icon:'<path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm3 3h6v2H9V9zm0 4h6v2H9v-2z"/>' },
+    { label:'Address', value:r.address, icon:'<path d="M12 2 3.5 20.5l8.5-3.75 8.5 3.75L12 2zm0 4.8 4.5 9.8-4.5-2-4.5 2L12 6.8z"/>' },
+    { label:'Venue type', value:r.type, icon:'<path d="' + prayerRoomIconPath() + '"/>' },
+    { label:'Opening info', value:r.hours, icon:'<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 5h-2v6l5 3 .9-1.5-3.9-2.3V7z"/>' }
+  ].filter(function(item) { return item.value; }).map(function(item) {
+    return '<div class="profile-detail-item">' +
+      '<div class="profile-detail-icon"><svg viewBox="0 0 24 24" fill="currentColor">' + item.icon + '</svg></div>' +
+      '<div class="profile-detail-body">' +
+        '<div class="profile-detail-subtitle">' + qText(item.label) + '</div>' +
+        '<div class="profile-detail-title">' + qText(item.value) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  var html =
+    '<div style="padding:16px 16px 0">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
+        '<button style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="showPage(\'prayer-rooms\')">' +
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>' +
+        '</button>' +
+        '<a href="' + qText(directionsUrl) + '" target="_blank" rel="noopener" style="background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.25);color:var(--gold);height:36px;padding:0 12px;border-radius:8px;display:flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;font-weight:600;font-family:inherit;white-space:nowrap">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 3.5 20.5l8.5-3.75 8.5 3.75L12 2zm0 4.8 4.5 9.8-4.5-2-4.5 2L12 6.8z"/></svg>' +
+          'Get Directions' +
+        '</a>' +
+      '</div>' +
+      '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:0;position:relative">' +
+        '<span class="area-badge" style="position:absolute;top:10px;right:12px;max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
+        '<div style="display:flex;align-items:center;gap:10px;padding-right:118px">' +
+          '<div style="width:42px;height:42px;border-radius:8px;background:' + col.bg + ';border:1px solid rgba(155,127,78,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px">' +
+            '<svg viewBox="0 0 24 24" fill="' + col.color + '" style="width:22px;height:22px"><path d="' + prayerRoomIconPath() + '"/></svg>' +
+          '</div>' +
+          '<div style="min-width:0">' +
+            '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px;line-height:1.25">' + qText(r.name) + '</h2>' +
+            '<p style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(r.address || r.venue || summary) + '</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="detail-body">' +
+      '<div class="detail-card">' +
+        '<h3>About</h3>' +
+        '<p style="font-size:13px;color:var(--muted);line-height:1.6">' + qText(summary) + '</p>' +
+      '</div>' +
+      '<div class="detail-card">' +
+        '<h3>Location Details</h3>' +
+        '<div class="profile-detail-list">' + infoRows + '</div>' +
+      '</div>' +
+      '<div class="detail-card">' +
+        '<h3>Facilities</h3>' +
+        facilities +
+      '</div>' +
+      '<div class="detail-card">' +
+        '<h3>Directions</h3>' +
+        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Use the address below to navigate to this prayer room. Check with venue staff if access has changed.</p>' +
+        (r.address ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div><span style="color:var(--muted);font-size:14px">' + qText(r.address) + '</span></div>' : '') +
+        '<a href="' + qText(directionsUrl) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#a6864a;font-size:13px;font-weight:700;text-decoration:none;margin-top:4px">Open directions</a>' +
+      '</div>' +
+    '</div>';
+  var dc = document.getElementById('detail-content');
+  if (!dc) return;
+  dc.innerHTML = html;
+  showPage('detail');
+  window.scrollTo(0, 0);
+  var detailPage = document.getElementById('page-detail');
+  if (detailPage) detailPage.scrollTop = 0;
+}
+
+function renderPrayerRooms(rooms) {
+  var el = document.getElementById('prayer-room-list') || document.getElementById('prayer-room-results');
+  if (!el) return;
+  if (!rooms.length) {
+    el.innerHTML = '<div class="loading-state">No prayer rooms listed yet</div>';
+    return;
+  }
+  el.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">' + rooms.map(function(r) {
+    var col = prayerRoomTypeColor(r.type);
+    var locationNote = r.venue || r.notes || r.type || '';
+    var idx = PRAYER_ROOMS.indexOf(r);
+    return '<div class="mosque-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;position:relative">' +
+      '<div style="width:38px;height:38px;border-radius:10px;background:' + col.bg + ';border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;overflow:hidden">' +
+        '<svg viewBox="0 0 24 24" fill="' + col.color + '" style="width:21px;height:21px"><path d="M5 3h10a2 2 0 0 1 2 2v14h2v2H3v-2h2V3zm2 2v14h8V5H7zm6 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>' +
+      '</div>' +
+      '<div style="flex:1;min-width:0;padding-right:132px">' +
+        '<div class="mosque-card-name" style="margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(prayerRoomCardName(r)) + '</div>' +
+        (locationNote ? '<div style="font-size:13px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(locationNote) + '</div>' : '') +
+      '</div>' +
+      '<div style="position:absolute;top:12px;right:12px">' +
+        '<span class="pill-tag pill-tag--compact" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
 
 function courseTypeColor(type) {
   var map = {
@@ -3569,7 +3850,7 @@ function refreshRenderedData(data) {
   renderList(MOSQUES);
   filterMosques();
   filterServices();
-  filterCourses();
+  filterPrayerRooms();
   if (document.getElementById('page-jumuah') && document.getElementById('page-jumuah').classList.contains('active')) renderJumuahPage();
 }
 
@@ -3717,6 +3998,7 @@ function applyData(results) {
         if (b.end_date   && b.end_date   < todayStr) return false;
         return true;
       });
+      setPrayerRoomsFromAnnouncements(annRows);
 
       var asrOpinionByMosque = {};
       var logoByMosque = {};
@@ -3724,6 +4006,7 @@ function applyData(results) {
       var jummahByMosque = {};
       var prayerOverrideByMosque = {};
       annRows.forEach(function(a) {
+        if (isPrayerRoomAnnouncement(a)) return;
         if (isSystemAnnouncement(a) && String(a.tag || a.category || '').toLowerCase() === 'asropinion') {
           asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
         }
@@ -3789,6 +4072,7 @@ function applyData(results) {
       var annByMosque = {};
       annRows.forEach(function(a) {
         if (a.active === false || a.is_active === false) return;
+        if (isPrayerRoomAnnouncement(a)) return;
         if (isSystemAnnouncement(a)) return;
         if (isAnnouncementExpired(a)) return;
         if (!annByMosque[a.mosque_id]) annByMosque[a.mosque_id] = [];
@@ -3972,11 +4256,11 @@ function renderBanners() {
 
   var homeBanners   = BANNERS.filter(function(b){ return b.position === 'home'     || b.position === 'all'; });
   var svcBanners    = BANNERS.filter(function(b){ return b.position === 'services' || b.position === 'all'; });
-  var onlineBanners = BANNERS.filter(function(b){ return b.position === 'online'   || b.position === 'all'; });
+  var onlineBanners = BANNERS.filter(function(b){ return b.position === 'prayer-rooms' || b.position === 'prayer_rooms' || b.position === 'online' || b.position === 'all'; });
 
   var homeEl   = document.getElementById('banner-home');
   var svcEl    = document.getElementById('banner-services');
-  var onlineEl = document.getElementById('banner-online');
+  var onlineEl = document.getElementById('banner-prayer-rooms');
 
   if (homeEl)   homeEl.innerHTML   = buildBannerHtml(homeBanners);
   if (svcEl)    svcEl.innerHTML    = buildBannerHtml(svcBanners);
@@ -3999,8 +4283,8 @@ function initApp() {
   }, 0);
   setTimeout(function() {
     filterServices();
-    initCourseFilters();
-    filterCourses();
+    initPrayerRoomFilters();
+    filterPrayerRooms();
     initJummahFilters();
     filterJummah();
     var routePage = pageFromRoute();
@@ -4425,9 +4709,11 @@ function refreshHomeData(done) {
     var annRows      = results[1] || [];
     var timesRows    = results[2] || [];
     var tomorrowRows = results[3] || [];
+    setPrayerRoomsFromAnnouncements(annRows);
     var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {}, logoByMosque = {}, profileByMosque = {}, jummahByMosque = {}, prayerOverrideByMosque = {};
     annRows.forEach(function(a) {
       if (a.active === false || a.is_active === false) return;
+      if (isPrayerRoomAnnouncement(a)) return;
       if (isSystemAnnouncement(a)) {
         if (String(a.tag || a.category || '').toLowerCase() === 'asropinion') asrOpinionByMosque[a.mosque_id] = parseAsrOpinion(a);
         if (String(a.tag || a.category || '').toLowerCase() === 'profilelogo' && !Object.prototype.hasOwnProperty.call(logoByMosque, a.mosque_id)) logoByMosque[a.mosque_id] = parseProfileLogo(a);
