@@ -13,7 +13,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: dark)">
+<script>
+(function() {
+  try {
+    var settings = JSON.parse(localStorage.getItem('qiblah_settings_v1') || '{}');
+    if (settings && settings.darkMode) document.documentElement.classList.add('qiblah-dark-mode');
+  } catch (e) {}
+})();
+</script>
 <style>html,body{background:#f6f1e8!important;margin:0!important;padding:0!important;}
+html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;color:#f3efe6!important;}
 @media(prefers-color-scheme:dark){html,body{background:#f6f1e8!important;}}
 .sponsored-slider { margin-bottom:8px; width:100%; box-sizing:border-box; }
 .sponsored-track-wrap { overflow:hidden; border-radius:var(--radius); width:100%; }
@@ -151,6 +160,22 @@
   --green:   #047857;
   --red:     #be123c;
 }
+html.qiblah-dark-mode {
+  --bg: #0d1110;
+  --bg2: #121817;
+  --bg3: #18201e;
+  --card: #151b1a;
+  --card2: #1d2523;
+  --gold: #d7bf8a;
+  --gold2: #bfa46d;
+  --gold-bright: #ead5a5;
+  --gold-rgb: 215,191,138;
+  --text: #f3efe6;
+  --muted: #b9b1a4;
+  --border: rgba(215,191,138,0.13);
+  --green: #9bd8bd;
+  --red: #e9a1ad;
+}
 @media (prefers-color-scheme: dark) {
   :root {
     --bg:    #f4efe7;
@@ -254,7 +279,7 @@
     border-color: rgba(255,255,255,0.08) !important;
     color-scheme: dark;
   }
-  select option { background: #132030; color: #e8e6f2; }
+  select option { background: #f8f5ef; color: var(--text); }
   /* Consistent subtle outline on all cards & bubbles */
   .mosque-card, .mosque-list-card, .detail-card, .pt-section,
   .service-card, .sponsored-card, .login-card, .dash-card,
@@ -288,7 +313,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 @keyframes ptFlipIn  { 0% { opacity:0; transform:translateY(6px); } 100% { opacity:1; transform:translateY(0); } }
 
 .hero { text-align: center; padding: 80px 32px 60px; position: relative; overflow: hidden; }
-.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(166,134,74,0.08) 0%, transparent 70%); pointer-events: none; }
+.hero::before { content: ''; position: absolute; inset: 0; background: none; pointer-events: none; }
 .hero h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 600; line-height: 1.1; margin-bottom: 16px; }
 .hero h1 .accent { color: var(--gold); }
 .hero p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0 auto 48px; line-height: 1.6; }
@@ -297,15 +322,15 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .feat-icon-box { width: 72px; height: 72px; border-radius: 18px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
 .feat-icon-box:hover { transform: scale(1.06); }
 .feat-icon span { font-size: 12px; color: var(--muted); }
-.feat-quran { background: linear-gradient(135deg, #10b981, #059669); }
-.feat-duas { background: linear-gradient(135deg, #ec4899, #db2777); }
-.feat-calendar { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.feat-quran { background: #10b981; }
+.feat-duas { background: #ec4899; }
+.feat-calendar { background: #6366f1; }
 .hero-slider { margin: 16px 16px 0; border-radius: var(--radius); overflow: hidden; position: relative; }
 @media (min-width: 768px) { .hero-slider { margin: 16px 32px 0; } .slide-content { padding: 120px 28px 24px; } }
 .slider-track { display: flex; height: 100%; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); will-change: transform; }
 .slide { min-width: 100%; position: relative; flex-shrink: 0; }
 .slide-img { position: absolute; inset: 0; background-size: cover; background-position: center center; }
-.slide-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(20,20,20,0.95) 0%, rgba(20,20,20,0.6) 50%, rgba(20,20,20,0.2) 100%); }
+.slide-overlay { position: absolute; inset: 0; background: rgba(20,20,20,0.72); }
 .slide-content { position: relative; z-index: 2; padding: 100px 20px 20px; display: flex; flex-direction: column; justify-content: flex-end; }
 .slide-label { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; color: #f87171; margin-bottom: 8px; text-transform: uppercase; }
 .slide-label.sponsored { color: #fbbf24; }
@@ -410,7 +435,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosque-list-name { margin-bottom: 8px; }
 .loading-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
 
-.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #f6f1e8; border-top: 1px solid rgba(0,0,0,0.08); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); }
+.mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #f6f1e8; border: 0; border-top: 1px solid rgba(0,0,0,0.08); padding: 8px 0 calc(12px + env(safe-area-inset-bottom)); z-index: 100; box-shadow: none; border-radius: 0; }
 @media (prefers-color-scheme: dark) { .mobile-nav { background: #f6f1e8; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); border-top-color: rgba(0,0,0,0.08); } }
 .mobile-nav-inner { display: flex; justify-content: space-around; }
 .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: #6f6453; cursor: pointer; padding: 4px 12px; border: none; background: none; font-family: inherit; }
@@ -447,7 +472,7 @@ nav::after {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--gold-rgb),0.3) 30%, rgba(var(--gold-rgb),0.3) 70%, transparent);
+  background: rgba(var(--gold-rgb),0.22);
   pointer-events: none;
 }
 
@@ -456,7 +481,7 @@ nav::after {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--gold-rgb),0.3) 30%, rgba(var(--gold-rgb),0.3) 70%, transparent);
+  background: rgba(var(--gold-rgb),0.22);
   pointer-events: none;
 }
 
@@ -500,9 +525,7 @@ nav::after {
 }
 
 /* Gold shimmer on sponsored card left border */
-.sponsored-card {
-  background: linear-gradient(135deg, rgba(var(--gold-rgb),0.05) 0%, transparent 60%);
-}
+.sponsored-card { background: rgba(var(--gold-rgb),0.05); }
 
 /* Area badge refinement */
 .area-badge {
@@ -555,6 +578,12 @@ nav::after {
   box-shadow: inset 0 0 0 1px rgba(166,134,74,0.18) !important;
   border: 1px solid rgba(166,134,74,0.16) !important;
 }
+.mobile-nav {
+  border: 0 !important;
+  border-top: 1px solid rgba(166,134,74,0.16) !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
 .mosque-card:hover,
 .service-card:hover {
   box-shadow: inset 0 0 0 1px rgba(166,134,74,0.28) !important;
@@ -570,7 +599,7 @@ nav::after {
 .directions-btn:hover { background: var(--gold2); transform: translateY(-1px); }
 .detail-hero { position: relative; height: 220px; overflow: hidden; }
 .detail-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,17,23,0.95) 0%, rgba(13,17,23,0.3) 100%); }
+.detail-hero-overlay { position: absolute; inset: 0; background: rgba(13,17,23,0.62); }
 .detail-back { position: absolute; top: 16px; left: 16px; z-index: 2; background: rgba(0,0,0,0.4); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .detail-hero-info { position: absolute; bottom: 16px; left: 20px; right: 20px; z-index: 2; }
 .detail-hero-info h2 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
@@ -630,10 +659,116 @@ nav::after {
 .profile-detail-meta { font-size: 12px; color: var(--muted); line-height: 1.4; text-align: right; flex-shrink: 0; max-width: 44%; }
 .profile-detail-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
 .profile-event-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; margin-bottom: 5px; }
-.profile-event-tag.class { background: rgba(96,165,250,0.14); color: #2563eb; }
+.profile-event-tag.class { background: rgba(155,127,78,0.12); color: var(--gold); }
 .profile-event-tag.online { background: rgba(20,184,166,0.14); color: #0f766e; }
 .profile-event-tag.event { background: rgba(var(--gold-rgb),0.14); color: var(--gold); }
 .directions-btn { width: 100%; background: var(--gold); color: #ffffff; font-size: 15px; font-weight: 500; padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; }
+
+.settings-card { background: var(--card); border: 1px solid rgba(166,134,74,0.16); border-radius: var(--radius); padding: 16px; box-shadow: inset 0 0 0 1px rgba(166,134,74,0.18); margin-bottom: 12px; }
+.settings-card h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; color: var(--text); }
+.settings-card p { font-size: 12px; line-height: 1.55; color: var(--muted); margin: 0; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 0; border-top: 1px solid var(--border); margin-top: 12px; }
+.settings-row + .settings-row { margin-top: 0; }
+.settings-row strong { display: block; font-size: 14px; font-weight: 500; margin-bottom: 3px; color: var(--text); }
+.settings-row span { display: block; font-size: 12px; color: var(--muted); line-height: 1.45; }
+.settings-select { width: 100%; background: var(--card2); border: 1px solid rgba(166,134,74,0.18); border-radius: 10px; padding: 10px 12px; color: var(--text); font: 500 13px Outfit,-apple-system,BlinkMacSystemFont,sans-serif; outline: none; }
+.settings-action { min-height: 36px; border: 1px solid rgba(166,134,74,0.24); background: rgba(166,134,74,0.08); color: var(--gold); border-radius: 10px; padding: 0 12px; font: 600 12px Outfit,-apple-system,BlinkMacSystemFont,sans-serif; cursor: pointer; white-space: nowrap; }
+.settings-action.primary { background: var(--gold); border-color: var(--gold); color: #fffaf2; }
+.settings-toggle { position: relative; display: inline-flex; width: 48px; height: 28px; flex-shrink: 0; }
+.settings-toggle input { opacity: 0; width: 0; height: 0; }
+.settings-toggle span { position: absolute; inset: 0; border-radius: 999px; background: rgba(135,123,106,0.22); transition: background 0.18s; }
+.settings-toggle span::after { content: ''; position: absolute; width: 22px; height: 22px; top: 3px; left: 3px; border-radius: 50%; background: #fffaf2; box-shadow: 0 2px 6px rgba(0,0,0,0.12); transition: transform 0.18s; }
+.settings-toggle input:checked + span { background: var(--gold); }
+.settings-toggle input:checked + span::after { transform: translateX(20px); }
+html.qiblah-dark-mode,
+html.qiblah-dark-mode body {
+  background: #0d1110 !important;
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode nav,
+html.qiblah-dark-mode .mobile-nav {
+  background: #0d1110 !important;
+  border-color: rgba(var(--gold-rgb),0.16) !important;
+}
+html.qiblah-dark-mode .nav-logo,
+html.qiblah-dark-mode .nav-link:hover {
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode .nav-link,
+html.qiblah-dark-mode .mobile-nav-btn {
+  color: var(--muted) !important;
+}
+html.qiblah-dark-mode .nav-link.active,
+html.qiblah-dark-mode .mobile-nav-btn.active {
+  color: var(--gold) !important;
+}
+html.qiblah-dark-mode .mobile-nav-btn svg {
+  color: var(--muted) !important;
+}
+html.qiblah-dark-mode .mobile-nav-btn.active svg {
+  color: var(--gold) !important;
+}
+html.qiblah-dark-mode .mobile-nav-btn svg path,
+html.qiblah-dark-mode .mobile-nav-btn svg circle,
+html.qiblah-dark-mode .mobile-nav-btn svg rect {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+html.qiblah-dark-mode .mosque-card,
+html.qiblah-dark-mode .mosque-list-card,
+html.qiblah-dark-mode .service-card,
+html.qiblah-dark-mode .sponsored-card,
+html.qiblah-dark-mode .detail-card,
+html.qiblah-dark-mode .pt-section,
+html.qiblah-dark-mode .profile-detail-item,
+html.qiblah-dark-mode .settings-card,
+html.qiblah-dark-mode .register-panel,
+html.qiblah-dark-mode .register-feature,
+html.qiblah-dark-mode .login-card,
+html.qiblah-dark-mode .dash-card,
+html.qiblah-dark-mode .course-card,
+html.qiblah-dark-mode .institute-card,
+html.qiblah-dark-mode #home-prayer-card > div,
+html.qiblah-dark-mode [id^="salah-countdown-"] {
+  background: var(--card) !important;
+  border-color: rgba(var(--gold-rgb),0.20) !important;
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode #home-ad-banner {
+  background: var(--card) !important;
+  border-color: rgba(var(--gold-rgb),0.18) !important;
+  border-left-color: var(--gold) !important;
+}
+html.qiblah-dark-mode .search-wrap input,
+html.qiblah-dark-mode .settings-select,
+html.qiblah-dark-mode .reg-field input,
+html.qiblah-dark-mode .reg-field select,
+html.qiblah-dark-mode .register-form-card input,
+html.qiblah-dark-mode .register-form-card select,
+html.qiblah-dark-mode #address-suggestions,
+html.qiblah-dark-mode .address-suggestions {
+  background: var(--card2) !important;
+  border-color: rgba(var(--gold-rgb),0.20) !important;
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode .area-btn,
+html.qiblah-dark-mode .tag,
+html.qiblah-dark-mode .area-badge,
+html.qiblah-dark-mode .jummah-pill,
+html.qiblah-dark-mode .profile-event-tag,
+html.qiblah-dark-mode .type-badge {
+  background: rgba(var(--gold-rgb),0.12) !important;
+  border-color: rgba(var(--gold-rgb),0.20) !important;
+  color: var(--gold) !important;
+}
+html.qiblah-dark-mode .register-form-card,
+html.qiblah-dark-mode .register-intro {
+  background: var(--card) !important;
+  color: var(--text) !important;
+}
+html.qiblah-dark-mode .register-feature {
+  background: var(--card2) !important;
+}
 
 .register-page-shell { padding: 20px 16px 40px; }
 .register-onboard { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 16px; align-items: start; }
@@ -662,7 +797,7 @@ nav::after {
   background: #101a28 !important; border-color: rgba(255,255,255,0.10) !important;
   color: #f5efe4 !important; border-radius: 10px !important; padding: 11px 13px !important;
 }
-.reg-submit, .register-cta { background: linear-gradient(135deg, #d9bd82, var(--gold)); color: #141007; border: none; cursor: pointer; font-family: inherit; font-weight: 800; }
+.reg-submit, .register-cta { background: var(--gold); color: #141007; border: none; cursor: pointer; font-family: inherit; font-weight: 800; }
 .register-cta { color: #ffffff; font-weight: 500; }
 .register-cta { font-size: 12px; padding: 9px 18px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
 .reg-submit { width: 100%; font-size: 15px; padding: 14px; border-radius: 10px; }
@@ -676,6 +811,195 @@ nav::after {
   .register-onboard { grid-template-columns: 1fr; }
   .register-feature-grid { grid-template-columns: 1fr; }
   .reg-row { grid-template-columns: 1fr; gap: 0; }
+}
+
+/* Shared light gold outline for card surfaces across every page. */
+.mosque-card,
+.mosque-list-card,
+.service-card,
+.sponsored-card,
+.detail-card,
+.pt-section,
+.profile-detail-item,
+.settings-card,
+.register-panel,
+.register-feature,
+.login-card,
+.dash-card,
+.course-card,
+.institute-card,
+#home-ad-banner,
+#home-prayer-card > div,
+[id^="salah-countdown-"],
+.address-suggestions,
+#address-suggestions,
+div[style*="background:var(--card)"][style*="border:"],
+div[style*="background: var(--card)"][style*="border:"],
+div[style*="border:1px solid rgba(155,127,78"],
+div[style*="border:1px solid rgba(166,134,74"],
+div[style*="border:1.5px solid rgba(155,127,78"],
+div[style*="box-shadow:inset 0 0 0 1px rgba(155,127,78"],
+div[style*="box-shadow: inset 0 0 0 1px rgba(155,127,78"],
+div[style*="box-shadow:inset 0 0 0 1px rgba(166,134,74"],
+div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
+  border: 1px solid rgba(var(--gold-rgb),0.16) !important;
+  box-shadow: none !important;
+}
+
+.mosque-card:hover,
+.mosque-list-card:hover,
+.service-card:hover,
+.sponsored-card:hover {
+  border-color: rgba(var(--gold-rgb),0.26) !important;
+  box-shadow: none !important;
+}
+
+/* Keep the home registration banner in the warm light Qiblah theme. */
+#home-ad-banner {
+  background: rgba(var(--gold-rgb),0.06) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(var(--gold-rgb),0.25) !important;
+  border-left: 3px solid var(--gold) !important;
+  box-shadow: none !important;
+  position: relative !important;
+}
+
+#home-ad-banner::before {
+  display: none !important;
+}
+
+#ad-slide-current {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#ad-slide-current > div > div:first-child {
+  color: var(--gold) !important;
+}
+
+#ad-slide-current > div > div:nth-child(2) {
+  color: var(--text) !important;
+}
+
+#ad-slide-current > div > div:nth-child(3) {
+  color: var(--muted) !important;
+}
+
+#home-ad-banner .register-cta {
+  background: rgba(166,134,74,0.16) !important;
+  color: var(--gold) !important;
+}
+
+html.qiblah-dark-mode #home-ad-banner {
+  background: var(--card) !important;
+  border-color: rgba(var(--gold-rgb),0.18) !important;
+  border-left-color: var(--gold) !important;
+}
+
+html.qiblah-dark-mode #home-ad-banner .register-cta {
+  background: rgba(var(--gold-rgb),0.10) !important;
+  color: var(--gold) !important;
+}
+
+/* Keep the register page in the warm light Qiblah theme. */
+.register-panel,
+.register-form-card,
+.register-intro {
+  background: var(--card) !important;
+  color: var(--text) !important;
+}
+
+.register-intro {
+  border-left: none !important;
+}
+
+.register-intro h1,
+.register-form-card h2,
+.register-feature strong {
+  color: var(--text) !important;
+}
+
+.register-intro p,
+.register-form-card .reg-note,
+.register-feature span,
+.register-form-card label,
+.reg-field label {
+  color: var(--muted) !important;
+}
+
+.register-feature {
+  background: var(--card2) !important;
+  border-color: rgba(var(--gold-rgb),0.16) !important;
+}
+
+.register-feature-icon {
+  background: rgba(166,134,74,0.10) !important;
+  color: var(--gold) !important;
+}
+
+.reg-field input,
+.reg-field select,
+.register-form-card input,
+.register-form-card select,
+#address-suggestions,
+.address-suggestions {
+  background: var(--card2) !important;
+  border-color: transparent !important;
+  color: var(--text) !important;
+}
+
+.reg-field input::placeholder {
+  color: rgba(135,123,106,0.58) !important;
+}
+
+.reg-field input:focus,
+.reg-field select:focus,
+.register-form-card input:focus,
+.register-form-card select:focus {
+  border-color: transparent !important;
+  box-shadow: 0 0 0 2px rgba(166,134,74,0.10) !important;
+}
+
+.reg-error {
+  color: #9f1239 !important;
+}
+
+html.qiblah-dark-mode .register-panel,
+html.qiblah-dark-mode .register-form-card,
+html.qiblah-dark-mode .register-intro,
+html.qiblah-dark-mode .settings-card,
+html.qiblah-dark-mode .register-feature {
+  background: var(--card) !important;
+  color: var(--text) !important;
+}
+
+html.qiblah-dark-mode .register-feature {
+  background: var(--card2) !important;
+}
+
+html.qiblah-dark-mode .reg-field input,
+html.qiblah-dark-mode .reg-field select,
+html.qiblah-dark-mode .register-form-card input,
+html.qiblah-dark-mode .register-form-card select,
+html.qiblah-dark-mode #address-suggestions,
+html.qiblah-dark-mode .address-suggestions {
+  background: var(--card2) !important;
+  border-color: rgba(var(--gold-rgb),0.20) !important;
+  color: var(--text) !important;
+}
+
+html.qiblah-dark-mode .register-intro h1,
+html.qiblah-dark-mode .register-form-card h2,
+html.qiblah-dark-mode .register-feature strong {
+  color: var(--text) !important;
+}
+
+html.qiblah-dark-mode .register-intro p,
+html.qiblah-dark-mode .register-form-card .reg-note,
+html.qiblah-dark-mode .register-feature span,
+html.qiblah-dark-mode .register-form-card label,
+html.qiblah-dark-mode .reg-field label {
+  color: var(--muted) !important;
 }
 
 </style>
