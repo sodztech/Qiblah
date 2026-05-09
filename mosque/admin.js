@@ -15,6 +15,18 @@ var embedType = 'small';
 var ADMIN_SESSION_KEY = 'qiblah_mosque_admin_session_v1';
 var pendingProfileLogo = undefined;
 var ANNOUNCEMENT_FILTERS = ['General', 'Quran', 'Arabic', 'Fiqh', 'Aqeedah', 'Hadith', 'Seerah', 'History', 'Spirituality'];
+var FACILITY_OPTIONS = [
+  'Wudu Area',
+  'Toilets',
+  'Womens Prayer Area',
+  'Disabled Access',
+  'Parking',
+  'Funeral Services',
+  'Nikah Services',
+  'Madrasa / Classes',
+  'Youth Activities',
+  'Community Hall'
+];
 
 function sbFetch(path, opts) {
   opts = opts || {};
@@ -494,9 +506,39 @@ function renderProfile() {
   byId('profile-phone').value = currentMosque.phone || '';
   byId('profile-website').value = currentMosque.website || '';
   byId('profile-email').value = currentMosque.email || '';
-  byId('profile-facilities').value = Array.isArray(currentMosque.facilities) ? currentMosque.facilities.join(', ') : (currentMosque.facilities || '');
+  renderFacilityChecks(currentMosque.facilities);
   renderProfileLogo(currentMosque.logo || '');
   renderJummahFields();
+}
+
+function normaliseFacilities(raw) {
+  if (Array.isArray(raw)) return raw.map(function(s) { return String(s || '').trim(); }).filter(Boolean);
+  if (typeof raw === 'string') return raw.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+  return [];
+}
+
+function renderFacilityChecks(rawFacilities) {
+  var wrap = byId('profile-facilities');
+  if (!wrap) return;
+  var saved = normaliseFacilities(rawFacilities);
+  var selectedMap = {};
+  saved.forEach(function(name) {
+    var key = name.toLowerCase();
+    selectedMap[key] = true;
+    if (key === 'sisters section') selectedMap['womens prayer area'] = true;
+  });
+  wrap.innerHTML = FACILITY_OPTIONS.map(function(name) {
+    var checked = selectedMap[name.toLowerCase()] ? ' checked' : '';
+    return '<label class="facility-check"><input type="checkbox" value="' + esc(name) + '"' + checked + '> <span>' + esc(name) + '</span></label>';
+  }).join('');
+}
+
+function selectedFacilities() {
+  var wrap = byId('profile-facilities');
+  if (!wrap) return [];
+  return Array.prototype.slice.call(wrap.querySelectorAll('input[type="checkbox"]:checked')).map(function(input) {
+    return input.value;
+  });
 }
 function renderProfileLogo(src) {
   var img = byId('profile-logo-preview');
@@ -672,13 +714,18 @@ function saveProfile() {
     var value = byId(id).value.trim();
     return value || null;
   }
+  var facilities = selectedFacilities();
+  if (!facilities.length) {
+    showSaveStatus('Select at least one facility', false);
+    return;
+  }
   var payload = {
     name: byId('profile-name').value.trim(),
     address: byId('profile-address').value.trim(),
     phone: optionalText('profile-phone'),
     website: optionalText('profile-website'),
     email: optionalText('profile-email'),
-    facilities: byId('profile-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean)
+    facilities: facilities
   };
   if (pendingProfileLogo !== undefined) payload.logo = pendingProfileLogo;
   var profilePayload = {
