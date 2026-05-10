@@ -5,7 +5,7 @@
 //   - Google Fonts / CDN       → Cache First with long TTL
 //   - Everything else          → Network First
 
-var CACHE_NAME = 'qiblah-shell-v32';
+var CACHE_NAME = 'qiblah-shell-v44';
 
 var SHELL_ASSETS = [
   '/',
@@ -15,7 +15,13 @@ var SHELL_ASSETS = [
   '/kahf.js',
   '/manifest.json',
   '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/icons/icon-512.png',
+  '/icons/mosque.webp',
+  '/icons/mosque-nav.png',
+  '/icons/quran.webp',
+  '/icons/prayer.webp',
+  '/icons/spaces.webp',
+  '/icons/spaces-nav.png'
 ];
 
 // ── Install: pre-cache the app shell ────────────────────────────────────────
