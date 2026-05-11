@@ -121,14 +121,6 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
     -webkit-line-clamp:1;
   }
 }
-.banner-slot { margin-bottom:16px; width:100%; }
-.banner-slot a { display:block; border-radius:var(--radius); overflow:hidden; }
-.banner-slot img { width:100%; height:auto; max-height:100px; object-fit:cover; object-position:center; display:block; border-radius:var(--radius); }
-.banner-slot:empty { display: none; }
-#banner-home a, #banner-home img { max-width:640px; margin:0 auto; display:block; }
-
-
-
 @media (max-width: 768px) { .hijri-date { display: block !important; } }
 @media (min-width: 769px) { .hijri-date { display: none !important; } }
 </style>
@@ -878,12 +870,11 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
   box-shadow: none !important;
 }
 
-/* Keep the home registration banner in the warm light Qiblah theme. */
+/* Home registration banner */
 #home-ad-banner {
-  background: rgba(var(--gold-rgb),0.06) !important;
-  color: var(--text) !important;
-  border: 1px solid rgba(var(--gold-rgb),0.25) !important;
-  border-left: 3px solid var(--gold) !important;
+  background: #201d16 !important;
+  color: #fff !important;
+  border: 1px solid rgba(166,134,74,0.18) !important;
   box-shadow: none !important;
   position: relative !important;
 }
@@ -898,26 +889,25 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
 }
 
 #ad-slide-current > div > div:first-child {
-  color: var(--gold) !important;
+  color: #a6864a !important;
 }
 
 #ad-slide-current > div > div:nth-child(2) {
-  color: var(--text) !important;
+  color: #ffffff !important;
 }
 
 #ad-slide-current > div > div:nth-child(3) {
-  color: var(--muted) !important;
+  color: rgba(255,255,255,0.58) !important;
 }
 
 #home-ad-banner .register-cta {
-  background: rgba(166,134,74,0.16) !important;
-  color: var(--gold) !important;
+  background: #ad8e4d !important;
+  color: #ffffff !important;
 }
 
 html.qiblah-dark-mode #home-ad-banner {
-  background: var(--card) !important;
-  border-color: rgba(var(--gold-rgb),0.18) !important;
-  border-left-color: var(--gold) !important;
+  background: #201d16 !important;
+  border-color: rgba(166,134,74,0.18) !important;
 }
 
 html.qiblah-dark-mode #home-ad-banner .register-cta {
@@ -1102,15 +1092,14 @@ html.qiblah-dark-mode .reg-field label {
 
   <!-- AD BANNER -->
   <div class="section" style="padding-bottom:0;padding-top:12px">
-    <div id="banner-home" class="banner-slot"></div>
       <div id="home-ad-banner" style="background:#201d16;border-radius:var(--radius);overflow:hidden;margin-bottom:0">
       <div id="ad-slide-current" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
         <div style="min-width:0">
-          <div style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
-          <div style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
+          <div id="home-ad-label" style="font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your community, one platform.</div>
+          <div id="home-ad-title" style="font-size:15px;font-weight:500;color:#ffffff;margin-bottom:4px;line-height:1.3">Qiblah is Coming to East London · September 2026</div>
+          <div id="home-ad-subtitle" style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5">A platform for Mosques, Institutions and Local services</div>
         </div>
-        <button onclick="track('register_click'); showPage('register')" class="register-cta">Register &rarr;</button>
+        <button id="home-ad-button" onclick="track('register_click'); showPage('register')" class="register-cta">Register &rarr;</button>
       </div>
     </div>
     <div style="height:8px"></div>
@@ -1186,7 +1175,7 @@ html.qiblah-dark-mode .reg-field label {
     </div>
     <div id="service-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;margin-bottom:4px"></div>
   </div>
-  <div class="mosques-results" id="service-results"><div id="banner-services" class="banner-slot"></div><div id="service-list"></div></div>
+  <div class="mosques-results" id="service-results"><div id="service-list"></div></div>
 </div>
 
 <!-- PRAYER ROOMS -->
@@ -1214,7 +1203,7 @@ html.qiblah-dark-mode .reg-field label {
     </div>
     <p id="prayer-room-location-label" style="display:none;margin-top:8px;font-size:12px;color:var(--muted)"></p>
   </div>
-  <div class="mosques-results" id="prayer-room-results"><div id="banner-prayer-rooms" class="banner-slot"></div><div id="prayer-room-list"></div></div>
+  <div class="mosques-results" id="prayer-room-results"><div id="prayer-room-list"></div></div>
 </div>
 
 
@@ -3436,9 +3425,15 @@ PRAYER_ROOM_SEED = [
 var BANNERS = [
   {
     position: 'home',
+    title: 'Qiblah is Coming to East London · September 2026',
+    label: 'Your community, one platform.',
+    subtitle: 'A platform for Mosques, Institutions and Local services',
+    button_text: 'Register →',
     image_url: null,
-    link_url: 'https://www.legacy99.co.uk/build-a-mosque',
-    alt_text: 'Build a Mosque with Legacy 99'
+    link_url: null,
+    alt_text: 'A platform for Mosques, Institutions and Local services',
+    active: true,
+    sort_order: 0
   }
 ];
 
@@ -4471,35 +4466,24 @@ function loadMosquesFromSupabase() {
 }
 
 function renderBanners() {
-  function buildBannerHtml(banners) {
-    if (!banners.length) return '';
-    if (banners.length === 1) {
-      var b = banners[0];
-      var inner = '<img src="' + b.image_url + '" alt="' + (b.alt_text||'') + '" loading="lazy">';
-      return b.link_url ? '<a href="' + b.link_url + '" target="_blank" rel="noopener">' + inner + '</a>' : inner;
-    }
-    var id = 'bnr' + Date.now();
-    var html = '<div class="sponsored-slider"><div class="sponsored-track-wrap"><div class="sponsored-track" id="' + id + '-track">' +
-      banners.map(function(b){
-        var inner = '<img src="' + b.image_url + '" alt="' + (b.alt_text||'') + '" loading="lazy">';
-        return '<div class="sponsored-slide">' + (b.link_url ? '<a href="' + b.link_url + '" target="_blank" rel="noopener">' + inner + '</a>' : inner) + '</div>';
-      }).join('') +
-    '</div></div></div>';
-    setTimeout(function(){ startAutoSlide(id, banners.length); }, 100);
-    return html;
+  var banner = (BANNERS || []).filter(function(b) {
+    return b.position === 'home' || b.position === 'all' || b.position === 'hero';
+  })[0] || {};
+  var labelEl = document.getElementById('home-ad-label');
+  var titleEl = document.getElementById('home-ad-title');
+  var subtitleEl = document.getElementById('home-ad-subtitle');
+  var buttonEl = document.getElementById('home-ad-button');
+  if (labelEl) labelEl.textContent = banner.label || 'Your community, one platform.';
+  if (titleEl) titleEl.textContent = banner.title || 'Qiblah is Coming to East London · September 2026';
+  if (subtitleEl) subtitleEl.textContent = banner.subtitle || banner.alt_text || 'A platform for Mosques, Institutions and Local services';
+  if (buttonEl) {
+    buttonEl.textContent = banner.button_text || 'Register →';
+    buttonEl.onclick = function() {
+      track('ad_banner_click', { title: banner.title || 'Qiblah is Coming to East London' });
+      if (banner.link_url) window.open(banner.link_url, '_blank', 'noopener');
+      else showPage('register');
+    };
   }
-
-  var homeBanners   = BANNERS.filter(function(b){ return b.position === 'home'     || b.position === 'all'; });
-  var svcBanners    = BANNERS.filter(function(b){ return b.position === 'services' || b.position === 'all'; });
-  var onlineBanners = BANNERS.filter(function(b){ return b.position === 'prayer-rooms' || b.position === 'prayer_rooms' || b.position === 'online' || b.position === 'all'; });
-
-  var homeEl   = document.getElementById('banner-home');
-  var svcEl    = document.getElementById('banner-services');
-  var onlineEl = document.getElementById('banner-prayer-rooms');
-
-  if (homeEl)   homeEl.innerHTML   = buildBannerHtml(homeBanners);
-  if (svcEl)    svcEl.innerHTML    = buildBannerHtml(svcBanners);
-  if (onlineEl) onlineEl.innerHTML = buildBannerHtml(onlineBanners);
 }
 
 

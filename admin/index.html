@@ -560,7 +560,7 @@ textarea{resize:vertical;min-height:80px}
       <div class="card">
         <div class="card-header">
           <span class="card-title">Ad Banners</span>
-          <button class="btn btn-primary btn-sm" onclick="openModal('banner')">+ Add Banner</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('banner')">+ Add Ad Banner</button>
         </div>
         <div class="card-body">
           <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Banners appear at the top of the selected page. Use direct image URLs (e.g. from Squarespace, Cloudinary, or Imgur). Recommended size: <strong>1200×300px</strong> (4:1 ratio).</p>
@@ -1013,42 +1013,28 @@ function openModal(type, data) {
     title.textContent = 'Change Admin PIN';
     body.innerHTML = '<div class="form-grid"><div class="form-group full"><label>New PIN</label><input id="f-pin" type="text" placeholder="Enter new PIN"></div></div>';
   } else if (type === 'banner') {
-    title.textContent = data ? 'Edit Banner' : 'Add Banner';
+    title.textContent = data ? 'Edit Ad Banner' : 'Add Ad Banner';
     body.innerHTML = '<div class="form-grid">' +
-      '<div class="form-group full"><label>Title <span style="font-size:11px;color:var(--muted)">(internal reference)</span></label><input id="f-banner-title" value="' + escapeAttr(data&&data.title) + '" placeholder="Ramadan Campaign 2026"></div>' +
-      '<div class="form-group full"><label>Image URL</label><input id="f-banner-image" value="' + escapeAttr(data&&data.image_url) + '" placeholder="https://..."><div style="font-size:11px;color:var(--muted);margin-top:4px">Recommended: 1200×300px. Use Squarespace, Cloudinary or Imgur.</div></div>' +
-      '<div id="banner-preview-wrap"><img id="banner-preview-img" style="width:100%;max-height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:none" onerror="this.style.display=&quot;none&quot;"></div>' +
+      '<div class="form-group full"><label>Main Text</label><input id="f-banner-title" value="' + escapeAttr(data&&data.title) + '" placeholder="Qiblah is Coming to East London · September 2026"></div>' +
       '<div class="form-group full"><label>Click URL <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input id="f-banner-link" value="' + escapeAttr(data&&data.link_url) + '" placeholder="https://..."></div>' +
-      '<div class="form-group full"><label>Alt Text</label><input id="f-banner-alt" value="' + escapeAttr(data&&data.alt_text) + '" placeholder="Description for accessibility"></div>' +
+      '<div class="form-group full"><label>Fallback / Accessibility Text</label><input id="f-banner-alt" value="' + escapeAttr(data&&data.alt_text) + '" placeholder="Description for accessibility"></div>' +
       '<div class="form-group full" style="background:rgba(155,127,78,0.05);border:1px solid rgba(155,127,78,0.15);border-radius:10px;padding:12px 14px">' +
-        '<div style="font-size:12px;font-weight:500;color:var(--gold);margin-bottom:10px">Hero Slide Fields <span style="font-size:11px;font-weight:400;color:var(--muted)">(only used when position = Hero)</span></div>' +
+        '<div style="font-size:12px;font-weight:500;color:var(--gold);margin-bottom:10px">Home Ad Banner Text</div>' +
         '<div class="form-grid" style="padding:0">' +
-          '<div class="form-group"><label>Label</label><input id="f-banner-label" value="' + escapeAttr(data&&data.label) + '" placeholder="e.g. Sponsored, Charity Campaign"></div>' +
-          '<div class="form-group"><label>Button Text</label><input id="f-banner-btn" value="' + escapeAttr(data&&data.button_text) + '" placeholder="e.g. Learn More"></div>' +
-          '<div class="form-group full"><label>Subtitle</label><input id="f-banner-subtitle" value="' + escapeAttr(data&&data.subtitle) + '" placeholder="Short description shown below title"></div>' +
+          '<div class="form-group"><label>Small Label</label><input id="f-banner-label" value="' + escapeAttr(data&&data.label) + '" placeholder="Your community, one platform."></div>' +
+          '<div class="form-group"><label>Button Text</label><input id="f-banner-btn" value="' + escapeAttr(data&&data.button_text) + '" placeholder="Register →"></div>' +
+          '<div class="form-group full"><label>Subtitle</label><input id="f-banner-subtitle" value="' + escapeAttr(data&&data.subtitle) + '" placeholder="A platform for Mosques, Institutions and Local services"></div>' +
         '</div>' +
       '</div>' +
       '<div class="form-group"><label>Show On</label><select id="f-banner-position">' +
-        ['hero','home','services','online','all'].map(function(p){ return '<option value="' + p + '"' + (data&&data.position===p?' selected':'') + '>' + p.charAt(0).toUpperCase()+p.slice(1) + '</option>'; }).join('') +
+        ['home','all'].map(function(p){ return '<option value="' + p + '"' + (data&&data.position===p?' selected':'') + '>' + (p === 'home' ? 'Home ad banner' : 'All / fallback') + '</option>'; }).join('') +
       '</select></div>' +
       '<div class="form-group"><label>Status</label><select id="f-banner-active"><option value="true"' + (data&&data.active===false?'':' selected') + '>Active</option><option value="false"' + (data&&data.active===false?' selected':'') + '>Inactive</option></select></div>' +
       '<div class="form-group"><label>Start Date <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="date" id="f-banner-start" value="' + escapeAttr(data&&data.start_date) + '"></div>' +
       '<div class="form-group"><label>End Date <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="date" id="f-banner-end" value="' + escapeAttr(data&&data.end_date) + '"></div>' +
       '<div class="form-group"><label>Sort Order</label><input type="number" id="f-banner-order" value="' + ((data&&data.sort_order)||0) + '" min="0" style="width:80px"><div style="font-size:11px;color:var(--muted);margin-top:4px">Lower = shown first</div></div>' +
+      '<input type="hidden" id="f-banner-image" value="' + escapeAttr(data&&data.image_url) + '">' +
     '</div>';
-    // Live preview on URL input
-    setTimeout(function(){
-      var imgInput = document.getElementById('f-banner-image');
-      var prev = document.getElementById('banner-preview-img');
-      if (imgInput && prev) {
-        var v = imgInput.value.trim();
-        if (v) { prev.src = v; prev.style.display = 'block'; }
-        imgInput.addEventListener('input', function(){
-          var val = this.value.trim();
-          if (val) { prev.src = val; prev.style.display = 'block'; } else { prev.style.display = 'none'; }
-        });
-      }
-    }, 0);
   }
 
   overlay.classList.add('open');
@@ -1249,7 +1235,7 @@ function renderBanners() {
     return '<tr>' +
       '<td>' +
         '<strong style="display:block;font-size:13px">' + escapeHtml(b.title) + '</strong>' +
-        (b.image_url ? '<img src="' + escapeAttr(b.image_url) + '" style="width:80px;height:20px;object-fit:cover;border-radius:4px;margin-top:4px;display:block" onerror="this.style.display=&quot;none&quot;">' : '') +
+        (b.subtitle ? '<span style="display:block;font-size:11px;color:var(--muted);margin-top:3px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(b.subtitle) + '</span>' : '') +
       '</td>' +
       '<td><span class="badge badge-grey">' + pos + '</span></td>' +
       '<td style="font-size:12px">' + dates + '</td>' +
@@ -1281,7 +1267,7 @@ function saveBanner() {
     subtitle: document.getElementById('f-banner-subtitle') ? document.getElementById('f-banner-subtitle').value.trim() : null,
     button_text: document.getElementById('f-banner-btn') ? document.getElementById('f-banner-btn').value.trim() : null
   };
-  if (!payload.title || !payload.image_url) { toast('Title and image URL are required', 'error'); return; }
+  if (!payload.title) { toast('Main text is required', 'error'); return; }
   var method = editId ? 'PATCH' : 'POST';
   var path = editId ? 'banners?id=eq.' + editId : 'banners';
   sb(path, { method: method, body: JSON.stringify(payload) })
