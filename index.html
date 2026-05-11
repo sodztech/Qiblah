@@ -873,22 +873,33 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
 /* Home registration banner */
 #home-ad-banner {
   background: #201d16 !important;
-  background-size: cover !important;
-  background-position: center !important;
+  background-image: none !important;
   color: #fff !important;
   border: 1px solid rgba(166,134,74,0.18) !important;
   box-shadow: none !important;
   position: relative !important;
   height: 158px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  contain: paint !important;
 }
 
 #home-ad-banner::before {
-  display: none !important;
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  background-image: var(--home-ad-image, none) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  transform: scale(1.012) !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
 }
 
 #ad-slide-current {
   position: relative !important;
-  z-index: 1 !important;
+  z-index: 2 !important;
   height: 100% !important;
   flex-wrap: nowrap !important;
   align-items: flex-start !important;
@@ -899,9 +910,18 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-  background: linear-gradient(90deg, rgba(32,29,22,0.96), rgba(32,29,22,0.82) 56%, rgba(32,29,22,0.62)) !important;
-  z-index: 0 !important;
+  border-radius: inherit !important;
+  background:
+    linear-gradient(90deg, rgba(32,29,22,0.96) 0%, rgba(32,29,22,0.88) 42%, rgba(32,29,22,0.50) 68%, rgba(32,29,22,0.16) 100%),
+    linear-gradient(180deg, rgba(32,29,22,0.42) 0%, rgba(32,29,22,0) 18%, rgba(32,29,22,0) 78%, rgba(32,29,22,0.72) 100%),
+    linear-gradient(90deg, rgba(32,29,22,0.72) 0%, rgba(32,29,22,0) 12%, rgba(32,29,22,0) 86%, rgba(32,29,22,0.72) 100%),
+    radial-gradient(circle at top left, rgba(32,29,22,0.88) 0 18px, rgba(32,29,22,0) 46px),
+    radial-gradient(circle at top right, rgba(32,29,22,0.82) 0 20px, rgba(32,29,22,0) 54px),
+    radial-gradient(circle at bottom left, rgba(32,29,22,0.88) 0 18px, rgba(32,29,22,0) 46px),
+    radial-gradient(circle at bottom right, rgba(32,29,22,0.94) 0 24px, rgba(32,29,22,0.18) 58px, rgba(32,29,22,0) 88px) !important;
+  z-index: 1 !important;
   pointer-events: none !important;
+  box-shadow: inset 0 0 0 2px rgba(32,29,22,0.45), inset 0 -18px 24px rgba(32,29,22,0.56), inset -18px 0 24px rgba(32,29,22,0.44) !important;
 }
 
 #home-ad-banner .home-ad-copy {
@@ -945,7 +965,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
   object-fit: contain !important;
   border-radius: 8px !important;
   display: none;
-  z-index: 2 !important;
+  z-index: 3 !important;
 }
 
 #ad-slide-current > div > div:first-child {
@@ -4563,8 +4583,8 @@ function renderBanners() {
   function showHomeBanner(index) {
     var banner = banners[index] || {};
     if (bannerEl) {
-      if (banner.image_url) bannerEl.style.setProperty('background-image', 'url("' + String(banner.image_url).replace(/"/g, '%22') + '")', 'important');
-      else bannerEl.style.removeProperty('background-image');
+      if (banner.image_url) bannerEl.style.setProperty('--home-ad-image', 'url("' + String(banner.image_url).replace(/"/g, '%22') + '")');
+      else bannerEl.style.removeProperty('--home-ad-image');
     }
     if (logoEl) {
       logoEl.src = banner.logo_url || '';
@@ -4584,7 +4604,8 @@ function renderBanners() {
   }
 
   showHomeBanner(window.homeBannerIndex);
-  if (banners.length > 1) {
+  var bannerPaused = new URLSearchParams(window.location.search).get('pauseBanner') === '1';
+  if (banners.length > 1 && !bannerPaused) {
     window.homeBannerTimer = setInterval(function() {
       window.homeBannerIndex = (window.homeBannerIndex + 1) % banners.length;
       showHomeBanner(window.homeBannerIndex);
