@@ -451,6 +451,35 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .active .qiblah-img-icon--spaces { background:#8d6f35; }
 .nav-link .qiblah-img-icon { width:14px; height:14px; }
 .mobile-nav-btn .qiblah-img-icon { width:22px; height:22px; }
+.mosque-card-icon {
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  background:rgba(var(--gold-rgb),0.15);
+  border:1px solid rgba(var(--gold-rgb),0.28);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  padding:5px;
+  overflow:hidden;
+}
+.mosque-card .mosque-card-logo,
+.mosque-profile-logo {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  border-radius:8px;
+  filter:brightness(0) saturate(100%) invert(37%) sepia(18%) saturate(1018%) hue-rotate(6deg) brightness(96%) contrast(91%) drop-shadow(0 1px 1px rgba(31,27,22,0.2));
+}
+.mosque-card .mosque-card-fallback-icon {
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  object-position:center;
+  filter:brightness(0) saturate(100%) invert(37%) sepia(18%) saturate(1018%) hue-rotate(6deg) brightness(96%) contrast(91%) drop-shadow(0 1px 1px rgba(31,27,22,0.2));
+}
 .prayer-room-glyph {
   display:block;
   width:28px;
@@ -2089,10 +2118,10 @@ function cardHTML(m, i) {
   }
   var jummahCardTime = publicJummahLabel(m).replace(/\s*(AM|PM)\b/gi, '').trim();
   var logoHtml = m.logo
-    ? '<img src="' + qText(m.logo) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;border-radius:8px">'
-    : '<span class="qiblah-img-icon qiblah-img-icon--mosque" aria-hidden="true" style="width:24px;height:24px;background:var(--gold)"></span>';
+    ? '<img class="mosque-card-logo" src="' + qText(m.logo) + '" alt="" loading="lazy">'
+    : '<span class="qiblah-img-icon qiblah-img-icon--mosque mosque-card-fallback-icon" aria-hidden="true" style="background:var(--gold)"></span>';
   return '<div class="mosque-card" onclick="track(\'mosque_click\',{mosque_name:MOSQUES[' + i + '].name}); openDetail(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;position:relative">'  +
-    '<div style="width:38px;height:38px;border-radius:10px;background:rgba(155,127,78,0.1);border:1px solid rgba(155,127,78,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;overflow:hidden">' +
+    '<div class="mosque-card-icon">' +
       logoHtml +
     '</div>' +
       '<div style="flex:1;min-width:0;padding-right:70px">' +
@@ -3189,7 +3218,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:0;position:relative">' +
         '<span class="area-badge" style="position:absolute;top:10px;right:12px">' + (m.area || '') + '</span>' +
         '<div style="display:flex;align-items:center;gap:10px;padding-right:80px">' +
-          (m.logo ? '<img src="' + qText(m.logo) + '" alt="" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;border-radius:8px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:4px">' : '') +
+          (m.logo ? '<div style="width:42px;height:42px;flex-shrink:0;border-radius:8px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:5px"><img class="mosque-profile-logo" src="' + qText(m.logo) + '" alt=""></div>' : '') +
           '<div style="min-width:0">' +
             '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px">' + qText(m.name) + '</h2>' +
             '<p style="font-size:12px;color:var(--muted)">' + qText(m.address) + '</p>' +
