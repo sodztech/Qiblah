@@ -605,7 +605,17 @@ function sb(path, opts) {
   return fetch(SB + '/rest/v1/' + path, Object.assign({}, opts, {
     headers: Object.assign(headers, opts.headers || {})
   })).then(function(r) {
-    if (!r.ok) return r.text().then(function(t){ console.error('sb error', r.status, t); return null; });
+    if (!r.ok) return r.text().then(function(t){
+      console.error('sb error', r.status, t);
+      var msg = 'Supabase request failed';
+      try {
+        var parsed = JSON.parse(t);
+        msg = parsed.message || parsed.error || msg;
+      } catch(e) {
+        if (t) msg = t;
+      }
+      throw new Error(msg);
+    });
     if (method === 'DELETE') return null;
     return r.text().then(function(t) {
       if (!t || !t.trim()) return null;
@@ -1272,13 +1282,14 @@ function saveBanner() {
   var path = editId ? 'banners?id=eq.' + editId : 'banners';
   sb(path, { method: method, body: JSON.stringify(payload) })
     .then(function() { clearPublicAppCache(); closeModal(); toast('Banner saved', 'success'); loadAll(); })
-    .catch(function() { toast('Error saving banner', 'error'); });
+    .catch(function(err) { toast(err && err.message ? err.message : 'Error saving banner', 'error'); });
 }
 
 function deleteBanner(id) {
   if (!confirm('Delete this banner?')) return;
   sb('banners?id=eq.' + id, { method: 'DELETE' })
-    .then(function() { clearPublicAppCache(); toast('Banner deleted', 'success'); loadAll(); });
+    .then(function() { clearPublicAppCache(); toast('Banner deleted', 'success'); loadAll(); })
+    .catch(function(err) { toast(err && err.message ? err.message : 'Error deleting banner', 'error'); });
 }
 
 </script>
