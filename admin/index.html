@@ -1235,7 +1235,7 @@ function renderBanners() {
   var tbody = document.getElementById('banners-tbody');
   if (!tbody) return;
   if (!state.banners.length) {
-    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No banners yet</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No Supabase banner entries yet</p><p style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Run <code>supabase/banners-admin-policies.sql</code> in Supabase, then this page can add, edit and delete ad banners.</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = state.banners.map(function(b) {
