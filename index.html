@@ -149,7 +149,7 @@ html.qiblah-dark-mode,html.qiblah-dark-mode body{background:#0d1110!important;co
   --gold-bright: #c0a36b;
   --gold-rgb: 166,134,74;
   --text: #1f1b16; --muted: #877b6a;
-  --border:  rgba(166,134,74,0.08);
+  --border:  rgba(166,134,74,0.13);
   --radius:  16px;
   --green:   #047857;
   --red:     #be123c;
@@ -181,7 +181,7 @@ html.qiblah-dark-mode {
     --gold-bright: #c0a36b;
     --gold-rgb: 166,134,74;
     --text:  #1f1b16; --muted: #877b6a;
-    --border: rgba(166,134,74,0.08);
+    --border: rgba(166,134,74,0.13);
     --green: #10b981;
     --red:   #f43f5e;
   }
@@ -466,6 +466,9 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   padding:5px;
   overflow:hidden;
 }
+.mosque-card-icon--uploaded {
+  padding:2px;
+}
 .mosque-card .mosque-card-logo,
 .mosque-profile-logo {
   width:100%;
@@ -473,7 +476,10 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   object-fit:contain;
   object-position:center;
   border-radius:8px;
-  filter:brightness(0) saturate(100%) invert(37%) sepia(18%) saturate(1018%) hue-rotate(6deg) brightness(96%) contrast(91%) drop-shadow(0 1px 1px rgba(31,27,22,0.2));
+  filter:none;
+}
+.mosque-profile-logo-box {
+  padding:2px !important;
 }
 .mosque-card .mosque-card-fallback-icon {
   width:28px;
@@ -891,7 +897,7 @@ div[style*="box-shadow:inset 0 0 0 1px rgba(155,127,78"],
 div[style*="box-shadow: inset 0 0 0 1px rgba(155,127,78"],
 div[style*="box-shadow:inset 0 0 0 1px rgba(166,134,74"],
 div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
-  border: 1px solid rgba(var(--gold-rgb),0.16) !important;
+  border: 1px solid rgba(var(--gold-rgb),0.22) !important;
   box-shadow: none !important;
 }
 
@@ -899,7 +905,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
 .mosque-list-card:hover,
 .service-card:hover,
 .sponsored-card:hover {
-  border-color: rgba(var(--gold-rgb),0.26) !important;
+  border-color: rgba(var(--gold-rgb),0.32) !important;
   box-shadow: none !important;
 }
 
@@ -2123,7 +2129,7 @@ function cardHTML(m, i) {
     ? '<img class="mosque-card-logo" src="' + qText(m.logo) + '" alt="" loading="lazy">'
     : '<span class="qiblah-img-icon qiblah-img-icon--mosque mosque-card-fallback-icon" aria-hidden="true" style="background:var(--gold)"></span>';
   return '<div class="mosque-card" onclick="track(\'mosque_click\',{mosque_name:MOSQUES[' + i + '].name}); openDetail(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;position:relative">'  +
-    '<div class="mosque-card-icon">' +
+    '<div class="mosque-card-icon' + (m.logo ? ' mosque-card-icon--uploaded' : '') + '">' +
       logoHtml +
     '</div>' +
       '<div style="flex:1;min-width:0;padding-right:70px">' +
@@ -2396,14 +2402,14 @@ function renderHomePrayerCard(mosque) {
           var isNext = i === nextIdx;
           var t = p.raw ? (p.jamaah || '--') : (fmt12NoAmPm(p.jamaah) || '--');
           var b = p.begins ? fmt12NoAmPm(p.begins) : '';
-          var nameColor = isNext ? 'var(--gold)' : 'var(--muted)';
+          var nameColor = isNext ? 'var(--gold2)' : 'var(--muted)';
           var timeWeight = '500';
-          var timeColor = isNext ? 'var(--gold)' : 'var(--muted)';
+          var timeColor = isNext ? 'var(--gold2)' : 'var(--muted)';
           return '<div style="padding:12px 4px;text-align:center;min-height:58px;' + (isNext ? 'background:rgba(155,127,78,0.18);' : '') + (i < 4 ? 'border-right:1px solid var(--border);' : '') + '">' +
             '<div style="font-size:10px;font-weight:600;color:' + nameColor + ';margin-bottom:5px;text-transform:uppercase">' + p.name + '</div>' +
             '<div class="pt-cell" style="position:relative;height:36px">' +
               '<div class="pt-jam" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
-                '<div style="font-size:10px;color:' + (isNext ? 'var(--gold)' : 'var(--muted)') + ';line-height:1;opacity:0.7">Jam\'ah</div>' +
+                '<div style="font-size:10px;color:' + (isNext ? 'var(--gold2)' : 'var(--muted)') + ';line-height:1;opacity:' + (isNext ? '1' : '0.7') + '">Jam\'ah</div>' +
                 '<div style="font-size:15px;font-weight:' + timeWeight + ';color:' + timeColor + ';margin-top:1px">' + t + '</div>' +
               '</div>' +
               (b ? '<div class="pt-beg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0">' +
@@ -2411,7 +2417,7 @@ function renderHomePrayerCard(mosque) {
                 '<div style="font-size:15px;font-weight:500;color:var(--muted);margin-top:1px">' + b + '</div>' +
               '</div>' : '') +
             '</div>' +
-            (isNext ? '<div style="width:20px;height:2px;background:var(--gold);border-radius:1px;margin:4px auto 0"></div>' : '') +
+            (isNext ? '<div style="width:20px;height:2px;background:var(--gold2);border-radius:1px;margin:4px auto 0"></div>' : '') +
           '</div>';
         }).join('') +
         '</div>' +
@@ -3217,13 +3223,15 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
           'Get Directions' +
         '</a>' +
       '</div>' +
-      '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:0;position:relative">' +
-        '<span class="area-badge" style="position:absolute;top:10px;right:12px">' + (m.area || '') + '</span>' +
-        '<div style="display:flex;align-items:center;gap:10px;padding-right:80px">' +
-          (m.logo ? '<div style="width:42px;height:42px;flex-shrink:0;border-radius:8px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:5px"><img class="mosque-profile-logo" src="' + qText(m.logo) + '" alt=""></div>' : '') +
-          '<div style="min-width:0">' +
-            '<h2 style="font-size:17px;font-weight:500;margin:0 0 2px">' + qText(m.name) + '</h2>' +
-            '<p style="font-size:12px;color:var(--muted)">' + qText(m.address) + '</p>' +
+      '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:0">' +
+        '<div style="display:flex;align-items:center;gap:12px">' +
+          (m.logo ? '<div class="mosque-profile-logo-box" style="width:42px;height:42px;flex-shrink:0;border-radius:8px;background:rgba(155,127,78,0.08);border:1px solid rgba(155,127,78,0.18);padding:5px"><img class="mosque-profile-logo" src="' + qText(m.logo) + '" alt=""></div>' : '') +
+          '<div style="min-width:0;flex:1">' +
+            '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px">' +
+              '<h2 style="font-size:16px;font-weight:500;margin:0;line-height:1.2;min-width:0">' + qText(m.name) + '</h2>' +
+              (m.area ? '<span class="area-badge" style="flex-shrink:0">' + qText(m.area) + '</span>' : '') +
+            '</div>' +
+            '<p style="font-size:12px;color:var(--muted);line-height:1.35">' + qText(m.address) + '</p>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -3231,17 +3239,17 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     '<div class="detail-body">' +
       '<div class="pt-section">' +
         '<h3>Prayer Times</h3>' +
-        '<div id="salah-countdown-' + idx + '" style="background:rgba(155,127,78,0.04);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">' +
+        '<div id="salah-countdown-' + idx + '" style="background:rgba(155,127,78,0.035);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">' +
           '<div>' +
-            '<div style="font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">NEXT SALAH</div>' +
-            '<span id="cd-name-' + idx + '" style="font-size:18px;font-weight:500"></span>' +
+            '<div style="font-size:9px;font-weight:600;letter-spacing:1.3px;color:var(--muted);margin-bottom:2px">NEXT SALAH</div>' +
+            '<span id="cd-name-' + idx + '" style="font-size:16px;font-weight:500"></span>' +
           '</div>' +
           '<div style="text-align:right">' +
-            '<div style="font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px" id="cd-label-' + idx + '">JAM\'AH STARTS IN</div>' +
-            '<span id="cd-countdown-' + idx + '" style="font-size:18px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums"></span>' +
+            '<div style="font-size:9px;font-weight:600;letter-spacing:1.3px;color:var(--muted);margin-bottom:2px" id="cd-label-' + idx + '">JAM\'AH STARTS IN</div>' +
+            '<span id="cd-countdown-' + idx + '" style="font-size:16px;font-weight:500;color:var(--gold);font-variant-numeric:tabular-nums"></span>' +
           '</div>' +
         '</div>' +
-        '<div id="cd-bar-wrap-' + idx + '" style="height:3px;background:rgba(0,0,0,0.08);border-radius:2px;margin-bottom:16px;margin-top:-10px">' +
+        '<div id="cd-bar-wrap-' + idx + '" style="height:3px;background:rgba(0,0,0,0.08);border-radius:2px;margin-bottom:14px;margin-top:-7px">' +
           '<div id="cd-bar-' + idx + '" style="height:3px;background:var(--gold);border-radius:2px;width:0%;transition:width 1s linear"></div>' +
         '</div>' +
         '<div class="pt-header-row"><span></span><span>Begins</span><span>Jama\'ah</span><span>Tomorrow</span></div>' +
