@@ -5,11 +5,12 @@
 //   - Google Fonts / CDN       → Cache First with long TTL
 //   - Everything else          → Network First
 
-var CACHE_NAME = 'qiblah-shell-v68';
+var CACHE_NAME = 'qiblah-shell-v69';
 
 var SHELL_ASSETS = [
   '/',
   '/index.html',
+  '/admin/index.html',
   '/mosque/index.html',
   '/mosque/admin.js',
   '/kahf.js',
@@ -68,6 +69,11 @@ self.addEventListener('fetch', function(e) {
   // (app handles this via localStorage)
   if (url.includes('supabase.co')) return;
 
+  if (isAdminRequest(url)) {
+    e.respondWith(networkFirst(e.request, '/admin/index.html'));
+    return;
+  }
+
   if (isMosqueAdminRequest(url)) {
     e.respondWith(networkFirst(e.request, '/mosque/index.html'));
     return;
@@ -94,6 +100,11 @@ self.addEventListener('fetch', function(e) {
 function isMosqueAdminRequest(url) {
   var path = new URL(url).pathname;
   return path === '/mosque' || path === '/mosque/' || path.indexOf('/mosque/') === 0;
+}
+
+function isAdminRequest(url) {
+  var path = new URL(url).pathname;
+  return path === '/admin' || path === '/admin/' || path.indexOf('/admin/') === 0;
 }
 
 function isShellRequest(url) {
