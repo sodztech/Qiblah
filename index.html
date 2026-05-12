@@ -3182,8 +3182,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     return '<div class="pt-row">' +
       pname +
       '<span class="begins"' + beginsId + '>' + beginsText + '</span>' +
-      '<span class="jamaah">' + jamaahText + '</span>' +
-      '<span class="tomorrow">' + tomorrowText + (p.next ? '<span class="next-bar"></span>' : '') + '</span>' +
+      '<span class="jamaah">' + jamaahText + (p.next ? '<span class="next-bar"></span>' : '') + '</span>' +
+      '<span class="tomorrow">' + tomorrowText + '</span>' +
     '</div>';
   }).join('');
   var FACILITY_ICONS = {
