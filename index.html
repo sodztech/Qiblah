@@ -613,12 +613,17 @@ nav::after {
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   padding: 12px 14px;
 }
 .jummah-shortcut strong { font-size: 14px; font-weight: 400; }
 .jummah-shortcut span { font-size: 12px; color: var(--muted); }
+.jummah-shortcut > span:first-child { flex: 1; min-width: 0; }
+.jummah-shortcut__copy { display:flex; flex-direction:column; gap:0; min-width:0; text-align:left; }
+.jummah-shortcut__title { font-size:14px !important; font-weight:400 !important; color:var(--text) !important; line-height:1.2 !important; }
+.jummah-shortcut > svg,
+.jummah-shortcut__icon { margin-left:auto; width:18px; height:18px; color:var(--gold); flex-shrink:0; }
 .jummah-shortcut svg { width: 18px; height: 18px; color: var(--gold); flex-shrink: 0; }
 .jummah-directory { padding: 10px 32px 120px; }
 .jummah-area-section { margin-bottom: 14px; border: 1px solid rgba(var(--gold-rgb),0.22); border-radius: var(--radius); overflow: hidden; background: var(--card); }
@@ -626,10 +631,12 @@ nav::after {
 .jummah-table-row { display: grid; grid-template-columns: minmax(0,1fr) repeat(3,46px); align-items: center; column-gap: 8px; }
 .jummah-table-header { min-height: 38px; padding: 0 12px; background: rgba(var(--gold-rgb),0.12); color: var(--gold2); font-size: 12px; font-weight: 400; }
 .jummah-table-header strong { font-size: 13px; color: var(--text); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jummah-table-header span,
+.jummah-table-time { width: 100%; text-align: center; justify-self: center; }
 .jummah-table-row { min-height: 52px; padding: 9px 12px; border-top: 1px solid var(--border); cursor: pointer; }
 .jummah-table-row:nth-child(odd) { background: rgba(255,255,255,0.22); }
 .jummah-table-name { min-width: 0; font-size: 13px; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.jummah-table-time { text-align: center; font-size: 13px; font-weight: 400; color: var(--text); }
+.jummah-table-time { font-size: 13px; font-weight: 400; color: var(--text); }
 .jummah-table-time.is-empty { color: var(--muted); font-weight: 400; }
 #page-jumuah-times .mosques-header { padding-bottom: 0; }
 
@@ -1015,8 +1022,10 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
   inset: 0 !important;
   border-radius: inherit !important;
   background:
-    linear-gradient(90deg, rgba(32,29,22,0.76) 0%, rgba(32,29,22,0.58) 46%, rgba(32,29,22,0.28) 100%),
-    linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(166,134,74,0.08) 48%, rgba(32,29,22,0.08) 100%) !important;
+    radial-gradient(120% 120% at 0% 0%, rgba(20,18,14,0.50) 0%, rgba(20,18,14,0.22) 42%, rgba(20,18,14,0.00) 72%),
+    linear-gradient(90deg, rgba(32,29,22,0.82) 0%, rgba(32,29,22,0.62) 42%, rgba(32,29,22,0.26) 100%),
+    linear-gradient(180deg, rgba(12,11,9,0.16) 0%, rgba(12,11,9,0.06) 35%, rgba(12,11,9,0.18) 100%),
+    linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(166,134,74,0.07) 48%, rgba(32,29,22,0.06) 100%) !important;
   z-index: 1 !important;
   pointer-events: none !important;
   box-shadow: none !important;
@@ -1040,6 +1049,7 @@ div[style*="box-shadow: inset 0 0 0 1px rgba(166,134,74"] {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   -webkit-box-orient: vertical !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.22) !important;
 }
 
 #home-ad-label {
@@ -1343,11 +1353,10 @@ html.qiblah-dark-mode .reg-field label {
       </select>
     </div>
     <button class="jummah-shortcut" onclick="showPage('jumuah-times')">
-      <span style="display:flex;align-items:center;gap:10px">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h3V2zm13 8H4v10h16V10z"/></svg>
-        <strong>Jumu'ah Times</strong>
+      <span class="jummah-shortcut__copy">
+        <span class="jummah-shortcut__title">Jumu'ah Times</span>
       </span>
-      <span>1st 2nd 3rd</span>
+      <svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.75A10.25 10.25 0 112.75 12 10.26 10.26 0 0112 1.75zm0 1.5A8.75 8.75 0 1020.75 12 8.76 8.76 0 0012 3.25zm-.75 3.5h1.5v5.02l3.48 2.08-.77 1.29-4.21-2.52V6.75z"/></svg>
     </button>
   </div>
   <div class="mosques-results mosque-grid" id="mosque-results"></div>
@@ -1360,8 +1369,12 @@ html.qiblah-dark-mode .reg-field label {
       <h1>Jumu'ah Times</h1>
       <div class="mosques-count" id="jummah-count">Loading...</div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:10px">
-      <select id="jummah-area-select" onchange="filterJummah()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+    <div class="search-bar-row" style="margin-top:14px">
+      <div class="search-wrap" style="flex:1.2">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="jummah-search" placeholder="Search mosque..." oninput="filterJummah()">
+      </div>
+      <select id="jummah-area-select" onchange="filterJummah()" style="flex:0.82;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
         <option value="">All Areas</option>
       </select>
     </div>
@@ -1997,9 +2010,82 @@ window.addEventListener('popstate', function() {
 
 
 var activeJummahArea = 'All';
+var jummahAreaAutoSelected = true;
+
+var AREA_CENTROIDS = {
+  'Whitechapel':[51.518,-0.061],'Stepney':[51.515,-0.048],'Shadwell':[51.512,-0.059],
+  'Shoreditch':[51.522,-0.072],'Bethnal Green':[51.527,-0.056],'Bow':[51.528,-0.023],
+  'Poplar':[51.508,-0.018],'Limehouse':[51.511,-0.035],'Docklands':[51.503,-0.009],
+  'Mile End':[51.525,-0.034],'Wapping':[51.507,-0.063],'Forest Gate':[51.550,0.034],
+  'East Ham':[51.538,0.046],'Plaistow':[51.530,0.019],'Stratford':[51.542,0.003],
+  'Canning Town':[51.514,0.007],'Ilford':[51.559,0.079],'Seven Kings':[51.568,0.099],
+  'Newbury Park':[51.572,0.063],'Woodford':[51.607,0.021],'Chadwell Heath':[51.568,0.130],
+  'Redbridge':[51.569,0.065]
+};
 
 function initJummahFilters() {
+  var areaEl = document.getElementById('jummah-area-select');
+  if (areaEl && !areaEl.dataset.bound) {
+    areaEl.addEventListener('change', function() {
+      jummahAreaAutoSelected = !areaEl.value;
+    });
+    areaEl.dataset.bound = '1';
+  }
   updateJummahAreaDropdown();
+}
+
+function getAreaBorough(area) {
+  var boroughs = Object.keys(BOROUGH_AREAS);
+  for (var i = 0; i < boroughs.length; i++) {
+    if (BOROUGH_AREAS[boroughs[i]].indexOf(area) > -1) return boroughs[i];
+  }
+  return '';
+}
+
+function nearestJummahBorough() {
+  if (userLat === null || userLng === null) return '';
+  var bestBorough = '';
+  var bestDistance = Infinity;
+  Object.keys(BOROUGH_AREAS).forEach(function(borough) {
+    BOROUGH_AREAS[borough].forEach(function(area) {
+      var coords = AREA_CENTROIDS[area];
+      if (!coords) return;
+      var km = haversine(userLat, userLng, coords[0], coords[1]);
+      if (km < bestDistance) {
+        bestDistance = km;
+        bestBorough = borough;
+      }
+    });
+  });
+  return bestBorough;
+}
+
+function jummahAreaDistance(area) {
+  if (userLat === null || userLng === null) return Infinity;
+  var coords = AREA_CENTROIDS[area];
+  if (!coords) return Infinity;
+  return haversine(userLat, userLng, coords[0], coords[1]);
+}
+
+function sortJummahAreas(areas, selectedFilter) {
+  var list = areas.slice();
+  var selectedBorough = BOROUGH_AREAS[selectedFilter] ? selectedFilter : '';
+  list.sort(function(a, b) {
+    if (selectedBorough) {
+      var aInSelected = BOROUGH_AREAS[selectedBorough].indexOf(a) > -1;
+      var bInSelected = BOROUGH_AREAS[selectedBorough].indexOf(b) > -1;
+      if (aInSelected !== bInSelected) return aInSelected ? -1 : 1;
+    }
+    if (userLat !== null && userLng !== null) {
+      var diff = jummahAreaDistance(a) - jummahAreaDistance(b);
+      if (Math.abs(diff) > 0.01) return diff;
+    }
+    var aBorough = getAreaBorough(a);
+    var bBorough = getAreaBorough(b);
+    if (aBorough !== bBorough) return aBorough.localeCompare(bBorough);
+    return a.localeCompare(b);
+  });
+  return list;
 }
 
 function updateJummahAreaDropdown() {
@@ -2015,7 +2101,11 @@ function updateJummahAreaDropdown() {
     });
   });
   areaEl.innerHTML = opts;
-  if (prev) areaEl.value = prev;
+  if (prev) {
+    areaEl.value = prev;
+  } else if (jummahAreaAutoSelected) {
+    areaEl.value = nearestJummahBorough();
+  }
 }
 
 function filterJummah() {
@@ -2044,16 +2134,13 @@ function renderJummah(mosques) {
   var el = document.getElementById('jummah-results');
   if (!el) return;
   var countEl = document.getElementById('jummah-count');
+  var areaFilterEl = document.getElementById('jummah-area-select');
+  var selectedAreaFilter = areaFilterEl ? areaFilterEl.value : '';
   if (countEl) countEl.textContent = mosques.length + ' mosque' + (mosques.length !== 1 ? 's' : '') + ' listed';
   if (!mosques.length) {
     el.innerHTML = "<div class=\"loading-state\">No Jumu'ah times found</div>";
     return;
   }
-
-  var areaOrder = [];
-  Object.keys(BOROUGH_AREAS).forEach(function(b) {
-    BOROUGH_AREAS[b].forEach(function(a) { areaOrder.push(a); });
-  });
   var groups = {};
   var usedAreas = [];
 
@@ -2064,13 +2151,7 @@ function renderJummah(mosques) {
   });
 
   usedAreas = usedAreas.filter(function(v, i, a) { return a.indexOf(v) === i; });
-  usedAreas.sort(function(a, b) {
-    var ai = areaOrder.indexOf(a), bi = areaOrder.indexOf(b);
-    if (ai === -1 && bi === -1) return a.localeCompare(b);
-    if (ai === -1) return 1;
-    if (bi === -1) return -1;
-    return ai - bi;
-  });
+  usedAreas = sortJummahAreas(usedAreas, selectedAreaFilter);
 
   el.innerHTML = usedAreas.map(function(area) {
     var entries = groups[area];
@@ -2404,16 +2485,18 @@ function fetchSunrise(lat, lon, address, callback, mosqueMeta) {
 function buildDuaStrip(mosque) {
   // Always default to 'entering'; user tap toggles
   var isEntering = duaMode === 'entering';
-  var icon      = '';
   var label     = isEntering ? 'Entering Mosque' : 'Leaving Mosque';
   var dua       = isEntering ? DUA_ENTERING_EN : DUA_LEAVING_EN;
-  var nextLabel = isEntering ? 'Leaving  ' : 'Entering  ';
+  var nextLabel = isEntering ? 'Switch to leaving dua' : 'Switch to entering dua';
+  var nextIcon = isEntering
+    ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M10 17l5-5-5-5v10zM5 19h2V5H5v14z"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M14 7l-5 5 5 5V7zm3 12h2V5h-2v14z"/></svg>';
   return '<div onclick="event.stopPropagation();duaMode=duaMode===\'entering\'?\'leaving\':\'entering\';renderHomePrayerCard();" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">' +
     '<div>' +
       '<div class="mosque-card-name" style="margin-bottom:2px">' + label + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">' + dua + '</div>' +
     '</div>' +
-    '<span class="pill-tag pill-tag--compact">' + nextLabel + '</span>' +
+    '<span class="pill-tag pill-tag--compact" title="' + nextLabel + '" aria-label="' + nextLabel + '" style="width:30px;height:30px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center">' + nextIcon + '</span>' +
   '</div>';
 }
 
@@ -2436,6 +2519,7 @@ function buildHomePracticeRow(item) {
 }
 
 var _lastPrayerCardMosque = null;
+var SUNRISE_COUNTDOWN_PREVIEW = false;
 
 function renderHomePrayerCard(mosque) {
   var el = document.getElementById('home-prayer-card');
@@ -2542,8 +2626,13 @@ function renderHomePrayerCard(mosque) {
           '</div>';
         })() +
         '</div>' +
+        '<button class="jummah-shortcut" onclick="event.stopPropagation();showPage(\'jumuah-times\')" style="margin-top:8px;padding:10px 14px">' +
+          '<span class="jummah-shortcut__copy">' +
+            '<span class="jummah-shortcut__title">Jumu\'ah Times</span>' +
+          '</span>' +
+          '<svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.75A10.25 10.25 0 112.75 12 10.26 10.26 0 0112 1.75zm0 1.5A8.75 8.75 0 1020.75 12 8.76 8.76 0 0012 3.25zm-.75 3.5h1.5v5.02l3.48 2.08-.77 1.29-4.21-2.52V6.75z"/></svg>' +
+        '</button>' +
         '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:8px">' +
-        buildDuaStrip(m) +
         (function() {
           var nowM = new Date().getHours() * 60 + new Date().getMinutes();
           var isFriday = isJumuahTime(row.maghrib_begins || row.maghrib_jamaah);
@@ -2630,14 +2719,16 @@ function startHomePtFlip() {
 function startHomeCd(prayers, tomorrowFajr) {
   if (window._homeCdTimer) cancelAnimationFrame(window._homeCdTimer);
 
-  function toMins(t) {
+  function toMins(t, prayerName) {
     if (!t || t === '--') return 9999;
-    var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
-    t = t.replace(/ AM| PM/gi,'').trim();
+    t = String(t).replace(/\./g, ':').trim();
+    var isPM = /\bPM\b/i.test(t), isAM = /\bAM\b/i.test(t);
+    t = t.replace(/\s*(AM|PM)\b/gi,'').trim();
     var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
+    if (isNaN(h) || isNaN(m)) return 9999;
     if (isPM && h !== 12) h += 12;
     if (isAM && h === 12) h = 0;
-    // Raw 24h (no AM/PM marker) — already correct
+    if (!isPM && !isAM) h = normalisedUnmarkedHour(h, prayerName);
     return h * 60 + m;
   }
   function padZ(n) { return n < 10 ? '0' + n : '' + n; }
@@ -2649,11 +2740,11 @@ function startHomeCd(prayers, tomorrowFajr) {
     if (!timerEl) { cancelAnimationFrame(window._homeCdTimer); window._homeCdTimer = null; return; }
 
     // Find next target: Begins first, then Jam'ah for each prayer
-    var targetMins = null, targetName = '', targetLabel = '';
+    var targetMins = null, targetName = '', targetLabel = '', targetAccent = 'var(--gold)';
     for (var i = 0; i < prayers.length; i++) {
       var p = prayers[i];
-      var bm = toMins(p.begins);
-      var jm = toMins(p.jamaah);
+      var bm = toMins(p.begins, p.name);
+      var jm = toMins(p.jamaah, p.name);
       // If before Begins
       if (bm !== 9999 && nowM < bm) {
         targetMins = bm; targetName = p.name; targetLabel = 'Begins'; break;
@@ -2667,11 +2758,22 @@ function startHomeCd(prayers, tomorrowFajr) {
 
     timerEl.style.fontSize = '15px';
     timerEl.style.color = 'var(--gold)';
+    if (nameEl) nameEl.style.color = 'var(--muted)';
+    if (labelEl) labelEl.style.color = 'var(--muted)';
+
+    // For the last 30 minutes before sunrise, switch the countdown to sunrise.
+    var sunriseM = _sunriseCache ? toMins(_sunriseCache, 'Sunrise') : 9999;
+    if (sunriseM !== 9999 && (SUNRISE_COUNTDOWN_PREVIEW || (nowM >= (sunriseM - 30) && nowM < sunriseM))) {
+      targetMins = SUNRISE_COUNTDOWN_PREVIEW ? (nowM + 30) : sunriseM;
+      targetName = 'Sunrise';
+      targetLabel = 'Begins';
+      targetAccent = 'var(--red)';
+    }
 
     if (targetMins === null) {
       // Past all prayers — count down to tomorrow's Fajr Begins
       var tf = tomorrowFajr;
-      var tfBegMins = tf && tf.begins ? toMins(tf.begins) : (tf ? toMins(tf.jamaah || tf) : null);
+      var tfBegMins = tf && tf.begins ? toMins(tf.begins, 'Fajr') : (tf ? toMins(tf.jamaah || tf, 'Fajr') : null);
       if (tfBegMins !== null && tfBegMins !== 9999) {
         var minsLeft = 1440 - nowM + tfBegMins;
         var diffSecs = minsLeft * 60 - nowS;
@@ -2691,8 +2793,11 @@ function startHomeCd(prayers, tomorrowFajr) {
 
     if (nameEl) nameEl.textContent = targetName;
     if (labelEl) labelEl.textContent = targetLabel;
+    if (nameEl && targetName === 'Sunrise') nameEl.style.color = 'var(--muted)';
+    if (labelEl && targetName === 'Sunrise') labelEl.style.color = 'var(--muted)';
     var diffSecs = (targetMins - nowM) * 60 - nowS;
     var h = Math.floor(diffSecs/3600), mn = Math.floor((diffSecs%3600)/60), s = diffSecs%60;
+    timerEl.style.color = targetAccent;
     timerEl.textContent = (h > 0 ? h + ':' + padZ(mn) : mn) + ':' + padZ(s);
   }
   tick();
@@ -3404,7 +3509,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
 
   // Start countdown using the same Begins -> Jama'ah flow as the My Mosque card.
   var detailCdPrayers = (cdPrayers || prayers).filter(function(p) { return !p.sunrise; });
-  function toMins(t) { return toMins24(String(t || '').trim()); }
+  var detailSunrisePrayer = (prayers || []).filter(function(p) { return p.sunrise; })[0] || null;
+  function toMins(t, prayerName) { return toMins24(String(t || '').trim(), prayerName); }
   function padZ(n) { return n<10?'0'+n:n; }
   var cdTimer = null;
   function updateCd() {
@@ -3414,8 +3520,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
     var prevM = 0;
     for (var i = 0; i < detailCdPrayers.length; i++) {
       var p = detailCdPrayers[i];
-      var bm = toMins(p.begins);
-      var jm = toMins(p.jamaah);
+      var bm = toMins(p.begins, p.name);
+      var jm = toMins(p.jamaah, p.name);
       if (bm !== 9999 && nowM < bm) {
         target = { name: p.name, label: 'Begins', mins: bm };
         break;
@@ -3428,9 +3534,15 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       if (jm !== 9999) prevM = jm;
       else if (bm !== 9999) prevM = bm;
     }
+    var sunriseM = detailSunrisePrayer ? toMins(detailSunrisePrayer.begins, 'Sunrise') : 9999;
+    if (sunriseM !== 9999 && (SUNRISE_COUNTDOWN_PREVIEW || (nowM >= (sunriseM - 30) && nowM < sunriseM))) {
+      var previewSunriseMins = SUNRISE_COUNTDOWN_PREVIEW ? (nowM + 30) : sunriseM;
+      target = { name: 'Sunrise', label: 'Begins', mins: previewSunriseMins, accent: 'var(--red)' };
+      prevM = SUNRISE_COUNTDOWN_PREVIEW ? nowM : (sunriseM - 30);
+    }
     if (!target) {
       var fajr = detailCdPrayers[0] || {};
-      var tfBeg = toMins(fajr.tomorrowBegins || fajr.begins);
+      var tfBeg = toMins(fajr.tomorrowBegins || fajr.begins, 'Fajr');
       if (tfBeg !== 9999) target = { name: 'Fajr', label: 'Begins', mins: tfBeg + 1440 };
     }
     var nm=document.getElementById('cd-name-'+idx);
@@ -5435,7 +5547,25 @@ function renderJumuahPage() {
 // Register PWA service worker
 if ('serviceWorker' in navigator && (location.hostname === 'qiblah.co.uk' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').catch(function(){});
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      reg.update().catch(function(){});
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      reg.addEventListener('updatefound', function() {
+        var worker = reg.installing;
+        if (!worker) return;
+        worker.addEventListener('statechange', function() {
+          if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+            worker.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+      var reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        if (reloaded) return;
+        reloaded = true;
+        location.reload();
+      });
+    }).catch(function(){});
   });
 }
 
