@@ -620,7 +620,7 @@ nav::after {
 .jummah-shortcut strong { font-size: 14px; font-weight: 400; }
 .jummah-shortcut span { font-size: 12px; color: var(--muted); }
 .jummah-shortcut svg { width: 18px; height: 18px; color: var(--gold); flex-shrink: 0; }
-.jummah-directory { padding: 4px 32px 120px; }
+.jummah-directory { padding: 10px 32px 120px; }
 .jummah-area-section { margin-bottom: 14px; border: 1px solid rgba(var(--gold-rgb),0.22); border-radius: var(--radius); overflow: hidden; background: var(--card); }
 .jummah-table-header,
 .jummah-table-row { display: grid; grid-template-columns: minmax(0,1fr) repeat(3,46px); align-items: center; column-gap: 8px; }
@@ -634,7 +634,7 @@ nav::after {
 #page-jumuah-times .mosques-header { padding-bottom: 0; }
 
 @media (max-width: 600px) {
-  .jummah-directory { padding: 4px 16px 112px; }
+  .jummah-directory { padding: 10px 16px 112px; }
   .jummah-table-header,
   .jummah-table-row { grid-template-columns: minmax(0,1fr) repeat(3,38px); column-gap: 6px; }
   .jummah-table-header { padding: 0 10px; }
@@ -1347,7 +1347,7 @@ html.qiblah-dark-mode .reg-field label {
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h3V2zm13 8H4v10h16V10z"/></svg>
         <strong>Jumu'ah Times</strong>
       </span>
-      <span>1st 2nd 3rd 4th</span>
+      <span>1st 2nd 3rd</span>
     </button>
   </div>
   <div class="mosques-results mosque-grid" id="mosque-results"></div>
@@ -1356,18 +1356,9 @@ html.qiblah-dark-mode .reg-field label {
 <!-- JUMU'AH TIMES PAGE -->
 <div class="page" id="page-jumuah-times">
   <div class="mosques-header">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-      <div>
-        <h1>Jumu'ah Times</h1>
-        <div class="mosques-count" id="jummah-count">Loading...</div>
-      </div>
-      <button class="view-all" onclick="showPage('mosques')">Mosques</button>
-    </div>
-    <div class="search-bar-row">
-      <div class="search-wrap">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" id="jummah-search" placeholder="Search Jumu'ah times..." oninput="filterJummah()">
-      </div>
+    <div>
+      <h1>Jumu'ah Times</h1>
+      <div class="mosques-count" id="jummah-count">Loading...</div>
     </div>
     <div style="display:flex;gap:10px;margin-top:10px">
       <select id="jummah-area-select" onchange="filterJummah()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
