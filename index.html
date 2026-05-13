@@ -2273,13 +2273,28 @@ function isJumuahTime(maghribBegins) {
   return false;
 }
 
-function toMins24(t) {
+function normalisedUnmarkedHour(hour, prayerName) {
+  var name = String(prayerName || '').toLowerCase();
+  if (name.indexOf('fajr') > -1) return hour;
+  if (name.indexOf('zuhr') > -1 || name.indexOf('dhuhr') > -1 || name.indexOf('jumu') > -1 || name.indexOf('jumm') > -1) {
+    return hour >= 1 && hour <= 4 ? hour + 12 : hour;
+  }
+  if (name.indexOf('asr') > -1 || name.indexOf('maghrib') > -1 || name.indexOf('isha') > -1) {
+    return hour < 12 ? hour + 12 : hour;
+  }
+  return hour;
+}
+
+function toMins24(t, prayerName) {
   if (!t || t === '--') return 9999;
-  var isPM = t.indexOf('PM') > -1, isAM = t.indexOf('AM') > -1;
-  t = t.replace(/ AM| PM/g,'').trim();
+  t = String(t).replace(/\./g, ':').trim();
+  var isPM = /\bPM\b/i.test(t), isAM = /\bAM\b/i.test(t);
+  t = t.replace(/\s*(AM|PM)\b/gi,'').trim();
   var p = t.split(':'), h = parseInt(p[0]), m = parseInt(p[1]||0);
+  if (isNaN(h) || isNaN(m)) return 9999;
   if (isPM && h !== 12) h += 12;
   if (isAM && h === 12) h = 0;
+  if (!isPM && !isAM) h = normalisedUnmarkedHour(h, prayerName);
   return h * 60 + m;
 }
 
