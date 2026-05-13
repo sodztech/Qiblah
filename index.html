@@ -408,7 +408,8 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
 .mosques-count { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
 .search-bar-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
 #page-services .search-bar-row,
-#page-prayer-rooms .search-bar-row { margin-top: 14px; }
+#page-prayer-rooms .search-bar-row,
+#page-jumuah-times .search-bar-row { margin-top: 14px; }
 .search-wrap { flex: 1; position: relative; }
 .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
 .search-wrap input { width: 100%; background: var(--card); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; }
@@ -577,6 +578,69 @@ nav::after {
 .service-card:hover {
   box-shadow: 0 6px 20px rgba(var(--gold-rgb),0.1), inset 0 0 0 1px rgba(var(--gold-rgb),0.35) !important;
   transform: translateY(-2px);
+}
+
+#page-mosques .mosque-card,
+#page-services .service-card,
+#page-prayer-rooms .mosque-card {
+  min-height: 70px !important;
+  padding: 14px 16px !important;
+}
+
+#page-mosques .mosque-card,
+#page-prayer-rooms .mosque-card {
+  display: flex !important;
+  align-items: center !important;
+}
+
+#page-services .service-card {
+  align-items: center !important;
+}
+
+#page-prayer-rooms .mosque-card {
+  gap: 12px;
+}
+
+.jummah-shortcut {
+  width: 100%;
+  margin-top: 10px;
+  min-height: 54px;
+  border: 1px solid rgba(var(--gold-rgb),0.22);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+}
+.jummah-shortcut strong { font-size: 14px; font-weight: 400; }
+.jummah-shortcut span { font-size: 12px; color: var(--muted); }
+.jummah-shortcut svg { width: 18px; height: 18px; color: var(--gold); flex-shrink: 0; }
+.jummah-directory { padding: 4px 32px 120px; }
+.jummah-area-section { margin-bottom: 14px; border: 1px solid rgba(var(--gold-rgb),0.22); border-radius: var(--radius); overflow: hidden; background: var(--card); }
+.jummah-table-header,
+.jummah-table-row { display: grid; grid-template-columns: minmax(0,1fr) repeat(3,46px); align-items: center; column-gap: 8px; }
+.jummah-table-header { min-height: 38px; padding: 0 12px; background: rgba(var(--gold-rgb),0.12); color: var(--gold2); font-size: 12px; font-weight: 400; }
+.jummah-table-header strong { font-size: 13px; color: var(--text); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jummah-table-row { min-height: 52px; padding: 9px 12px; border-top: 1px solid var(--border); cursor: pointer; }
+.jummah-table-row:nth-child(odd) { background: rgba(255,255,255,0.22); }
+.jummah-table-name { min-width: 0; font-size: 13px; font-weight: 400; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jummah-table-time { text-align: center; font-size: 13px; font-weight: 400; color: var(--text); }
+.jummah-table-time.is-empty { color: var(--muted); font-weight: 400; }
+#page-jumuah-times .mosques-header { padding-bottom: 0; }
+
+@media (max-width: 600px) {
+  .jummah-directory { padding: 4px 16px 112px; }
+  .jummah-table-header,
+  .jummah-table-row { grid-template-columns: minmax(0,1fr) repeat(3,38px); column-gap: 6px; }
+  .jummah-table-header { padding: 0 10px; }
+  .jummah-table-row { padding: 9px 10px; }
+  .jummah-table-name { font-size: 13px; }
+  .jummah-table-time { font-size: 12px; }
 }
 
 /* Gold shimmer on sponsored card left border */
@@ -1278,8 +1342,40 @@ html.qiblah-dark-mode .reg-field label {
         <option value="">All Areas</option>
       </select>
     </div>
+    <button class="jummah-shortcut" onclick="showPage('jumuah-times')">
+      <span style="display:flex;align-items:center;gap:10px">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h3V2zm13 8H4v10h16V10z"/></svg>
+        <strong>Jumu'ah Times</strong>
+      </span>
+      <span>1st 2nd 3rd 4th</span>
+    </button>
   </div>
   <div class="mosques-results mosque-grid" id="mosque-results"></div>
+</div>
+
+<!-- JUMU'AH TIMES PAGE -->
+<div class="page" id="page-jumuah-times">
+  <div class="mosques-header">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div>
+        <h1>Jumu'ah Times</h1>
+        <div class="mosques-count" id="jummah-count">Loading...</div>
+      </div>
+      <button class="view-all" onclick="showPage('mosques')">Mosques</button>
+    </div>
+    <div class="search-bar-row">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="jummah-search" placeholder="Search Jumu'ah times..." oninput="filterJummah()">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <select id="jummah-area-select" onchange="filterJummah()" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238a9ab5'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+        <option value="">All Areas</option>
+      </select>
+    </div>
+  </div>
+  <div class="jummah-directory" id="jummah-results"></div>
 </div>
 
 <!-- MOSQUE DETAIL -->
@@ -1863,10 +1959,12 @@ function showPage(id) {
   if (!pageEl) return;
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   pageEl.classList.add('active');
-  document.querySelectorAll('[data-page]').forEach(function(b){ b.classList.toggle('active', b.dataset.page === id); });
+  var navPage = id === 'jumuah-times' ? 'mosques' : id;
+  document.querySelectorAll('[data-page]').forEach(function(b){ b.classList.toggle('active', b.dataset.page === navPage); });
   if (id === 'mosques') { filterMosques(); }
   if (id === 'services') { filterServices(); }
   if (id === 'prayer-rooms') { filterPrayerRooms(); }
+  if (id === 'jumuah-times') { initJummahFilters(); filterJummah(); }
   if (id === 'jumuah') { renderJumuahPage(); }
   if (id === 'morning-adhkar' && !_morningAdhkarRendered) { _morningAdhkarRendered = true; adhkarRender(MORNING_ADHKAR, 'morning-adhkar-cards', {}); }
   if (id === 'evening-adhkar' && !_eveningAdhkarRendered) { _eveningAdhkarRendered = true; adhkarRender(EVENING_ADHKAR, 'evening-adhkar-cards', {}); }
@@ -1882,6 +1980,8 @@ function pageFromRoute() {
     services: 'services',
     online: 'prayer-rooms',
     'prayer-rooms': 'prayer-rooms',
+    'jumuah-times': 'jumuah-times',
+    'jummah-times': 'jumuah-times',
     register: 'register',
     jumuah: 'jumuah',
     surahkahf: 'surahkahf',
@@ -1893,7 +1993,7 @@ function pageFromRoute() {
 
 function updateRouteForPage(id) {
   if (!history || !history.pushState || location.protocol === 'file:') return;
-  var routes = { home:'/', services:'/services/', 'prayer-rooms':'/prayer-rooms/', register:'/register/' };
+  var routes = { home:'/', services:'/services/', 'prayer-rooms':'/prayer-rooms/', 'jumuah-times':'/jumuah-times/', register:'/register/' };
   var target = routes[id];
   if (!target || location.pathname === target) return;
   history.pushState({ page:id }, '', target);
@@ -1932,62 +2032,74 @@ function filterJummah() {
   var input = document.getElementById('jummah-search');
   var q = input ? input.value.toLowerCase() : '';
   var area = document.getElementById('jummah-area-select') ? document.getElementById('jummah-area-select').value : '';
-  var hasFilter = q || area;
-  var base = (!hasFilter && nearestMosques20) ? nearestMosques20 : MOSQUES;
-  var filtered = base.filter(function(m) {
+  var filtered = MOSQUES.filter(function(m) {
     var areaMatch = !area || m.area === area || (BOROUGH_AREAS[area] && BOROUGH_AREAS[area].indexOf(m.area) > -1);
-    var textMatch = !q || m.name.toLowerCase().indexOf(q) > -1 || m.area.toLowerCase().indexOf(q) > -1 || publicJummahLabel(m).indexOf(q) > -1;
+    var searchText = [m.name, m.area, m.borough, combinedJummahTimes(m)].join(' ').toLowerCase();
+    var textMatch = !q || searchText.indexOf(q) > -1;
     return areaMatch && textMatch;
   });
   renderJummah(filtered);
 }
 
+function jummahDirectoryTimes(m) {
+  var parts = jummahTimeParts(m).slice(0, 3).map(function(t) {
+    return fmt12NoAmPm(t || '').trim();
+  });
+  while (parts.length < 3) parts.push('');
+  return parts;
+}
+
 function renderJummah(mosques) {
   var el = document.getElementById('jummah-results');
   if (!el) return;
-  if (!mosques.length) { el.innerHTML = '<div class="loading-state">No results found</div>'; return; }
+  var countEl = document.getElementById('jummah-count');
+  if (countEl) countEl.textContent = mosques.length + ' mosque' + (mosques.length !== 1 ? 's' : '') + ' listed';
+  if (!mosques.length) {
+    el.innerHTML = "<div class=\"loading-state\">No Jumu'ah times found</div>";
+    return;
+  }
 
-  // Group by borough (via BOROUGH_AREAS lookup), then by area within borough
-  var boroughOrder = Object.keys(BOROUGH_AREAS);
+  var areaOrder = [];
+  Object.keys(BOROUGH_AREAS).forEach(function(b) {
+    BOROUGH_AREAS[b].forEach(function(a) { areaOrder.push(a); });
+  });
   var groups = {};
-  var usedBoroughs = [];
+  var usedAreas = [];
 
   mosques.forEach(function(m) {
-    var borough = 'Other';
-    boroughOrder.forEach(function(b) {
-      if (BOROUGH_AREAS[b].indexOf(m.area) > -1) borough = b;
-    });
-    if (!groups[borough]) { groups[borough] = []; usedBoroughs.push(borough); }
-    groups[borough].push({ mosque: m, idx: MOSQUES.indexOf(m) });
+    var area = m.area || 'Other';
+    if (!groups[area]) { groups[area] = []; usedAreas.push(area); }
+    groups[area].push({ mosque: m, idx: MOSQUES.indexOf(m) });
   });
 
-  // Keep borough order consistent
-  usedBoroughs = usedBoroughs.filter(function(v, i, a) { return a.indexOf(v) === i; });
-  usedBoroughs.sort(function(a, b) {
-    return boroughOrder.indexOf(a) - boroughOrder.indexOf(b);
+  usedAreas = usedAreas.filter(function(v, i, a) { return a.indexOf(v) === i; });
+  usedAreas.sort(function(a, b) {
+    var ai = areaOrder.indexOf(a), bi = areaOrder.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
   });
 
-  el.innerHTML = usedBoroughs.map(function(borough) {
-    var entries = groups[borough];
-    // Sort entries within borough alphabetically by area then name
+  el.innerHTML = usedAreas.map(function(area) {
+    var entries = groups[area];
     entries.sort(function(a, b) {
-      if (a.mosque.area !== b.mosque.area) return a.mosque.area.localeCompare(b.mosque.area);
       return a.mosque.name.localeCompare(b.mosque.name);
     });
     var rows = entries.map(function(e) {
-      return '<div class="mosque-card" onclick="openDetail(' + e.idx + ')" style="cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px 16px;position:relative;margin-bottom:8px">' +
-        '<div style="flex:1;min-width:0">' +
-          '<div style="font-size:14px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + e.mosque.name + '</div>' +
-          '<span style="font-size:11px;color:var(--gold)">Jummah: ' + publicJummahLabel(e.mosque) + '</span>' +
-        '</div>' +
+      var times = jummahDirectoryTimes(e.mosque);
+      return '<div class="jummah-table-row" onclick="openDetail(' + e.idx + ')">' +
+        '<div class="jummah-table-name">' + qText(e.mosque.name) + '</div>' +
+        times.map(function(t) {
+          return '<div class="jummah-table-time' + (!t ? ' is-empty' : '') + '">' + (t || '&ndash;') + '</div>';
+        }).join('') +
       '</div>';
     }).join('');
 
-    return '<div style="margin-bottom:24px">' +
-      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
-        '<span style="font-size:15px;font-weight:500;color:var(--text)">' + borough + '</span>' +
-        '<span style="font-size:12px;color:var(--muted)">' + entries.length + ' mosque' + (entries.length !== 1 ? 's' : '') + '</span>' +
-        '<div style="flex:1;height:1px;background:var(--border)"></div>' +
+    return '<div class="jummah-area-section">' +
+      '<div class="jummah-table-header">' +
+        '<strong>' + qText(area) + '</strong>' +
+        '<span>1st</span><span>2nd</span><span>3rd</span>' +
       '</div>' +
       rows +
     '</div>';
@@ -4209,6 +4321,7 @@ function refreshRenderedData(data) {
   filterMosques();
   filterServices();
   filterPrayerRooms();
+  if (document.getElementById('page-jumuah-times') && document.getElementById('page-jumuah-times').classList.contains('active')) filterJummah();
   if (document.getElementById('page-jumuah') && document.getElementById('page-jumuah').classList.contains('active')) renderJumuahPage();
 }
 
@@ -4459,9 +4572,7 @@ function applyData(results) {
       });
 
       // Populate MOSQUES
-      MOSQUES = mosqueRows.filter(function(m) {
-        return !!timesByMosque[m.id];
-      }).map(function(m) {
+      MOSQUES = mosqueRows.map(function(m) {
         var profile = profileByMosque[m.id] || {};
         return {
           name:     profile.name || m.name || '',
@@ -5143,7 +5254,7 @@ function refreshHomeData(done) {
         tomorrowFajrByMosque[mid] = { jamaah: tomorrowOverride.fajr_jamaah, begins: tomorrowOverride.fajr_begins || tomorrowOverride.fajr_jamaah };
       }
     });
-    MOSQUES = mosqueRows.filter(function(m){ return !!timesByMosque[m.id]; }).map(function(m, i) {
+    MOSQUES = mosqueRows.map(function(m, i) {
       var profile = profileByMosque[m.id] || {};
       return { name:profile.name||m.name||'', address:profile.address||m.address||'', area:m.area||'', borough:m.borough||'', jummah:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah)||m.jummah||'1:30 PM', jummah2:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah2)||m.jummah2||'', jummah3:(jummahByMosque[m.id]&&jummahByMosque[m.id].jummah3)||m.jummah3||'', phone:profileValue(profile,m,'phone'), website:profileValue(profile,m,'website'), email:profileValue(profile,m,'email'), about:profileValue(profile,m,'about'), facilities:Object.prototype.hasOwnProperty.call(profile,'facilities')?normaliseFacilities(profile.facilities):normaliseFacilities(m.facilities), logo:logoByMosque[m.id]||m.logo||'', url:m.url||'', lat:m.lat||null, lon:m.lon||null, services:[], announcements:annByMosque[m.id]||[], _times:timesByMosque[m.id]||null, _tomorrowFajr:tomorrowFajrByMosque[m.id]||null, _prayerOverrides:prayerOverrideByMosque[m.id]||null, _asrOpinion:asrOpinionByMosque[m.id]||'first', _id:m.id, _slug:m.slug, _sourceIndex: mosqueRows.indexOf(m) };
     });
