@@ -383,6 +383,11 @@ textarea{resize:vertical;min-height:80px}
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h7v2H4z"/></svg>
       Ad Banners
     </div>
+    <div class="sb-item" onclick="showPage('reports')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z"/></svg>
+      Listing Reports
+      <span class="badge" id="sb-report-count">—</span>
+    </div>
   </nav>
   <div class="sb-footer">Qiblah &copy; 2026 &bull; Legacy 99</div>
 </div>
@@ -572,6 +577,20 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
 
+    <div class="page" id="page-reports">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Prayer Space Reports</span>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Listing</th><th>Issue</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
+            <tbody id="reports-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -624,7 +643,7 @@ function sb(path, opts) {
   });
 }
 
-var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [] };
+var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [], reports: [] };
 var currentModal = null;
 var editId = null;
 
@@ -642,7 +661,7 @@ function showPage(id) {
   document.getElementById('page-' + id).classList.add('active');
   document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.sb-item').forEach(function(b){ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
-  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners' };
+  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', reports:'Listing Reports' };
   document.getElementById('page-title').textContent = titles[id] || id;
   var action = document.getElementById('topbar-action');
   action.style.display = 'none';
@@ -659,7 +678,8 @@ function loadAll() {
     sb('prayer_timetables?select=mosque_id,date'),
     sb('banners?select=*&order=sort_order,created_at'),
     sb('services?select=id'),
-    sb('analytics?select=*&created_at=gte.' + encodeURIComponent(since) + '&order=created_at.desc&limit=5000')
+    sb('analytics?select=*&created_at=gte.' + encodeURIComponent(since) + '&order=created_at.desc&limit=5000'),
+    sb('listing_reports?select=*&order=created_at.desc&limit=1000')
   ]).then(function(results) {
     state.mosques = results[0] || [];
     state.admins = results[1] || [];
@@ -669,6 +689,7 @@ function loadAll() {
     state.banners = results[5] || [];
     state.services = results[6] || [];
     state.analytics = results[7] || [];
+    state.reports = results[8] || [];
     updateStats();
     renderDashboard();
     renderMosques();
@@ -677,7 +698,9 @@ function loadAll() {
     renderCourses();
     renderTimetables();
     renderBanners();
+    renderReports();
     document.getElementById('sb-mosque-count').textContent = state.mosques.length;
+    document.getElementById('sb-report-count').textContent = state.reports.length;
   });
 }
 
@@ -1261,6 +1284,62 @@ function renderBanners() {
       else if (this.dataset.action === 'delete-banner') deleteBanner(id);
     });
   });
+}
+
+function reportIssueLabel(issueTypes) {
+  var list = Array.isArray(issueTypes) ? issueTypes : [];
+  if (!list.length) return '—';
+  return list.map(function(item) {
+    if (item === 'closed') return 'Closed';
+    if (item === 'unavailable') return 'Unavailable';
+    if (item === 'incorrect') return 'Incorrect details';
+    return item;
+  }).join(', ');
+}
+
+function reportStatusBadge(status) {
+  if (status === 'resolved') return '<span class="badge badge-green">Resolved</span>';
+  if (status === 'reviewing') return '<span class="badge badge-blue">Reviewing</span>';
+  return '<span class="badge badge-gold">New</span>';
+}
+
+function renderReports() {
+  var tbody = document.getElementById('reports-tbody');
+  if (!tbody) return;
+  if (!state.reports.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No listing reports yet</p><p style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Run <code>supabase/listing-reports.sql</code> in Supabase, then prayer space reports will appear here.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.reports.map(function(r) {
+    var submitted = r.created_at ? formatEventTime(r.created_at) : '—';
+    return '<tr>' +
+      '<td><strong style="display:block">' + escapeHtml(r.listing_name || 'Unknown listing') + '</strong><span style="display:block;font-size:11px;color:var(--muted);margin-top:3px">' + escapeHtml((r.listing_area || '—') + (r.listing_address ? ' • ' + r.listing_address : '')) + '</span></td>' +
+      '<td><span style="font-size:12px;line-height:1.5">' + escapeHtml(reportIssueLabel(r.issue_types)) + (r.notes ? '<br><span style="color:var(--muted)">' + escapeHtml(r.notes) + '</span>' : '') + '</span></td>' +
+      '<td>' + reportStatusBadge(r.status) + '</td>' +
+      '<td style="font-size:12px">' + escapeHtml(submitted) + '</td>' +
+      '<td><button class="btn btn-ghost btn-sm" data-action="review-report" data-id="' + r.id + '" data-status="reviewing">Reviewing</button> <button class="btn btn-ghost btn-sm" data-action="resolve-report" data-id="' + r.id + '" data-status="resolved">Resolve</button> <button class="btn btn-danger btn-sm" data-action="delete-report" data-id="' + r.id + '">Delete</button></td>' +
+    '</tr>';
+  }).join('');
+  tbody.querySelectorAll('[data-action]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.dataset.id;
+      if (this.dataset.action === 'delete-report') deleteReport(id);
+      else updateReportStatus(id, this.dataset.status);
+    });
+  });
+}
+
+function updateReportStatus(id, status) {
+  sb('listing_reports?id=eq.' + id, { method: 'PATCH', body: JSON.stringify({ status: status, reviewed_at: new Date().toISOString() }) })
+    .then(function(){ toast('Report updated', 'success'); loadAll(); })
+    .catch(function(err){ toast(err && err.message ? err.message : 'Error updating report', 'error'); });
+}
+
+function deleteReport(id) {
+  if (!confirm('Delete this report?')) return;
+  sb('listing_reports?id=eq.' + id, { method: 'DELETE' })
+    .then(function(){ toast('Report deleted', 'success'); loadAll(); })
+    .catch(function(err){ toast(err && err.message ? err.message : 'Error deleting report', 'error'); });
 }
 
 function handleBannerImageUpload(event, targetId, maxW, maxH, maxBytes) {

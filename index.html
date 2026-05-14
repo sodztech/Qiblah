@@ -4009,23 +4009,100 @@ function prayerRoomDirectionsUrl(r) {
   return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query || 'prayer space');
 }
 
-function prayerRoomReportUrl(r) {
-  var subject = 'Prayer Space report: ' + (r && r.name ? r.name : 'Unknown space');
-  var body = [
-    'Please review this Prayer Space listing:',
-    '',
-    'Name: ' + (r && r.name || ''),
-    'Address: ' + (r && r.address || ''),
-    'Area: ' + (r && r.area || ''),
-    '',
-    'Issue:',
-    '[ ] Closed',
-    '[ ] No longer available',
-    '[ ] Details are incorrect',
-    '',
-    'Notes:'
-  ].join('\n');
-  return 'mailto:hello@qiblah.app?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+function prayerRoomReportKey(idx) {
+  return 'prayer-room-report-' + idx;
+}
+
+function prayerRoomReportCardState(idx) {
+  var key = prayerRoomReportKey(idx);
+  if (!window._prayerRoomReportState) window._prayerRoomReportState = {};
+  if (!window._prayerRoomReportState[key]) window._prayerRoomReportState[key] = { submitted:false, submitting:false, error:'' };
+  return window._prayerRoomReportState[key];
+}
+
+function prayerRoomIssueValues(idx) {
+  return Array.prototype.slice.call(document.querySelectorAll('input[name="prayer-room-issue-' + idx + '"]:checked')).map(function(el) {
+    return el.value;
+  });
+}
+
+function renderPrayerRoomReportCard(idx) {
+  var r = PRAYER_ROOMS[idx] || null;
+  var mount = document.getElementById('prayer-room-report-card');
+  if (!r || !mount) return;
+  var state = prayerRoomReportCardState(idx);
+  if (state.submitted) {
+    mount.innerHTML =
+      '<h3>Report Listing</h3>' +
+      '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:0">Thanks. Your report has been sent to Qiblah super admin for review.</p>';
+    return;
+  }
+  var errorHtml = state.error ? '<div style="font-size:12px;color:#b4234b;margin-top:10px">' + qText(state.error) + '</div>' : '';
+  mount.innerHTML =
+    '<h3>Report Listing</h3>' +
+    '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">If this prayer space is closed, unavailable, or listed incorrectly, submit a report and the super admin team will review it.</p>' +
+    '<div style="display:grid;gap:10px">' +
+      '<label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="closed" style="width:16px;height:16px"> Closed</label>' +
+      '<label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="unavailable" style="width:16px;height:16px"> No longer available</label>' +
+      '<label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="incorrect" style="width:16px;height:16px"> Details are incorrect</label>' +
+    '</div>' +
+    '<textarea id="prayer-room-report-notes" placeholder="Add any helpful details" style="margin-top:12px;min-height:96px"></textarea>' +
+    '<button type="button" onclick="submitPrayerRoomReport(' + idx + ')" style="margin-top:12px;background:rgba(166,134,74,0.12);border:1px solid rgba(166,134,74,0.28);color:var(--gold);height:38px;padding:0 14px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;min-width:180px"' + (state.submitting ? ' disabled' : '') + '>' +
+      (state.submitting ? 'Sending report...' : '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M11 7h2v7h-2V7zm0 9h2v2h-2v-2zM1 21h22L12 2 1 21z"/></svg>Send report') +
+    '</button>' +
+    errorHtml;
+}
+
+function submitPrayerRoomReport(idx) {
+  var r = PRAYER_ROOMS[idx] || null;
+  if (!r) return;
+  var state = prayerRoomReportCardState(idx);
+  var issues = prayerRoomIssueValues(idx);
+  if (!issues.length) {
+    state.error = 'Select at least one issue first.';
+    renderPrayerRoomReportCard(idx);
+    return;
+  }
+  state.submitting = true;
+  state.error = '';
+  renderPrayerRoomReportCard(idx);
+  var notesEl = document.getElementById('prayer-room-report-notes');
+  var payload = {
+    listing_type: 'prayer_space',
+    listing_name: r.name || '',
+    listing_area: r.area || '',
+    listing_address: r.address || '',
+    source_page: 'prayer-rooms',
+    issue_types: issues,
+    notes: notesEl ? notesEl.value.trim() : '',
+    status: 'new'
+  };
+  fetch(SB_URL + '/rest/v1/listing_reports', {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(payload)
+  }).then(function(resp) {
+    if (!resp.ok) {
+      return resp.text().then(function(text) {
+        throw new Error(text || 'Could not submit report');
+      });
+    }
+    return resp.json();
+  }).then(function() {
+    state.submitting = false;
+    state.submitted = true;
+    state.error = '';
+    renderPrayerRoomReportCard(idx);
+  }).catch(function(err) {
+    state.submitting = false;
+    state.error = (err && err.message ? err.message : 'Could not submit report. Please try again.').replace(/^"|"$/g, '');
+    renderPrayerRoomReportCard(idx);
+  });
 }
 
 function prayerRoomSummary(r) {
@@ -4058,7 +4135,6 @@ function openPrayerRoomDetail(idx) {
   if (!r) return;
   var col = prayerRoomTypeColor(r.type);
   var directionsUrl = prayerRoomDirectionsUrl(r);
-  var reportUrl = prayerRoomReportUrl(r);
   var summary = prayerRoomSummary(r);
   var facilities = (r.facilities && r.facilities.length ? r.facilities : ['Prayer space']).map(function(f) {
     return '<div class="facility-item">' +
@@ -4118,10 +4194,7 @@ function openPrayerRoomDetail(idx) {
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Report Listing</h3>' +
-        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">If this prayer space is closed, unavailable, or listed incorrectly, let us know so we can update it.</p>' +
-        '<a href="' + qText(reportUrl) + '" style="display:inline-flex;align-items:center;gap:6px;color:#a6864a;font-size:13px;font-weight:700;text-decoration:none">' +
-          '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M11 7h2v7h-2V7zm0 9h2v2h-2v-2zM1 21h22L12 2 1 21z"/></svg>Report unavailable' +
-        '</a>' +
+        '<div id="prayer-room-report-card"></div>' +
       '</div>' +
     '</div>';
   var dc = document.getElementById('detail-content');
@@ -4131,6 +4204,7 @@ function openPrayerRoomDetail(idx) {
   window.scrollTo(0, 0);
   var detailPage = document.getElementById('page-detail');
   if (detailPage) detailPage.scrollTop = 0;
+  renderPrayerRoomReportCard(idx);
 }
 
 function renderPrayerRooms(rooms) {
