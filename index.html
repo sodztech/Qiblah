@@ -3934,6 +3934,40 @@ function setPrayerRoomsFromAnnouncements(rows) {
   PRAYER_ROOMS = Object.keys(byName).map(function(k) { return byName[k]; });
 }
 
+function normalisePrayerSpaceRow(row) {
+  var facilities = row && row.facilities;
+  if (typeof facilities === 'string') facilities = facilities.split(',').map(function(x){ return x.trim(); }).filter(Boolean);
+  if (!Array.isArray(facilities)) facilities = [];
+  return {
+    id: row && row.id || null,
+    name: row && row.name || 'Prayer Space',
+    venue: row && row.venue || '',
+    address: row && row.address || '',
+    area: row && row.area || '',
+    city: row && row.city || '',
+    type: row && row.type || 'Other',
+    hours: row && row.hours || '',
+    notes: row && row.notes || '',
+    facilities: facilities,
+    url: row && row.url || '',
+    lat: row && row.lat != null ? row.lat : null,
+    lon: row && row.lon != null ? row.lon : null,
+    active: row && row.active !== false,
+    sort_order: row && row.sort_order || 0
+  };
+}
+
+function setPrayerRoomsFromSupabase(rows, announcementRows) {
+  var activeRows = (rows || []).filter(function(r) { return r && r.active !== false; }).map(normalisePrayerSpaceRow);
+  if (activeRows.length) {
+    PRAYER_ROOMS = activeRows.slice().sort(function(a, b) {
+      return (a.sort_order || 0) - (b.sort_order || 0) || String(a.name || '').localeCompare(String(b.name || ''));
+    });
+    return;
+  }
+  setPrayerRoomsFromAnnouncements(announcementRows || []);
+}
+
 function initPrayerRoomFilters() {
   var el = document.getElementById('prayer-room-area-select');
   if (!el) return;
@@ -4028,18 +4062,16 @@ function prayerRoomIssueValues(idx) {
 
 function renderPrayerRoomReportCard(idx) {
   var r = PRAYER_ROOMS[idx] || null;
-  var mount = document.getElementById('prayer-room-report-card');
+  var mount = document.getElementById('prayer-room-report-page') || document.getElementById('prayer-room-report-card');
   if (!r || !mount) return;
   var state = prayerRoomReportCardState(idx);
   if (state.submitted) {
     mount.innerHTML =
-      '<h3>Report Listing</h3>' +
       '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:0">Thanks. Your report has been sent to Qiblah super admin for review.</p>';
     return;
   }
   var errorHtml = state.error ? '<div style="font-size:12px;color:#b4234b;margin-top:10px">' + qText(state.error) + '</div>' : '';
   mount.innerHTML =
-    '<h3>Report Listing</h3>' +
     '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">If this prayer space is closed, unavailable, or listed incorrectly, submit a report and the super admin team will review it.</p>' +
     '<div style="display:grid;gap:10px">' +
       '<label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" name="prayer-room-issue-' + idx + '" value="closed" style="width:16px;height:16px"> Closed</label>' +
@@ -4130,6 +4162,34 @@ function prayerRoomCardName(r) {
   return cleaned || name || 'Prayer Space';
 }
 
+function openPrayerRoomReportPage(idx) {
+  var r = PRAYER_ROOMS[idx] || null;
+  if (!r) return;
+  var html =
+    '<div style="padding:16px 16px 0">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
+        '<button style="background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="openPrayerRoomDetail(' + idx + ')">' +
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>' +
+        '</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="detail-body">' +
+      '<div class="detail-card">' +
+        '<h3>Report Listing</h3>' +
+        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">' + qText(r.name || 'Prayer Space') + '</p>' +
+        '<div id="prayer-room-report-page"></div>' +
+      '</div>' +
+    '</div>';
+  var dc = document.getElementById('detail-content');
+  if (!dc) return;
+  dc.innerHTML = html;
+  showPage('detail');
+  window.scrollTo(0, 0);
+  var detailPage = document.getElementById('page-detail');
+  if (detailPage) detailPage.scrollTop = 0;
+  renderPrayerRoomReportCard(idx);
+}
+
 function openPrayerRoomDetail(idx) {
   var r = PRAYER_ROOMS[idx] || null;
   if (!r) return;
@@ -4194,7 +4254,11 @@ function openPrayerRoomDetail(idx) {
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Report Listing</h3>' +
-        '<div id="prayer-room-report-card"></div>' +
+        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">If this prayer space is closed or details have changed, send a report to the super admin team.</p>' +
+        '<button type="button" onclick="openPrayerRoomReportPage(' + idx + ')" style="background:rgba(166,134,74,0.12);border:1px solid rgba(166,134,74,0.28);color:var(--gold);height:38px;padding:0 14px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;min-width:180px">' +
+          '<svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M11 7h2v7h-2V7zm0 9h2v2h-2v-2zM1 21h22L12 2 1 21z"/></svg>' +
+          'Report unavailable' +
+        '</button>' +
       '</div>' +
     '</div>';
   var dc = document.getElementById('detail-content');
@@ -4204,7 +4268,6 @@ function openPrayerRoomDetail(idx) {
   window.scrollTo(0, 0);
   var detailPage = document.getElementById('page-detail');
   if (detailPage) detailPage.scrollTop = 0;
-  renderPrayerRoomReportCard(idx);
 }
 
 function renderPrayerRooms(rooms) {
@@ -4691,7 +4754,7 @@ function applyData(results) {
         if (b.end_date   && b.end_date   < todayStr) return false;
         return true;
       });
-      setPrayerRoomsFromAnnouncements(annRows);
+      setPrayerRoomsFromSupabase(results.prayerSpaceRows || [], annRows);
 
       var asrOpinionByMosque = {};
       var logoByMosque = {};
@@ -4875,6 +4938,7 @@ function loadMosquesFromSupabase() {
 
   // Supabase is the source of truth on every open; cache is only a fallback.
   var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities,logo&is_hidden=eq.false&order=name');
+  var p2 = sbGet('prayer_spaces?select=*&order=sort_order,name');
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
   var p4 = sbGet('courses?select=*&order=name&active=eq.true');
   var p5 = sbGet('institutes?select=id,name,address,area,borough,phone,website,type,about,is_featured&order=name');
@@ -4883,22 +4947,24 @@ function loadMosquesFromSupabase() {
   var p8 = sbGet('banners?select=*&order=sort_order,created_at');
   var p9 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
 
-  Promise.all([p1, p3, p4, p5, p6, p7, p8, p9])
+  Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9])
     .then(function(results) {
       var r = {
         mosqueRows:        results[0] || [],
+        prayerSpaceRows:   results[1] || [],
         svcRows:           [],
-        annRows:           results[1] || [],
-        courseRows:        results[2] || [],
-        instRows:          results[3] || [],
-        instSvcRows:       results[4] || [],
-        timesRows:         results[5] || [],
-        bannerRows:        results[6] || [],
-        tomorrowTimesRows: results[7] || []
+        annRows:           results[2] || [],
+        courseRows:        results[3] || [],
+        instRows:          results[4] || [],
+        instSvcRows:       results[5] || [],
+        timesRows:         results[6] || [],
+        bannerRows:        results[7] || [],
+        tomorrowTimesRows: results[8] || []
       };
       // Save to cache
       cacheSet(CACHE_KEY_STATIC, {
         mosqueRows:  r.mosqueRows,
+        prayerSpaceRows: r.prayerSpaceRows,
         svcRows:     r.svcRows,
         annRows:     r.annRows,
         courseRows:  r.courseRows,
@@ -5413,15 +5479,17 @@ window.addEventListener('focus', function() {
 function refreshHomeData(done) {
   var today = todayISO(), tomorrow = tomorrowISO();
   var p1 = sbGet('mosques?select=id,slug,name,address,area,borough,jummah,phone,website,email,about,url,lat,lon,sisters,facilities,logo&is_hidden=eq.false&order=name');
+  var p2 = sbGet('prayer_spaces?select=*&order=sort_order,name');
   var p3 = sbGet('announcements?select=*&order=sort_order,created_at.desc');
   var p4 = sbGet('prayer_timetables?date=eq.' + today + '&select=mosque_id,fajr_begins,fajr_jamaah,zuhr_begins,zuhr_jamaah,asr_begins,asr_begins_secondary,asr_jamaah,maghrib_begins,maghrib_jamaah,isha_begins,isha_jamaah');
   var p5 = sbGet('prayer_timetables?date=eq.' + tomorrow + '&select=mosque_id,fajr_jamaah');
-  Promise.all([p1, p3, p4, p5]).then(function(results) {
+  Promise.all([p1, p2, p3, p4, p5]).then(function(results) {
     var mosqueRows   = results[0] || [];
-    var annRows      = results[1] || [];
-    var timesRows    = results[2] || [];
-    var tomorrowRows = results[3] || [];
-    setPrayerRoomsFromAnnouncements(annRows);
+    var prayerSpaceRows = results[1] || [];
+    var annRows      = results[2] || [];
+    var timesRows    = results[3] || [];
+    var tomorrowRows = results[4] || [];
+    setPrayerRoomsFromSupabase(prayerSpaceRows, annRows);
     var annByMosque = {}, timesByMosque = {}, tomorrowFajrByMosque = {}, asrOpinionByMosque = {}, logoByMosque = {}, profileByMosque = {}, jummahByMosque = {}, prayerOverrideByMosque = {};
     annRows.forEach(function(a) {
       if (a.active === false || a.is_active === false) return;

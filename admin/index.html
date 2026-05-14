@@ -292,6 +292,11 @@ textarea{resize:vertical;min-height:80px}
   #banners-tbody td:nth-child(3)::before { content:'Dates'; }
   #banners-tbody td:nth-child(4)::before { content:'Status'; }
   #banners-tbody td:nth-child(5)::before { content:'Actions'; }
+  #spaces-tbody td:nth-child(1)::before { content:'Name'; }
+  #spaces-tbody td:nth-child(2)::before { content:'Area'; }
+  #spaces-tbody td:nth-child(3)::before { content:'Type'; }
+  #spaces-tbody td:nth-child(4)::before { content:'Status'; }
+  #spaces-tbody td:nth-child(5)::before { content:'Actions'; }
   td .btn { margin:0 6px 6px 0; }
   .activity-row {
     grid-template-columns:82px minmax(0,1fr);
@@ -382,6 +387,11 @@ textarea{resize:vertical;min-height:80px}
     <div class="sb-item" onclick="showPage('banners')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h7v2H4z"/></svg>
       Ad Banners
+    </div>
+    <div class="sb-item" onclick="showPage('spaces')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12v18H6V3zm2 2v14h8V5H8zm2 6h4v2h-4v-2z"/></svg>
+      Prayer Spaces
+      <span class="badge" id="sb-space-count">—</span>
     </div>
     <div class="sb-item" onclick="showPage('reports')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z"/></svg>
@@ -577,6 +587,24 @@ textarea{resize:vertical;min-height:80px}
       </div>
     </div>
 
+    <div class="page" id="page-spaces">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Prayer Spaces</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="importPrayerSpacesSeed()">Import Current Spaces</button>
+            <button class="btn btn-primary btn-sm" onclick="openModal('prayer-space')">+ Add Prayer Space</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Name</th><th>Area</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="spaces-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div class="page" id="page-reports">
       <div class="card">
         <div class="card-header">
@@ -608,6 +636,8 @@ textarea{resize:vertical;min-height:80px}
     </div>
   </div>
 </div>
+
+<script src="../assets/data/prayer-spaces-seed.js"></script>
 
 <!-- TOAST -->
 <div id="toast"></div>
@@ -643,7 +673,7 @@ function sb(path, opts) {
   });
 }
 
-var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [], reports: [] };
+var state = { mosques: [], admins: [], institutes: [], courses: [], timetables: [], banners: [], services: [], analytics: [], reports: [], prayerSpaces: [] };
 var currentModal = null;
 var editId = null;
 
@@ -661,7 +691,7 @@ function showPage(id) {
   document.getElementById('page-' + id).classList.add('active');
   document.querySelectorAll('.sb-item').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.sb-item').forEach(function(b){ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
-  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', reports:'Listing Reports' };
+  var titles = { dashboard:'Dashboard', mosques:'Mosques', timetables:'Prayer Timetables', admins:'Admin Credentials', institutes:'Institutes', courses:'Online Courses', banners:'Ad Banners', spaces:'Prayer Spaces', reports:'Listing Reports' };
   document.getElementById('page-title').textContent = titles[id] || id;
   var action = document.getElementById('topbar-action');
   action.style.display = 'none';
@@ -677,6 +707,7 @@ function loadAll() {
     sb('courses?select=*&order=name'),
     sb('prayer_timetables?select=mosque_id,date'),
     sb('banners?select=*&order=sort_order,created_at'),
+    sb('prayer_spaces?select=*&order=sort_order,name'),
     sb('services?select=id'),
     sb('analytics?select=*&created_at=gte.' + encodeURIComponent(since) + '&order=created_at.desc&limit=5000'),
     sb('listing_reports?select=*&order=created_at.desc&limit=1000')
@@ -687,9 +718,10 @@ function loadAll() {
     state.courses = results[3] || [];
     state.timetables = results[4] || [];
     state.banners = results[5] || [];
-    state.services = results[6] || [];
-    state.analytics = results[7] || [];
-    state.reports = results[8] || [];
+    state.prayerSpaces = results[6] || [];
+    state.services = results[7] || [];
+    state.analytics = results[8] || [];
+    state.reports = results[9] || [];
     updateStats();
     renderDashboard();
     renderMosques();
@@ -698,8 +730,10 @@ function loadAll() {
     renderCourses();
     renderTimetables();
     renderBanners();
+    renderPrayerSpaces();
     renderReports();
     document.getElementById('sb-mosque-count').textContent = state.mosques.length;
+    document.getElementById('sb-space-count').textContent = state.prayerSpaces.length;
     document.getElementById('sb-report-count').textContent = state.reports.length;
   });
 }
@@ -1069,6 +1103,24 @@ function openModal(type, data) {
       '<div class="form-group"><label>End Date <span style="font-size:11px;color:var(--muted)">(optional)</span></label><input type="date" id="f-banner-end" value="' + escapeAttr(data&&data.end_date) + '"></div>' +
       '<div class="form-group"><label>Sort Order</label><input type="number" id="f-banner-order" value="' + ((data&&data.sort_order)||0) + '" min="0" style="width:80px"><div style="font-size:11px;color:var(--muted);margin-top:4px">Lower = shown first</div></div>' +
     '</div>';
+  } else if (type === 'prayer-space') {
+    title.textContent = data ? 'Edit Prayer Space' : 'Add Prayer Space';
+    body.innerHTML = '<div class="form-grid">' +
+      '<div class="form-group full"><label>Name</label><input id="f-name" value="' + escapeAttr(data&&data.name) + '" placeholder="Selfridges"></div>' +
+      '<div class="form-group full"><label>Specific Location</label><input id="f-venue" value="' + escapeAttr(data&&data.venue) + '" placeholder="4th floor near customer services"></div>' +
+      '<div class="form-group full"><label>Address</label><input id="f-address" value="' + escapeAttr(data&&data.address) + '" placeholder="400 Oxford Street, London W1A 1AB"></div>' +
+      '<div class="form-group"><label>Area</label><input id="f-area" value="' + escapeAttr(data&&data.area) + '" placeholder="Oxford Street"></div>' +
+      '<div class="form-group"><label>City</label><input id="f-city" value="' + escapeAttr(data&&data.city) + '" placeholder="London"></div>' +
+      '<div class="form-group"><label>Type</label><select id="f-type">' + ['Shopping Centre','Community Space','Workplace','Cultural Venue','Transport Hub','Hospital','University','Retail Park','Entertainment Venue','Airport','Government','Other'].map(function(t){ return '<option' + (data&&data.type===t?' selected':'') + '>' + t + '</option>'; }).join('') + '</select></div>' +
+      '<div class="form-group"><label>Opening Info</label><input id="f-hours" value="' + escapeAttr(data&&data.hours) + '" placeholder="Open daily / ask staff"></div>' +
+      '<div class="form-group"><label>Directions URL</label><input id="f-url" value="' + escapeAttr(data&&data.url) + '" placeholder="https://..."></div>' +
+      '<div class="form-group"><label>Latitude</label><input id="f-lat" value="' + escapeAttr(data&&data.lat) + '" placeholder="51.514"></div>' +
+      '<div class="form-group"><label>Longitude</label><input id="f-lon" value="' + escapeAttr(data&&data.lon) + '" placeholder="-0.152"></div>' +
+      '<div class="form-group"><label>Status</label><select id="f-active"><option value="true"' + (data&&data.active===false?'':' selected') + '>Active</option><option value="false"' + (data&&data.active===false?' selected':'') + '>Inactive</option></select></div>' +
+      '<div class="form-group"><label>Sort Order</label><input type="number" id="f-order" value="' + ((data&&data.sort_order)||0) + '" min="0"></div>' +
+      '<div class="form-group full"><label>Facilities</label><input id="f-facilities" value="' + escapeAttr(facilitiesText(data&&data.facilities)) + '" placeholder="Prayer space, Wudu, Toilets"></div>' +
+      '<div class="form-group full"><label>Notes</label><textarea id="f-notes">' + escapeHtml(data&&data.notes) + '</textarea></div>' +
+    '</div>';
   }
 
   overlay.classList.add('open');
@@ -1142,6 +1194,7 @@ function saveModal() {
   else if (currentModal === 'course') saveCourse();
   else if (currentModal === 'pin') savePin();
   else if (currentModal === 'banner') saveBanner();
+  else if (currentModal === 'prayer-space') savePrayerSpace();
 }
 
 function saveMosque() {
@@ -1234,9 +1287,36 @@ function savePin() {
   });
 }
 
+function savePrayerSpace() {
+  var payload = {
+    name: document.getElementById('f-name').value.trim(),
+    venue: document.getElementById('f-venue').value.trim(),
+    address: document.getElementById('f-address').value.trim(),
+    area: document.getElementById('f-area').value.trim(),
+    city: document.getElementById('f-city').value.trim(),
+    type: document.getElementById('f-type').value,
+    hours: document.getElementById('f-hours').value.trim(),
+    url: document.getElementById('f-url').value.trim(),
+    lat: numberOrNull(document.getElementById('f-lat').value),
+    lon: numberOrNull(document.getElementById('f-lon').value),
+    active: document.getElementById('f-active').value === 'true',
+    sort_order: parseInt(document.getElementById('f-order').value, 10) || 0,
+    facilities: document.getElementById('f-facilities').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
+    notes: document.getElementById('f-notes').value.trim()
+  };
+  if (!payload.name || !payload.area) { toast('Name and area are required', 'error'); return; }
+  var method = editId ? 'PATCH' : 'POST';
+  var path = editId ? 'prayer_spaces?id=eq.' + editId : 'prayer_spaces';
+  sb(path, { method: method, body: JSON.stringify(payload) }).then(function(){
+    clearPublicAppCache();
+    closeModal(); toast('Prayer space ' + (editId ? 'updated' : 'added'), 'success'); loadAll();
+  }).catch(function(err){ toast(err && err.message ? err.message : 'Error saving prayer space', 'error'); });
+}
+
 function editMosque(id) { openModal('mosque', state.mosques.find(function(m){ return m.id===id; })); }
 function editInstitute(id) { openModal('institute', state.institutes.find(function(i){ return i.id===id; })); }
 function editCourse(id) { openModal('course', state.courses.find(function(c){ return c.id===id; })); }
+function editPrayerSpace(id) { openModal('prayer-space', state.prayerSpaces.find(function(s){ return s.id===id; })); }
 function editPin(id, pin, name) { editId = id; currentModal = 'pin'; openModal('pin', {id:id, pin_hash:pin}); document.getElementById('modal-title').textContent = 'Change PIN — ' + name; }
 
 function deleteMosque(id, name) {
@@ -1250,6 +1330,10 @@ function deleteInstitute(id) {
 function deleteCourse(id) {
   if (!confirm('Delete this course?')) return;
   sb('courses?id=eq.' + id, { method: 'DELETE' }).then(function(){ clearPublicAppCache(); toast('Deleted', 'success'); loadAll(); });
+}
+function deletePrayerSpace(id, name) {
+  if (!confirm('Delete ' + name + '?')) return;
+  sb('prayer_spaces?id=eq.' + id, { method: 'DELETE' }).then(function(){ clearPublicAppCache(); toast('Prayer space deleted', 'success'); loadAll(); });
 }
 
 // INIT
@@ -1284,6 +1368,73 @@ function renderBanners() {
       else if (this.dataset.action === 'delete-banner') deleteBanner(id);
     });
   });
+}
+
+function renderPrayerSpaces() {
+  var tbody = document.getElementById('spaces-tbody');
+  if (!tbody) return;
+  if (!state.prayerSpaces.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No prayer spaces in Supabase yet</p><p style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Use <code>Import Current Spaces</code> to bring in the current public list, then edit them here.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.prayerSpaces.map(function(space) {
+    var locationLine = space.venue || space.address || '';
+    return '<tr>' +
+      '<td><strong style="display:block;font-size:13px">' + escapeHtml(space.name || 'Prayer Space') + '</strong>' +
+        (locationLine ? '<span style="display:block;font-size:11px;color:var(--muted);margin-top:3px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(locationLine) + '</span>' : '') +
+      '</td>' +
+      '<td><span class="badge badge-gold">' + escapeHtml(space.area || '—') + '</span></td>' +
+      '<td>' + escapeHtml(space.type || '—') + '</td>' +
+      '<td>' + (space.active === false ? '<span class="badge badge-grey">Inactive</span>' : '<span class="badge badge-green">Active</span>') + '</td>' +
+      '<td><button class="btn btn-ghost btn-sm" data-action="edit-space" data-id="' + space.id + '">Edit</button> <button class="btn btn-danger btn-sm" data-action="delete-space" data-id="' + space.id + '">Delete</button></td>' +
+    '</tr>';
+  }).join('');
+  tbody.querySelectorAll('[data-action]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.dataset.id;
+      if (this.dataset.action === 'edit-space') editPrayerSpace(id);
+      if (this.dataset.action === 'delete-space') {
+        var space = state.prayerSpaces.find(function(item) { return item.id === id; });
+        deletePrayerSpace(id, space ? space.name : 'this prayer space');
+      }
+    });
+  });
+}
+
+function importPrayerSpacesSeed() {
+  var seed = Array.isArray(window.PRAYER_ROOM_SEED_IMPORT) ? window.PRAYER_ROOM_SEED_IMPORT : [];
+  if (!seed.length) {
+    toast('Prayer space seed list not found', 'error');
+    return;
+  }
+  if (!confirm('Import the current public prayer spaces into Supabase?')) return;
+  var rows = seed.map(function(space, idx) {
+    return {
+      name: space.name || '',
+      venue: space.venue || '',
+      address: space.address || '',
+      area: space.area || '',
+      city: space.city || 'London',
+      type: space.type || 'Other',
+      hours: space.hours || '',
+      notes: space.notes || '',
+      facilities: Array.isArray(space.facilities) ? space.facilities : [],
+      url: space.url || '',
+      lat: numberOrNull(space.lat),
+      lon: numberOrNull(space.lon),
+      active: space.active !== false,
+      sort_order: typeof space.sort_order === 'number' ? space.sort_order : idx
+    };
+  });
+  sb('prayer_spaces', { method: 'POST', body: JSON.stringify(rows) })
+    .then(function() {
+      clearPublicAppCache();
+      toast('Prayer spaces imported', 'success');
+      loadAll();
+    })
+    .catch(function(err) {
+      toast(err && err.message ? err.message : 'Error importing prayer spaces', 'error');
+    });
 }
 
 function reportIssueLabel(issueTypes) {
