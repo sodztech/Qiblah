@@ -28,6 +28,14 @@ copy_dir() {
   rsync -a --inplace --whole-file "$src/" "$dst/"
 }
 
+copy_dir_excluding_audio() {
+  local src="$WEB_ROOT/$1"
+  local dst="$IOS_WEB/$1"
+  [[ -d "$src" ]] || return 0
+  mkdir -p "$dst"
+  rsync -a --inplace --whole-file --exclude 'audio/' "$src/" "$dst/"
+}
+
 if [[ "$INCLUDE_INDEX" == "1" ]]; then
   copy_file "index.html"
 fi
@@ -46,7 +54,7 @@ copy_dir "jumuah"
 copy_dir "morning-adhkar"
 copy_dir "evening-adhkar"
 copy_dir "surah-kahf"
-copy_dir "assets"
+copy_dir_excluding_audio "assets"
 copy_dir "icons"
 
 echo "Synced website web files to: $IOS_WEB"

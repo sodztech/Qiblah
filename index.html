@@ -623,8 +623,8 @@ nav::after {
 .jummah-shortcut__copy { display:flex; flex-direction:column; gap:0; min-width:0; text-align:left; }
 .jummah-shortcut__title { font-size:14px !important; font-weight:400 !important; color:var(--text) !important; line-height:1.2 !important; }
 .jummah-shortcut > svg,
-.jummah-shortcut__icon { margin-left:auto; width:18px; height:18px; color:var(--gold); flex-shrink:0; }
-.jummah-shortcut svg { width: 18px; height: 18px; color: var(--gold); flex-shrink: 0; }
+.jummah-shortcut__icon { margin-left:auto; width:30px; height:30px; color:var(--gold); flex-shrink:0; border:1px solid rgba(166,134,74,0.22); background:rgba(166,134,74,0.08); border-radius:50%; padding:6px; box-sizing:border-box; }
+.jummah-shortcut svg { width: 30px; height: 30px; color: var(--gold); flex-shrink: 0; }
 .jummah-directory { padding: 10px 32px 120px; }
 .jummah-area-section { margin-bottom: 14px; border: 1px solid rgba(var(--gold-rgb),0.22); border-radius: var(--radius); overflow: hidden; background: var(--card); }
 .jummah-table-header,
@@ -763,6 +763,8 @@ nav::after {
 .service-icon svg { width: 18px; height: 18px; }
 .institute-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .institute-icon svg { width: 18px; height: 18px; }
+.service-icon-img { width: 18px; height: 18px; background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0; }
+.service-icon-img--quran { background-image: url('icons/quran.webp'); filter: brightness(0) saturate(100%) invert(51%) sepia(78%) saturate(915%) hue-rotate(132deg) brightness(92%) contrast(88%); }
 .service-body { flex: 1; min-width: 0; }
 .service-name { font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; font-weight: 400; }
 .service-provider { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
@@ -1320,8 +1322,8 @@ html.qiblah-dark-mode .reg-field label {
 
   <div class="section">
     <div class="section-header">
-      <div><h2>Nearby Services</h2><p id="home-services-label" style="display:none"></p></div>
-      <button class="view-all" onclick="showPage('services')">View All</button>
+      <div><h2>Nearby Prayer Spaces</h2><p id="home-services-label" style="display:none"></p></div>
+      <button class="view-all" onclick="showPage('prayer-rooms')">View All</button>
     </div>
     <div id="home-services-grid"></div>
   </div>
@@ -1356,7 +1358,7 @@ html.qiblah-dark-mode .reg-field label {
       <span class="jummah-shortcut__copy">
         <span class="jummah-shortcut__title">Jumu'ah Times</span>
       </span>
-      <svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.75A10.25 10.25 0 112.75 12 10.26 10.26 0 0112 1.75zm0 1.5A8.75 8.75 0 1020.75 12 8.76 8.76 0 0012 3.25zm-.75 3.5h1.5v5.02l3.48 2.08-.77 1.29-4.21-2.52V6.75z"/></svg>
+      <svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V10h14v9zm0-11H5V6h14v2z"/></svg>
     </button>
   </div>
   <div class="mosques-results mosque-grid" id="mosque-results"></div>
@@ -1766,6 +1768,19 @@ function svcColor(type) {
   return SVC_COLORS[type] || {bg:'rgba(255,255,255,0.08)',color:'var(--muted)'};
 }
 
+function usesQuranSubjectIcon(service) {
+  var s = service || {};
+  var text = [s.type, s.name, s.title, s.description].filter(Boolean).join(' ').toLowerCase();
+  return /qur'?an|quran/.test(text);
+}
+
+function serviceIconHtml(service, color) {
+  if (usesQuranSubjectIcon(service)) {
+    return '<div class="service-icon-img service-icon-img--quran" aria-hidden="true"></div>';
+  }
+  return '<svg viewBox="0 0 24 24" fill="' + color + '">' + svcIcon(service && service.type) + '</svg>';
+}
+
 function svcIcon(type) {
   if (type === 'General') return '<path d="M4 5h16v10H7l-3 3V5zm4 4h8v1.8H8V9zm0 3.2h5.5V14H8v-1.8z"/>';
   if (type === 'Quran') return '<path d="M5 4.5C6.2 4.15 7.45 4 8.7 4c1.35 0 2.45.22 3.3.66.85-.44 1.95-.66 3.3-.66 1.25 0 2.5.15 3.7.5v14.8c-1.08-.34-2.25-.5-3.5-.5-1.42 0-2.58.25-3.5.76-.92-.51-2.08-.76-3.5-.76-1.25 0-2.42.16-3.5.5V4.5zm6 2.05c-.58-.22-1.35-.33-2.3-.33-.68 0-1.3.05-1.85.16v10.2c.53-.07 1.08-.1 1.65-.1.96 0 1.79.1 2.5.31V6.55zm2 10.24c.71-.21 1.54-.31 2.5-.31.57 0 1.12.03 1.65.1V6.38c-.55-.11-1.17-.16-1.85-.16-.95 0-1.72.11-2.3.33v10.24z"/>';
@@ -1905,13 +1920,13 @@ function renderServices(results) {
     var clickHandler = r.isInstitute ? 'openInstitute(' + r.mosqueIdx + ')' : 'openDetail(' + r.mosqueIdx + ')';
     return '<div class="service-card" onclick="' + clickHandler + '">' +
       '<div class="service-icon" style="background:' + c.bg + '">' +
-        '<svg viewBox="0 0 24 24" fill="' + c.color + '">' + svcIcon(s.type) + '</svg>' +
+        serviceIconHtml(s, c.color) +
       '</div>' +
-      '<div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:7px">' +
+      '<div style="position:absolute;top:10px;right:12px;width:126px;display:flex;flex-direction:column;align-items:flex-end;gap:10px">' +
         '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 7px;border-radius:5px">' + s.type + '</span>' +
-        (s.days || s.time ? '<span style="font-size:12px !important;font-weight:400;line-height:1.05;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right">' + (s.days||'') + (s.time?(s.days?' ':'')+fmtServiceTime(s.time):'') + '</span>' : '') +
+        (s.days || s.time ? '<span style="display:block;width:100%;font-size:12px !important;font-weight:400;line-height:1.15;font-family:\'Outfit\',sans-serif;color:var(--muted);text-align:right;margin-top:2px">' + (s.days||'') + (s.time?(s.days?' ':'')+fmtServiceTime(s.time):'') + '</span>' : '') +
       '</div>' +
-      '<div class="service-body" style="padding-right:64px">' +
+      '<div class="service-body" style="padding-right:126px">' +
         '<div class="service-name">' + s.name + '</div>' +
         '<div class="service-provider">' + m.name + '</div>' +
       '</div>' +
@@ -1939,12 +1954,14 @@ function buildFeaturedServiceCard(r) {
   var clickHandler = r.isInstitute ? 'openInstitute(' + r.mosqueIdx + ')' : 'openDetail(' + r.mosqueIdx + ')';
   var rawTime = fmtServiceTime(s.time || '');
   var meta = [s.type, s.days, rawTime].filter(Boolean).join('   ');
+  var c = svcColor(s.type);
   return '<div class="sponsored-card" onclick="' + clickHandler + '">' +
     '<div class="featured-badge">' +
       '<svg width="10" height="10" viewBox="0 0 24 24" fill="var(--gold)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' +
       '<span>FEATURED</span>' +
     '</div>' +
     '<div class="sponsored-card-body">' +
+      '<div class="service-icon" style="background:' + c.bg + ';margin-bottom:10px">' + serviceIconHtml(s, c.color) + '</div>' +
       '<div class="sponsored-card-title">' + s.name + '</div>' +
       '<div class="sponsored-card-sub">' + m.name + '</div>' +
       (meta ? '<div class="sponsored-card-desc">' + meta + '</div>' : '') +
@@ -2518,20 +2535,24 @@ function buildDuaStrip(mosque) {
 }
 
 function homePracticeBadge(key, active) {
-  if (key === 'friday') return active ? 'Today' : 'Friday';
-  if (key === 'kahf') return active ? 'Today' : 'Friday';
+  if (key === 'friday' || key === 'kahf') {
+    return active
+      ? '<svg aria-label="Read" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>'
+      : 'Friday';
+  }
   if (key === 'morning') return active ? 'Now' : 'After Fajr';
   if (key === 'evening') return active ? 'Now' : 'After Asr';
   return '';
 }
 
 function buildHomePracticeRow(item) {
-  return '<div onclick="event.stopPropagation();showPage(\'' + item.page + '\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border);' + (item.active ? 'background:rgba(166,134,74,0.05);' : '') + '">' +
+  var activeStyle = '';
+  return '<div onclick="event.stopPropagation();showPage(\'' + item.page + '\')" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-top:1px solid var(--border);' + activeStyle + '">' +
     '<div>' +
       '<div class="mosque-card-name" style="margin-bottom:2px">' + item.title + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">' + item.desc + '</div>' +
     '</div>' +
-    '<span class="pill-tag pill-tag--compact">' + item.badge + '</span>' +
+    '<span class="pill-tag pill-tag--compact" title="Read" style="' + (item.key === 'friday' || item.key === 'kahf' ? 'width:30px;height:30px;padding:0;border-radius:50%;' : '') + '">' + item.badge + '</span>' +
   '</div>';
 }
 
@@ -2647,7 +2668,7 @@ function renderHomePrayerCard(mosque) {
           '<span class="jummah-shortcut__copy">' +
             '<span class="jummah-shortcut__title">Jumu\'ah Times</span>' +
           '</span>' +
-          '<svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.75A10.25 10.25 0 112.75 12 10.26 10.26 0 0112 1.75zm0 1.5A8.75 8.75 0 1020.75 12 8.76 8.76 0 0012 3.25zm-.75 3.5h1.5v5.02l3.48 2.08-.77 1.29-4.21-2.52V6.75z"/></svg>' +
+          '<svg class="jummah-shortcut__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V10h14v9zm0-11H5V6h14v2z"/></svg>' +
         '</button>' +
         '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:8px">' +
         (function() {
@@ -2842,44 +2863,28 @@ function renderHomeGrid(mosques, label) {
   if (lbl) { lbl.textContent = label || ''; lbl.style.display = label ? 'block' : 'none'; }
 }
 
-function renderHomeServices(nearestMosques) {
+function renderHomePrayerSpaces(label) {
   var el = document.getElementById('home-services-grid');
   if (!el) return;
-  // Collect announcement-backed services from nearby mosques
-  var results = [];
-  var areas = nearestMosques ? nearestMosques.map(function(m){ return m.area; }) : [];
-  MOSQUES.forEach(function(m, mi) {
-    var isNearby = !nearestMosques || areas.indexOf(m.area) > -1;
-    if (!isNearby) return;
-    mosqueAnnouncementServices(m).forEach(function(s) {
-      if (results.length < 5) results.push({service: s, mosque: m, mosqueIdx: mi});
-    });
-  });
-  // Fallback if not enough nearby services
-  if (results.length < 5) {
-    MOSQUES.forEach(function(m, mi) {
-      mosqueAnnouncementServices(m).forEach(function(s) {
-        if (results.length < 5 && !results.some(function(r){ return r.mosque === m && r.service.name === s.name; })) {
-          results.push({service: s, mosque: m, mosqueIdx: mi});
-        }
-      });
-    });
-  }
-  if (!results.length) { el.innerHTML = ''; return; }
+  var rooms = PRAYER_ROOMS.slice();
+  if (userLat !== null && userLng !== null) rooms = sortPrayerRoomsByDistance(rooms);
+  rooms = rooms.slice(0, 5);
+  var lbl = document.getElementById('home-services-label');
+  if (lbl) { lbl.textContent = label || ''; lbl.style.display = label ? 'block' : 'none'; }
+  if (!rooms.length) { el.innerHTML = ''; return; }
   el.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">' +
-    results.map(function(r) {
-      var s = r.service, m = r.mosque, c = svcColor(s.type);
-      return '<div class="service-card" onclick="openDetail(' + r.mosqueIdx + ')">' +
-        '<div class="service-icon" style="background:' + c.bg + '">' +
-          '<svg viewBox="0 0 24 24" fill="' + c.color + '">' + svcIcon(s.type) + '</svg>' +
+    rooms.map(function(r) {
+      var dist = userLat !== null && userLng !== null ? prayerRoomDistLabel(r) : '';
+      var idx = PRAYER_ROOMS.indexOf(r);
+      var locationNote = r.venue || r.notes || r.type || r.address || '';
+      return '<div class="mosque-card" onclick="openPrayerRoomDetail(' + idx + ')" style="cursor:pointer;display:flex;align-items:center;padding:14px 16px;position:relative">' +
+        '<div style="flex:1;min-width:0;padding-right:132px">' +
+          '<div class="mosque-card-name" style="margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(prayerRoomCardName(r)) + '</div>' +
+          '<div style="font-size:13px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + qText(locationNote) + '</div>' +
         '</div>' +
-        '<div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:7px">' +
-          '<span style="font-size:10px;font-weight:600;color:' + c.color + ';background:' + c.bg + ';padding:2px 7px;border-radius:5px">' + s.type + '</span>' +
-          (s.days || s.time ? '<span style="font-size:10px;color:var(--muted);text-align:right">' + (s.days || '') + (s.time ? (s.days ? ' ' : '') + fmtServiceTime(s.time) : '') + '</span>' : '') +
-        '</div>' +
-        '<div class="service-body" style="padding-right:64px">' +
-          '<div class="service-name">' + s.name + '</div>' +
-          '<div class="service-provider">' + m.name + '</div>' +
+        '<div style="position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
+          '<span class="pill-tag pill-tag--compact" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + qText(prayerRoomAreaLabel(r.area)) + '</span>' +
+          (dist ? '<span style="font-size:11px;color:var(--muted);font-weight:500;line-height:1">' + qText(dist) + '</span>' : '') +
         '</div>' +
       '</div>';
     }).join('') + '</div>';
@@ -2922,7 +2927,7 @@ function initHomeLocation() {
     // Home tab
     renderHomePrayerCard();
     renderHomeGrid(nearestMosquesHome, nearestMosquesHomeLabel);
-    renderHomeServices(nearestMosquesHome);
+    renderHomePrayerSpaces((userLat !== null && userLng !== null && PRAYER_ROOMS.length) ? 'Nearest to you' : '');
     // Mosques tab
     renderList(nearest20);
     var countEl = document.getElementById('mosque-count');
@@ -2935,7 +2940,7 @@ function initHomeLocation() {
     nearestMosquesHomeLabel = '';
     renderHomePrayerCard();
     renderHomeGrid(null, '');
-    renderHomeServices(null);
+    renderHomePrayerSpaces('');
   }, { timeout: 5000 });
 }
 
@@ -3382,8 +3387,8 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
       services.map(function(s) {
         var c = svcColor(s.type);
         return '<div class="svc-item">' +
-          '<div class="svc-icon-sm" style="background:' + c.bg + '">' +
-            '<svg viewBox="0 0 24 24" fill="' + c.color + '">' + svcIcon(s.type) + '</svg>' +
+      '<div class="svc-icon-sm" style="background:' + c.bg + '">' +
+            serviceIconHtml(s, c.color) +
           '</div>' +
           '<div style="flex:1">' +
             '<div style="font-size:14px;font-weight:600">' + qText(s.name) + '</div>' +
@@ -3404,7 +3409,7 @@ function renderDetailPage(idx, m, img, prayers, cdPrayers) {
         var meta = [a.day, a.time, formatProfileDate(a.start_date || a.date), duration].filter(Boolean).join(' · ');
         return '<div class="profile-detail-item">' +
           '<div class="profile-detail-icon" style="background:' + c.bg + ';color:' + c.color + '">' +
-            '<svg viewBox="0 0 24 24" fill="currentColor">' + svcIcon(type) + '</svg>' +
+            serviceIconHtml({ type:type, name:a.title, description:announcementText(a) }, c.color) +
           '</div>' +
           '<div class="profile-detail-body">' +
             '<div class="profile-detail-title">' + qText(a.title) + '</div>' +
@@ -4241,16 +4246,11 @@ function openPrayerRoomDetail(idx) {
     '<div class="detail-body">' +
       '<div class="detail-card">' +
         '<h3>Information</h3>' +
-        '<p style="font-size:13px;color:var(--muted);line-height:1.6">' + qText(summary) + '</p>' +
+        '<p style="font-size:13px;color:var(--text);line-height:1.6">' + qText(summary) + '</p>' +
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Facilities</h3>' +
         facilities +
-      '</div>' +
-      '<div class="detail-card">' +
-        '<h3>Directions</h3>' +
-        '<p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Use the address below to navigate to this prayer space. Check with venue staff if access has changed.</p>' +
-        (r.address ? '<div class="contact-item"><div class="con-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div><span style="color:var(--muted);font-size:14px">' + qText(r.address) + '</span></div>' : '') +
       '</div>' +
       '<div class="detail-card">' +
         '<h3>Report Listing</h3>' +
@@ -4486,7 +4486,7 @@ function openInstitute(idx) {
     var sc = svcColor(s.type);
     return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)">' +
       '<div style="width:36px;height:36px;border-radius:10px;background:' + sc.bg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
-        '<svg viewBox="0 0 24 24" fill="' + sc.color + '" width="18" height="18">' + svcIcon(s.type) + '</svg>' +
+        serviceIconHtml(s, sc.color) +
       '</div>' +
       '<div style="flex:1">' +
         '<div style="font-size:14px;font-weight:600">' + s.name + '</div>' +
