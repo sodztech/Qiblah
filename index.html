@@ -484,7 +484,7 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   overflow:hidden;
 }
 .mosque-card-icon--uploaded {
-  padding:2px;
+  padding:0;
 }
 .mosque-card .mosque-card-logo,
 .mosque-profile-logo {
@@ -496,15 +496,15 @@ nav { position: sticky; top: 0; z-index: 100; background: #f6f1e8 !important; bo
   filter:none;
 }
 .mosque-profile-logo-box {
-  padding:2px !important;
+  padding:0 !important;
 }
 .mosque-card .mosque-card-fallback-icon {
   width:28px;
   height:28px;
   object-fit:contain;
   object-position:center;
-  opacity:0.9;
-  filter:brightness(0) saturate(100%) invert(62%) sepia(21%) saturate(530%) hue-rotate(8deg) brightness(93%) contrast(87%) drop-shadow(0 1px 1px rgba(31,27,22,0.14));
+  opacity:0.74;
+  filter:brightness(0) saturate(100%) invert(61%) sepia(15%) saturate(318%) hue-rotate(8deg) brightness(92%) contrast(84%) drop-shadow(0 1px 1px rgba(31,27,22,0.10));
 }
 .mosque-name-with-icon {
   display:flex;
@@ -2399,7 +2399,7 @@ function cardHTML(m, i) {
       logoHtml +
     '</div>' +
       '<div style="flex:1;min-width:0;padding-right:70px">' +
-      '<div class="mosque-card-name mosque-name-with-icon" style="margin-bottom:5px"><span>' + m.name + '</span>' + (hasWomenPrayerArea ? '<img class="women-prayer-icon-img" src="icons/hijab.svg" alt="" aria-hidden="true">' : '') + '</div>' +
+      '<div class="mosque-card-name" style="margin-bottom:5px">' + m.name + '</div>' +
       (function() {
         var isFri = isJumuahTime(m._times && m._times[3] && m._times[3].begins);
         var nextDisplay = next;
@@ -2411,8 +2411,9 @@ function cardHTML(m, i) {
         '</div>';
       })() +
     '</div>' +
-    '<div style="position:absolute;top:12px;right:12px">' +
+    '<div style="position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:8px">' +
     '<span class="pill-tag pill-tag--compact">' + (m.area||'') + '</span>' +
+    (hasWomenPrayerArea ? '<img class="women-prayer-icon-img" src="icons/hijab.svg" alt="" aria-hidden="true">' : '') +
     '</div>' +
 
   '</div>';
@@ -2914,8 +2915,20 @@ function renderHomePrayerSpaces(label) {
   var el = document.getElementById('home-services-grid');
   if (!el) return;
   var rooms = PRAYER_ROOMS.slice();
-  if (userLat !== null && userLng !== null) rooms = sortPrayerRoomsByDistance(rooms);
-  rooms = rooms.slice(0, 5);
+  if (userLat !== null && userLng !== null && rooms.length) {
+    var scored = rooms.map(function(r) {
+      return { r: r, d: prayerRoomDistanceKm(r) };
+    }).filter(function(s) {
+      return s.d !== null;
+    }).sort(function(a, b) {
+      return a.d - b.d;
+    });
+    var nearby = nearbyScoredPrayerRooms(scored);
+    rooms = (nearby.length ? nearby : scored).slice(0, 5).map(function(s) { return s.r; });
+    if (rooms[0]) label = (nearby.length ? 'Near you • ' : 'Closest to you • ') + (prayerRoomAreaLabel(rooms[0].area) || 'Prayer Spaces');
+  } else {
+    rooms = rooms.slice(0, 5);
+  }
   var lbl = document.getElementById('home-services-label');
   if (lbl) { lbl.textContent = label || ''; lbl.style.display = label ? 'block' : 'none'; }
   if (!rooms.length) { el.innerHTML = ''; return; }
@@ -3886,10 +3899,11 @@ var BANNERS = [
 var activeCourseType = 'All';
 var activePrayerRoomArea = 'All';
 var prayerRoomNearMeActive = false;
+var NEARBY_PRAYER_ROOM_RADIUS_KM = 8;
 
 var PRAYER_ROOM_AREA_CENTROIDS = {
   'Archway':[51.565,-0.135], 'Avery Hill':[51.456,0.072], 'Bankside':[51.507,-0.099],
-  'Battersea':[51.482,-0.144], 'Beckton':[51.515,0.061], 'Bloomsbury':[51.523,-0.124],
+  'Barking':[51.539,0.080], 'Battersea':[51.482,-0.144], 'Beckton':[51.515,0.061], 'Bloomsbury':[51.523,-0.124],
   'Brent Cross':[51.576,-0.223], 'Canary Wharf':[51.505,-0.020], 'Chelsea':[51.487,-0.169],
   'Clerkenwell':[51.523,-0.104], 'Croydon':[51.376,-0.098], 'Denmark Hill':[51.468,-0.090],
   'Docklands':[51.503,-0.009], 'Edmonton':[51.615,-0.073], 'Euston':[51.528,-0.134],
@@ -3945,6 +3959,12 @@ function sortPrayerRoomsByDistance(rooms) {
     if (da === null) da = 999999;
     if (db === null) db = 999999;
     return da - db;
+  });
+}
+
+function nearbyScoredPrayerRooms(scored) {
+  return scored.filter(function(s) {
+    return (s.d !== undefined ? s.d : 999999) <= NEARBY_PRAYER_ROOM_RADIUS_KM;
   });
 }
 
@@ -4055,7 +4075,15 @@ function filterPrayerRooms() {
   });
   if (userLat !== null && userLng !== null) {
     filtered = sortPrayerRoomsByDistance(filtered);
-    if (prayerRoomNearMeActive) filtered = filtered.slice(0, 20);
+    if (prayerRoomNearMeActive) {
+      var scored = filtered.map(function(r) {
+        return { r: r, d: prayerRoomDistanceKm(r) };
+      }).filter(function(s) {
+        return s.d !== null;
+      });
+      var nearby = nearbyScoredPrayerRooms(scored);
+      filtered = (nearby.length ? nearby : scored).slice(0, 20).map(function(s) { return s.r; });
+    }
   }
   var lbl = document.getElementById('prayer-room-location-label');
   if (lbl) {
